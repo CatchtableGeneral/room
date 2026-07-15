@@ -10,7 +10,7 @@
   html,body{width:100%;height:100%;overflow:hidden;font-family:"Pretendard",sans-serif;background:#EBECEE;-webkit-font-smoothing:antialiased;color:#1F2124;}
   .fit-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#EBECEE;overflow:hidden;}
   .fit-wrap.dark{background:radial-gradient(1100px 520px at 50% -8%, rgba(255,80,63,0.18), rgba(255,80,63,0) 62%), #0C0D11;}
-  .page{width:1920px;height:1080px;background:#fff;position:relative;display:flex;flex:none;overflow:hidden;}
+  .page{width:1920px;height:1080px;background:#fff;position:relative;display:flex;flex:none;overflow:hidden;transform-origin:center center;}
 
   /* ===== 사이드바 (코랄) ===== */
   .side{width:400px;flex:0 0 400px;background:linear-gradient(155deg,#FF8064 0%,#FF503F 42%,#E5361E 100%);color:#fff;padding:48px 50px;display:flex;flex-direction:column;position:relative;z-index:2;box-shadow:8px 0 24px rgba(0,0,0,0.16);}
@@ -58,9 +58,9 @@
   .side.light .sch-item.now{background:#FFE7E3;}
   .side.light .sch-item.now .t{color:#F03A29;}
   .side.light .sch-item.now .n{color:#D6321E;}
-  .sch-item.past{opacity:0.5;display:flex;align-items:baseline;gap:7px;padding:3px 12px;}
-  .sch-item.past .t{font-size:12px;}
-  .sch-item.past .n{font-size:11px;margin-top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sch-item.past{opacity:0.5;display:flex;align-items:baseline;flex-wrap:nowrap;gap:7px;padding:3px 12px;}
+  .sch-item.past .t{font-size:12px;white-space:nowrap;flex:none;}
+  .sch-item.past .n{font-size:11px;margin-top:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .sch-empty{font-size:14px;opacity:0.85;background:rgba(255,255,255,0.1);border-radius:12px;padding:14px;text-align:center;}
   .side-bottom{margin-top:auto;padding-top:24px;display:flex;flex-direction:column;gap:16px;}
   .pill{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.32);padding:11px 20px;border-radius:999px;font-size:17px;font-weight:600;}
@@ -325,9 +325,9 @@ function renderSched(events,sample){
 
 function fit(){
   const page=document.getElementById('page');
-  // transform 대신 zoom(reflow) 사용 — 경량 브라우저·브라우저 줌에 안 흔들리고 선명함
+  // [테스트] 원래 방식: transform 스케일 (파이어스틱 초기 테스트와 동일)
   const s=Math.min(window.innerWidth/1920, window.innerHeight/1080);
-  page.style.zoom = s;
+  page.style.transform='scale('+s+')';
 }
 function render(){
   const page=document.getElementById('page'),fitw=document.getElementById('fit');
