@@ -10,7 +10,7 @@
   html,body{width:100%;height:100%;overflow:hidden;font-family:"Pretendard",sans-serif;background:#EBECEE;-webkit-font-smoothing:antialiased;color:#1F2124;}
   .fit-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#EBECEE;overflow:hidden;}
   .fit-wrap.dark{background:radial-gradient(1100px 520px at 50% -8%, rgba(255,80,63,0.18), rgba(255,80,63,0) 62%), #0C0D11;}
-  .page{width:1920px;height:1080px;background:#fff;position:absolute;top:0;left:0;display:flex;transform-origin:0 0;flex:none;overflow:hidden;}
+  .page{width:1920px;height:1080px;background:#fff;position:absolute;top:50%;left:50%;display:flex;transform-origin:center center;flex:none;overflow:hidden;}
 
   /* ===== 사이드바 (코랄) ===== */
   .side{width:400px;flex:0 0 400px;background:linear-gradient(155deg,#FF8064 0%,#FF503F 42%,#E5361E 100%);color:#fff;padding:48px 50px;display:flex;flex-direction:column;position:relative;z-index:2;box-shadow:8px 0 24px rgba(0,0,0,0.16);}
@@ -326,14 +326,16 @@ function renderSched(events,sample){
 function fit(){
   const page=document.getElementById('page');
   const vw=window.innerWidth, vh=window.innerHeight, target=1920/1080;
+  let sc;
   if(Math.abs((vw/vh) - target) <= 0.15){
     // 16:9 근접(TV) → 살짝 늘여서 꽉 채움 (잘림 없음, 미세 왜곡만)
-    page.style.transform='scale('+(vw/1920)+','+(vh/1080)+')';
+    sc='scale('+(vw/1920)+','+(vh/1080)+')';
   } else {
     // PC 창 등 → 안 잘리게 비율 유지하며 맞춤
     const s=Math.min(vw/1920, vh/1080);
-    page.style.transform='scale('+s+')';
+    sc='scale('+s+')';
   }
+  page.style.transform='translate(-50%,-50%) '+sc;  // 중앙 고정 배치 (쏠림 방지)
 }
 function render(){
   const page=document.getElementById('page'),fitw=document.getElementById('fit');
