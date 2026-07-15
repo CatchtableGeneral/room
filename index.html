@@ -327,10 +327,14 @@ function fit(){
   const page=document.getElementById('page');
   if(!ROOMS[(getParam('room')||'').toLowerCase()]){page.style.transform='none';return;}
   const vw=window.innerWidth, vh=window.innerHeight, target=1920/1080;
-  // 화면비가 16:9에 가까우면(TV) 꽉 채우기(cover), 많이 다르면(PC 창) 안 잘리게 맞추기(contain)
-  const near = Math.abs((vw/vh) - target) <= 0.15;
-  const s = near ? Math.max(vw/1920, vh/1080) : Math.min(vw/1920, vh/1080);
-  page.style.transform='scale('+s+')';
+  if(Math.abs((vw/vh) - target) <= 0.15){
+    // 16:9 근접(TV) → 살짝 늘여서 꽉 채움 (잘림 없음, 미세 왜곡만)
+    page.style.transform='scale('+(vw/1920)+','+(vh/1080)+')';
+  } else {
+    // PC 창 등 → 안 잘리게 비율 유지하며 맞춤
+    const s=Math.min(vw/1920, vh/1080);
+    page.style.transform='scale('+s+')';
+  }
 }
 function render(){
   const page=document.getElementById('page'),fitw=document.getElementById('fit');
