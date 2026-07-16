@@ -370,10 +370,10 @@ function render(){
     page.style.width='1920px';page.style.height='1080px';page.style.background='#fff';
     page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):mainStandard(room,t));
     document.title=room.name+' · 회의실 가이드';
-    // 화면은 저장된 값만 가볍게 읽음 → 60초 주기 + 화면마다 시각 어긋나게(±20초 지터)
+    // 15초 주기 폴링(+지터) → 서버가 요청 시 최신화하므로 신선도 ≈ 폴링 주기(약 15초)
     const calKey=room.cal||key;
     loadSchedule(calKey);
-    (function poll(){ setTimeout(function(){ loadSchedule(calKey); poll(); }, 60000+Math.floor(Math.random()*20000)); })();
+    (function poll(){ setTimeout(function(){ loadSchedule(calKey); poll(); }, 15000+Math.floor(Math.random()*5000)); })();
   }
   fit();
 }
