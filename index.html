@@ -101,15 +101,15 @@
   .imgslot{width:100%;height:300px;margin:16px 0 4px;border-radius:16px;background:#F1F2F4;border:2px dashed #D7DADF;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9aa0a6;text-align:center;padding:8px;}
   .imgslot.anim{border-style:solid;border-color:#E7E9ED;background:#F7F8FA;overflow:hidden;padding:10px;}
   .anim-svg{width:100%;height:100%;display:block;}
-  /* HDMI (5.5s): 노트북 자판쪽 포트에 꽂기 → TV 미러링 / 뽑으면 TV엔 가이드화면 */
-  @keyframes hdmiPlug2{0%{transform:translateX(24px)}12.5%{transform:translateX(0)}50%{transform:translateX(0)}62.5%{transform:translateX(24px)}100%{transform:translateX(24px)}}
-  @keyframes tvGuide{0%,10%{opacity:1}16%,50%{opacity:0}58%,100%{opacity:1}}
-  @keyframes tvMirror{0%,16%{opacity:0}22%,50%{opacity:1}56%,100%{opacity:0}}
-  @keyframes hdmiCable{0%{d:path("M165 76 C 172 96, 174 116, 167 122")}12.5%{d:path("M165 76 C 160 95, 152 113, 143 122")}50%{d:path("M165 76 C 160 95, 152 113, 143 122")}62.5%{d:path("M165 76 C 172 96, 174 116, 167 122")}100%{d:path("M165 76 C 172 96, 174 116, 167 122")}}
-  .hdmi-conn{animation:hdmiPlug2 8s ease-in-out infinite}
-  .hdmi-cable{animation:hdmiCable 8s ease-in-out infinite}
-  .tv-guide{animation:tvGuide 8s ease-in-out infinite}
-  .tv-mirror{animation:tvMirror 8s ease-in-out infinite}
+  /* HDMI (10s): 무선과 동일 타이밍 — 60% 연결 → 64~92% 미러 → 96% 뽑기 */
+  @keyframes hdmiPlug2{0%{transform:translateX(24px)}52%{transform:translateX(24px)}60%{transform:translateX(0)}92%{transform:translateX(0)}96%{transform:translateX(24px)}100%{transform:translateX(24px)}}
+  @keyframes tvGuide{0%,57%{opacity:1}63%,93%{opacity:0}97%,100%{opacity:1}}
+  @keyframes tvMirror{0%,57%{opacity:0}64%,92%{opacity:1}97%,100%{opacity:0}}
+  @keyframes hdmiCable{0%{d:path("M165 76 C 172 96, 174 116, 167 122")}52%{d:path("M165 76 C 172 96, 174 116, 167 122")}60%{d:path("M165 76 C 160 95, 152 113, 143 122")}92%{d:path("M165 76 C 160 95, 152 113, 143 122")}96%{d:path("M165 76 C 172 96, 174 116, 167 122")}100%{d:path("M165 76 C 172 96, 174 116, 167 122")}}
+  .hdmi-conn{animation:hdmiPlug2 10s ease-in-out infinite}
+  .hdmi-cable{animation:hdmiCable 10s ease-in-out infinite}
+  .tv-guide{animation:tvGuide 10s ease-in-out infinite}
+  .tv-mirror{animation:tvMirror 10s ease-in-out infinite}
   /* Windows (10s): Win+K → 캐스트 선택 → TV 연결허용 → 허용 → 무선 미러링 */
   @keyframes lpKeys{0%{opacity:0}4%,12%{opacity:1}18%,100%{opacity:0}}
   @keyframes lpCast2{0%,12%{opacity:0;transform:translateY(6px)}18%,50%{opacity:1;transform:translateY(0)}56%,100%{opacity:0;transform:translateY(6px)}}
@@ -171,7 +171,7 @@
   .topbubble .arw{position:absolute;pointer-events:none;opacity:0.9;}
   .topbubble .arw-etq{top:-16px;right:-18px;}
   .topbubble .arw-conn{bottom:-40px;left:34px;transform:scaleX(-1);}
-  .topbubble .cb{max-width:86%;padding:16px 22px;font-size:19px;font-weight:800;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,0.10);}
+  .topbubble .cb{max-width:94%;padding:19px 26px;font-size:22px;font-weight:800;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,0.10);}
   .topbubble .cb-top{align-self:flex-end;background:#fff;color:#3A3D42;border:1px solid #E4E7EC;border-radius:20px 6px 20px 20px;}
   .topbubble .cb-bot{align-self:flex-start;margin-left:52px;background:linear-gradient(150deg,#FF6A3D,#FD3D00);color:#fff;border-radius:20px 20px 20px 6px;}
   /* 사이드바 Guest Wi-Fi */
@@ -189,6 +189,15 @@
   .wifi-guide .wg-h{font-size:19px;font-weight:800;color:#FD3D00;}
   .wifi-guide .wg-c{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#1F2124;white-space:nowrap;}
   .wifi-guide .wg-c .ql{flex:none;min-width:34px;text-align:center;font-size:11.5px;font-weight:800;color:#fff;background:#FD3D00;padding:3px 8px;border-radius:6px;}
+  .wifi-guide .wg-c .pwv{font-size:18px;letter-spacing:1.5px;}
+  /* 화상회의실 전용 */
+  .main-video .btmwrap{gap:14px;}
+  .main-video .imgslot{height:200px;}
+  .main-video .btmwrap .vguide{flex:0 0 auto;}
+  .vguide .vrow{display:flex;gap:18px;margin-top:4px;}
+  .vguide .vstep{flex:1;display:flex;gap:10px;align-items:center;font-size:16px;font-weight:600;line-height:1.45;color:#3A3D42;background:#FAFBFC;border:1px solid #E7E9ED;border-radius:14px;padding:13px 16px;}
+  .vguide .vstep .num{flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:#FD3D00;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .vguide .vstep .tip-ic{font-size:18px;flex:none;}
   /* 연결 가이드 : HDMI(1) + 무선그룹(2, Mac|Win + 공용 말풍선 1개) */
   .conn3{display:grid;grid-template-columns:1fr 2fr;gap:22px;}
   .conn4{display:grid;grid-template-columns:1fr 1fr 2fr;gap:16px;}
@@ -240,6 +249,14 @@
   .pbtn .rn{font-size:20px;font-weight:700;color:#F5F6F8;letter-spacing:-0.5px;}
   .pbtn .rt{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#aab0bc;}
   .pbtn .rt .tdot{width:7px;height:7px;border-radius:50%;background:var(--tc);box-shadow:0 0 8px var(--tc);}
+  .pbtn .pk-st{font-size:12.5px;font-weight:700;margin-top:7px;display:inline-flex;align-items:center;gap:6px;color:#8b8f9c;}
+  .pbtn .pk-st::before{content:"";width:7px;height:7px;border-radius:50%;background:#6b7078;display:inline-block;flex:none;}
+  .pbtn .pk-st.free{color:#2FCB84;}
+  .pbtn .pk-st.free::before{background:#2FCB84;box-shadow:0 0 8px #2FCB84;}
+  .pbtn .pk-st.busy{color:#FF7A8C;}
+  .pbtn .pk-st.busy::before{background:#FF2D55;box-shadow:0 0 8px rgba(255,45,85,0.7);}
+  .pbtn .pk-st.prep{color:#FFB259;}
+  .pbtn .pk-st.prep::before{background:#FF9500;box-shadow:0 0 8px rgba(255,149,0,0.7);}
   .pbtn .arr{position:absolute;right:16px;bottom:14px;color:var(--tc);opacity:0;transform:translateX(-4px);transition:all .18s ease;font-size:15px;font-weight:800;}
   .pbtn:hover .arr{opacity:1;transform:translateX(0);}
   /* ── 1080p→4K 업스케일 대비: 글자 굵게·테두리 두껍게 (크기 유지, 선명도↑) ── */
@@ -287,7 +304,7 @@ function bubbleTop(t){
   const iv=(t.kind==="interview");
   const top=iv?"좋은 인터뷰<br>문화 만들기":"일하기 좋은<br>회의 문화 만들기 🙏";
   const bot=iv?"조용한 환경<br>유지해요 🤫":"연결은 5초면 끝!<br>바로 회의 시작 👍";
-  const arrows=iv?"":ARW_ETQ+ARW_CONN;
+  const arrows="";
   return `<div class="topbubble"><div class="cb cb-top">${top}</div><div class="cb cb-bot">${bot}</div>${arrows}</div>`;
 }
 function wifiSide(){ return `<div class="wifi-side">
@@ -300,7 +317,7 @@ function wifiGuide(){ return `<div class="wifi-guide">
     <div class="wg-side">
       <div class="wg-h">Guest Wi-Fi</div>
       <div class="wg-c"><span class="ql">ID</span> WAD_Guest</div>
-      <div class="wg-c"><span class="ql">PW</span> guest!@#</div>
+      <div class="wg-c"><span class="ql">PW</span> <span class="pwv">guest!@#</span></div>
     </div>
   </div>`; }
 function sidebar(room,t){
@@ -332,7 +349,7 @@ const ANIM_HDMI = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRat
     <g fill="#FFECE9"><circle cx="191" cy="29" r="4"/><circle cx="202" cy="29" r="4"/><circle cx="213" cy="29" r="4"/><circle cx="224" cy="29" r="4"/><circle cx="235" cy="29" r="4"/></g>
     <text x="255" y="16.5" text-anchor="middle" font-size="2.6" font-weight="800" fill="#8A9099">Guest Wi-Fi</text><rect x="246" y="18" width="18" height="17" rx="2" fill="#fff" stroke="#E7E9ED" stroke-width="0.5"/><g fill="#3A3D42"><rect x="248" y="20" width="4" height="4"/><rect x="258" y="20" width="4" height="4"/><rect x="248" y="29" width="4" height="4"/><rect x="254" y="25" width="2.5" height="2.5"/><rect x="257" y="29.5" width="3" height="3"/><rect x="253" y="21" width="2" height="2"/></g>
     <rect x="189" y="39" width="52" height="11" rx="4" fill="#FD3D00"/><text x="192" y="46.5" font-size="3" font-weight="800" fill="#fff">일하기 좋은 회의문화</text>
-    <text x="189" y="56" font-size="2.9" font-weight="800" fill="#3A3D42">TV에 노트북 화면 연결하기</text>
+    <text x="189" y="56" font-size="2.9" font-weight="800" fill="#3A3D42">TV 미러링 가이드</text>
     <rect x="189" y="58" width="24" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/><rect x="216" y="58" width="24" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/><rect x="243" y="58" width="22" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/>
   </g>
   <g class="tv-mirror">
@@ -371,7 +388,7 @@ const ANIM_WIN = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRati
     <g fill="#FFECE9"><circle cx="191" cy="29" r="4"/><circle cx="202" cy="29" r="4"/><circle cx="213" cy="29" r="4"/><circle cx="224" cy="29" r="4"/><circle cx="235" cy="29" r="4"/></g>
     <text x="255" y="16.5" text-anchor="middle" font-size="2.6" font-weight="800" fill="#8A9099">Guest Wi-Fi</text><rect x="246" y="18" width="18" height="17" rx="2" fill="#fff" stroke="#E7E9ED" stroke-width="0.5"/><g fill="#3A3D42"><rect x="248" y="20" width="4" height="4"/><rect x="258" y="20" width="4" height="4"/><rect x="248" y="29" width="4" height="4"/><rect x="254" y="25" width="2.5" height="2.5"/><rect x="257" y="29.5" width="3" height="3"/><rect x="253" y="21" width="2" height="2"/></g>
     <rect x="189" y="39" width="52" height="11" rx="4" fill="#FD3D00"/><text x="192" y="46.5" font-size="3" font-weight="800" fill="#fff">일하기 좋은 회의문화</text>
-    <text x="189" y="56" font-size="2.9" font-weight="800" fill="#3A3D42">TV에 노트북 화면 연결하기</text>
+    <text x="189" y="56" font-size="2.9" font-weight="800" fill="#3A3D42">TV 미러링 가이드</text>
     <rect x="189" y="58" width="24" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/><rect x="216" y="58" width="24" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/><rect x="243" y="58" width="22" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/>
   </g>
   <g class="tw-mirror">
@@ -426,6 +443,16 @@ const CARD_VIDEO = `
       </ol>
       <div class="tip"><span class="tip-ic">💡</span><span class="tip-tx">회의가 없으면 <b>‘참가’</b> 후 코드(ID)를 입력하세요</span></div>
     </section>`;
+const CARD_INTERVIEW = `
+    <section class="gcard">
+      <div class="gc-head"><span class="gc-ic">🎤</span><div><div class="gc-ey">인터뷰 진행</div><div class="gc-tt">3단계 안내</div></div></div>
+      <ol class="steps">
+        <li><span class="num">1</span><span><b>인터뷰 전</b> · 10분 전 입실, 연결·카메라·마이크 점검</span></li>
+        <li><span class="num">2</span><span><b>인터뷰 중</b> · 정숙 유지, 외부 방해 차단</span></li>
+        <li><span class="num">3</span><span><b>인터뷰 후</b> · 자리 정리 후 바로 비워주기</span></li>
+      </ol>
+      <div class="tip"><span class="tip-ic">🔒</span><span class="tip-tx">지원자 <b>자료·메모는 반드시 회수·파기</b>해 주세요</span></div>
+    </section>`;
 const CTRL_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="3.5" y="5" width="17" height="6" rx="3"/><rect x="3.5" y="13" width="17" height="6" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg>';
 const MIRROR_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 19l-3.2 3.4h6.4z" fill="currentColor" stroke="none"/></svg>';
 const CARD_WIRED = `
@@ -479,34 +506,34 @@ function mainStandard(room,t){
   const wgroup = `<div class="wgroup"><div class="wpair">${cardMac(room)}${cardWin(room)}</div>${WL_TIP}</div>`;
   const sec = t.video
     ? guideSection("회의실 이용 가이드","화상회의 참여 &amp; 노트북 화면 연결","conn4",CARD_VIDEO+wiredGroup+wgroup)
-    : guideSection("TV에 노트북 화면 연결하기","유선·무선 방법을 골라 연결하세요","conn3",wiredGroup+wgroup);
+    : guideSection("TV 미러링 가이드","유선·무선 방법을 골라 연결하세요","conn3",wiredGroup+wgroup);
   const etq = etqSection("회의실 사용 에티켓","다음 사용자를 위해 함께 지켜주세요",
     [["⏰","이용시간 준수"],[PWR_OFF,"TV전원 OFF금지"],["🗑️","쓰레기 정리"],["🪑","자리 정리"],["💡","소등 후 퇴실"]]);
   return `<main class="main main-std"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}${wifiGuide()}</div><div class="btmwrap">${sec}</div></div></main>`;
 }
 
 function mainInterview(room,t){
-  const stepCards =
-    `<section class="gcard"><div class="gc-head"><span class="gc-ic">🗓️</span><div><div class="gc-ey">STEP 1</div><div class="gc-tt">인터뷰 전</div></div></div>
-      <ul class="ulm"><li><span class="dot">·</span><span>예약 <b>10분 전</b> 입실해 자료·노트북을 준비해요</span></li>
-      <li><span class="dot">·</span><span>화상 인터뷰는 <b>연결·카메라·마이크</b>를 미리 테스트해요</span></li>
-      <li><span class="dot">·</span><span>문 앞에 <b>‘인터뷰 중’</b> 표시를 걸어주세요</span></li></ul></section>`+
-    `<section class="gcard"><div class="gc-head"><span class="gc-ic">💬</span><div><div class="gc-ey">STEP 2</div><div class="gc-tt">인터뷰 중</div></div></div>
-      <ul class="ulm"><li><span class="dot">·</span><span>지원자가 편안하도록 <b>정숙한 환경</b>을 유지해요</span></li>
-      <li><span class="dot">·</span><span>노크·전화 등 <b>외부 방해</b>가 없도록 신경 써요</span></li>
-      <li><span class="dot">·</span><span>화면 공유가 필요하면 아래 <b>연결 방법</b>을 참고하세요</span></li></ul></section>`+
-    `<section class="gcard"><div class="gc-head"><span class="gc-ic">✅</span><div><div class="gc-ey">STEP 3</div><div class="gc-tt">인터뷰 후</div></div></div>
-      <ul class="ulm"><li><span class="dot">·</span><span>지원자 <b>자료·메모</b>는 반드시 회수·파기해요</span></li>
-      <li><span class="dot">·</span><span>책상·의자를 <b>원위치</b>하고 쓰레기를 정리해요</span></li>
-      <li><span class="dot">·</span><span>다음 인터뷰를 위해 <b>바로 비워</b> 주세요</span></li></ul></section>`;
-  const connCards =
-    `<section class="gcard row" style="flex-direction:row;align-items:center;gap:16px;"><span class="gc-ic">${hdmiIcon(28,18)}</span><div><div class="gc-tt" style="font-size:17px;">유선 · HDMI</div><div style="font-size:15px;color:#4A4F55;line-height:1.5;">책상의 <b>HDMI 케이블</b>을 노트북에 꽂으면 바로 TV에 표시돼요</div></div></section>`+
-    `<section class="gcard row" style="flex-direction:row;align-items:center;gap:16px;"><span class="gc-ic">📡</span><div><div class="gc-tt" style="font-size:17px;">무선 · 화면 미러링</div><div style="font-size:15px;color:#4A4F55;line-height:1.5;">Mac <b>화면 미러링</b> / Windows <b>Win + K</b>로 <b>${room.name}</b> 선택</div></div></section>`;
-  const steps = guideSection("인터뷰 진행 순서","지원자에게 좋은 경험을 남기는 3단계","row3",stepCards);
-  const conn = guideSection("화상 인터뷰 연결하기","원격 지원자와 화면을 공유할 때","row2",connCards);
+  const wiredGroup = `<div class="wgroup"><div class="wpair one">${CARD_WIRED}</div>${WIRED_TIP}</div>`;
+  const wgroup = `<div class="wgroup"><div class="wpair">${cardMac(room)}${cardWin(room)}</div>${WL_TIP}</div>`;
+  const sec = guideSection("인터뷰룸 이용 가이드","인터뷰 진행 &amp; 화면 연결","conn4",CARD_INTERVIEW+wiredGroup+wgroup);
   const etq = etqSection("인터뷰룸 이용 에티켓","지원자와 다음 인터뷰를 위해 지켜주세요",
     [["📅","인터뷰 우선 예약"],["🤫","정숙 유지"],["🔒","지원자 자료 보안"],["🪑","자리 정리"],["💡","소등 후 퇴실"]]);
-  return `<main class="main"><div class="inner">${steps}${conn}<div class="bottomrow">${bubbleTop(t)}${etq}</div></div></main>`;
+  return `<main class="main main-std"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}${wifiGuide()}</div><div class="btmwrap">${sec}</div></div></main>`;
+}
+
+function mainVideo(room,t){
+  const wiredGroup = `<div class="wgroup"><div class="wpair one">${CARD_WIRED}</div>${WIRED_TIP}</div>`;
+  const wgroup = `<div class="wgroup"><div class="wpair">${cardMac(room)}${cardWin(room)}</div>${WL_TIP}</div>`;
+  const videoSec = `<div class="gsection vguide"><div class="etq-h"><span class="etq-bar"></span><h3>화상회의 참여</h3><span class="s">예약된 회의에 바로 참가하세요</span></div>
+    <div class="vrow">
+      <div class="vstep"><span class="num">1</span><span>회의실 태블릿에서 <b>예약된 회의</b> 선택 후 <b>'참가'</b> 터치</span></div>
+      <div class="vstep"><span class="num">2</span><span>카메라·마이크가 켜지고 TV가 <b>회의 화면</b>으로 전환</span></div>
+      <div class="vstep"><span class="tip-ic">💡</span><span>회의가 없으면 <b>'참가'</b> 후 코드(ID)를 입력하세요</span></div>
+    </div></div>`;
+  const mirror = guideSection("TV 미러링 가이드","유선·무선으로 노트북 화면 연결","conn3",wiredGroup+wgroup);
+  const etq = etqSection("회의실 사용 에티켓","다음 사용자를 위해 함께 지켜주세요",
+    [["⏰","이용시간 준수"],[PWR_OFF,"TV전원 OFF금지"],["🗑️","쓰레기 정리"],["🪑","자리 정리"],["💡","소등 후 퇴실"]]);
+  return `<main class="main main-std main-video"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}${wifiGuide()}</div><div class="btmwrap">${videoSec}${mirror}</div></div></main>`;
 }
 
 function viewPicker(){
@@ -517,7 +544,7 @@ function viewPicker(){
     let btns="";
     list.forEach(([k,r])=>{
       const t=TYPES[r.type];
-      btns+=`<a class="pbtn" href="?room=${k}" style="--tc:${t.pick}"><span class="rn">${r.name}</span><span class="rt"><span class="tdot"></span>${r.tag||t.label}</span><span class="arr">→</span></a>`;
+      btns+=`<a class="pbtn" href="?room=${k}" style="--tc:${t.pick}"><span class="rn">${r.name}</span><span class="rt"><span class="tdot"></span>${r.tag||t.label}</span><span class="pk-st" id="pk-st-${k}">확인 중…</span><span class="arr">→</span></a>`;
     });
     grps+=`<div class="pgrp"><h3>${o} 사무실 <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
   });
@@ -546,6 +573,57 @@ function loadSchedule(key){
   s.src=CONFIG.appsScriptUrl+'?room='+encodeURIComponent(key)+'&callback='+cb;
   document.head.appendChild(s);
   setTimeout(fail, 15000); // 응답 지연 허용치 (Apps Script 콜드스타트 대비)
+}
+
+// 회의실 선택화면: 각 방의 "지금" 사용 가능 여부 계산 (renderSched와 동일 규칙)
+function pickAvail(events){
+  events=events||[];
+  const now=Date.now();
+  const busy=events.some(e=>now>=e.start&&now<e.end);
+  const MG=15*60000;
+  const _eod=new Date();_eod.setHours(23,59,59,0);const eod=_eod.getTime();
+  const nx=events.filter(e=>e.start>now).sort((a,b)=>a.start-b.start);
+  const nextStart=nx.length?nx[0].start:eod;
+  const availableNow=!busy && (nextStart-now)>=MG;
+  if(busy) return {cls:'busy',txt:'사용 중'};
+  if(!availableNow) return {cls:'prep',txt:'곧 회의 시작'};
+  const sR=Math.floor(now/MG)*MG;
+  const tt=nx.length?(fmt(sR)+'~'+fmt(nextStart)):(fmt(sR)+'부터');
+  return {cls:'free',txt:'지금 사용 가능 · '+tt};
+}
+function loadPickerStatuses(){
+  if(!CONFIG.appsScriptUrl){return;}
+  // ① 전체 한 번에 받는 창구(all=1) 우선 시도 → 구버전(창구 없음)이면 방별 폴백
+  const cb='pkall_'+Math.random().toString(36).slice(2);
+  const s=document.createElement('script');
+  let done=false;
+  const cleanup=()=>{try{delete window[cb];s.remove();}catch(e){}};
+  window[cb]=(data)=>{ if(done)return;done=true;
+    if(data && data.rooms){
+      Object.keys(ROOMS).forEach(k=>{ const el=document.getElementById('pk-st-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){const a=pickAvail(rd.events||[]);el.className='pk-st '+a.cls;el.textContent=a.txt;} else {el.textContent='';} });
+    } else { loadPickerStatusesPerRoom(); } // 구버전 → 방별 폴백
+    cleanup();
+  };
+  s.onerror=()=>{if(done)return;done=true;cleanup();loadPickerStatusesPerRoom();};
+  s.src=CONFIG.appsScriptUrl+'?all=1&callback='+cb;
+  document.head.appendChild(s);
+  setTimeout(()=>{if(!done){done=true;cleanup();loadPickerStatusesPerRoom();}},15000);
+}
+function loadPickerStatusesPerRoom(){
+  if(!CONFIG.appsScriptUrl) return;
+  Object.keys(ROOMS).forEach((k,i)=>{
+    setTimeout(()=>{
+      const cb='pk_'+Math.random().toString(36).slice(2);
+      const s=document.createElement('script');
+      let done=false;
+      const cleanup=()=>{try{delete window[cb];s.remove();}catch(e){}};
+      window[cb]=(data)=>{ if(done)return;done=true; const el=document.getElementById('pk-st-'+k); if(el){const a=pickAvail((data&&data.events)||[]); el.className='pk-st '+a.cls; el.textContent=a.txt;} cleanup(); };
+      s.onerror=()=>{if(done)return;done=true;const el=document.getElementById('pk-st-'+k);if(el)el.textContent='';cleanup();};
+      s.src=CONFIG.appsScriptUrl+'?room='+encodeURIComponent(k)+'&callback='+cb;
+      document.head.appendChild(s);
+      setTimeout(()=>{if(!done){done=true;cleanup();}},15000);
+    }, i*80); // 살짝 시차를 두고 순차 호출
+  });
 }
 function renderSched(events,mode){
   events=events||[];
@@ -584,8 +662,8 @@ function renderSched(events,mode){
   const itemsHtml=items.sort((a,b)=>a.start-b.start).map(e=>{
     if(e.__slot){
       if(e.active){
-        const q=15*60000; let sR=Math.ceil(now/q)*q; if(sR>=e.end) sR=now;
-        const tt=e.hasNext?(fmt(sR)+'~'+fmt(e.end)):(fmt(sR)+' 이후');
+        const q=15*60000; let sR=Math.floor(now/q)*q; // 지금 속한 15분 블록의 시작(이미 비어있으므로)
+        const tt=e.hasNext?(fmt(sR)+'~'+fmt(e.end)):(fmt(sR)+'부터');
         return `<div class="sch-item free"><span class="free-line"><span class="blink">●</span> 사용 가능 <b>${tt}</b></span></div>`;
       }
       const tt=e.hasNext?(fmt(e.start)+'~'+fmt(e.end)):(fmt(e.start)+' 이후');
@@ -616,10 +694,11 @@ function render(){
   if(!room){
     page.style.background='transparent';
     page.innerHTML=viewPicker();
+    loadPickerStatuses();
   } else {
     const t=TYPES[room.type]||TYPES.general;
     page.style.width='1920px';page.style.height='1080px';page.style.background='#fff';
-    page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):mainStandard(room,t));
+    page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):(t.video?mainVideo(room,t):mainStandard(room,t)));
     document.title=room.name+' · 회의실 가이드';
     // 15초 주기 폴링(+지터) → 서버가 요청 시 최신화하므로 신선도 ≈ 폴링 주기(약 15초)
     const calKey=room.cal||key;
