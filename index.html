@@ -43,6 +43,7 @@
   .sched-status .sdot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px;}
   .sched-status.s-free .sdot{background:#2FCB84;box-shadow:0 0 8px #2FCB84;}
   .sched-status.s-busy .sdot{background:#FF2D55;box-shadow:0 0 8px #FF2D55;}
+  .sched-status.s-prep .sdot{background:#FF9500;box-shadow:0 0 8px #FF9500;}
   .sched-status.s-loading .sdot{background:#c0c4cc;}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
   .now-tag .blink{color:#FF2D55;animation:blink 1.1s infinite;}
@@ -558,8 +559,11 @@ function renderSched(events,mode){
   const nextStart=_next.length?_next[0].start:eodMs;
   const availableNow=!busy && (nextStart-now)>=MINGAP; // 지금부터 15분 이상 비어야 사용 가능
   if(stEl){
-    const cls=loading?'s-loading':(availableNow?'s-free':'s-busy');
-    const label=loading?'확인 중':(availableNow?'사용 가능':'사용 중');
+    let cls,label;
+    if(loading){cls='s-loading';label='확인 중';}
+    else if(busy){cls='s-busy';label='사용 중';}
+    else if(availableNow){cls='s-free';label='사용 가능';}
+    else {cls='s-prep';label='다음 회의 준비중';} // 회의 중은 아니나 다음 회의까지 15분 미만
     stEl.className='sched-status '+cls;
     stEl.innerHTML='<span class="sdot"></span>'+label;
   }
