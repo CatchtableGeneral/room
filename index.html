@@ -189,7 +189,6 @@
   .wifi-guide .wg-h{font-size:19px;font-weight:800;color:#FD3D00;}
   .wifi-guide .wg-c{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#1F2124;white-space:nowrap;}
   .wifi-guide .wg-c .ql{flex:none;min-width:34px;text-align:center;font-size:11.5px;font-weight:800;color:#fff;background:#FD3D00;padding:3px 8px;border-radius:6px;}
-  .wifi-guide .wg-c .pwv{font-size:18px;letter-spacing:1.5px;}
   /* 화상회의실 전용 */
   .main-video .btmwrap{gap:14px;}
   .main-video .imgslot{height:200px;}
@@ -259,6 +258,10 @@
   .pbtn .pk-st.prep::before{background:#FF9500;box-shadow:0 0 8px rgba(255,149,0,0.7);}
   .pbtn .arr{position:absolute;right:16px;bottom:14px;color:var(--tc);opacity:0;transform:translateX(-4px);transition:all .18s ease;font-size:15px;font-weight:800;}
   .pbtn:hover .arr{opacity:1;transform:translateX(0);}
+  .pbtn-open{display:flex;flex-direction:column;gap:5px;text-decoration:none;color:inherit;}
+  .pbtn-open::after{content:"";position:absolute;inset:0;z-index:1;}
+  .pbtn-book{position:absolute;top:12px;right:12px;z-index:2;font-size:12px;font-weight:500;color:#F5F6F8;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.22);border-radius:8px;padding:6px 11px;cursor:pointer;transition:background .15s ease,border-color .15s ease;}
+  .pbtn-book:hover{background:rgba(255,255,255,0.18);border-color:var(--tc);}
   /* ── 1080p→4K 업스케일 대비: 글자 굵게·테두리 두껍게 (크기 유지, 선명도↑) ── */
   html,body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
   .gcard{border-width:2px;}
@@ -277,6 +280,40 @@
 
 <script>
 const CONFIG = { appsScriptUrl: "https://script.google.com/macros/s/AKfycbyfD-wzNoO_j-t-k2J66D6vZOzpv8cftt7Bj9Ay-pBwTGDYuumrGD8osh3I9dx9uI4/exec" };
+
+// 회의실별 구글 캘린더(리소스) ID — 선택화면 '예약' 링크용 (미연동 방은 없음)
+const ROOM_CAL = {
+  cuisine:"c_188dgde680ucqgiskkinq4v1679t4@resource.calendar.google.com",
+  savor:"c_188eajjgdlg88hj3nbfhla474n6ls@resource.calendar.google.com",
+  corkage:"c_1884cjlan27s8he4infbfhf5gfkg8@resource.calendar.google.com",
+  dining:"c_1889bp1es8ho4ijjndj9qqlnmemc2@resource.calendar.google.com",
+  pairing:"c_188aq42asna0ugkmghc8ucv6ltqh8@resource.calendar.google.com",
+  gourmet:"c_188e96rup6tusjr7knjj02tjjhmo4@resource.calendar.google.com",
+  cooking:"c_1886du93ijl88jlilbaq7mru1m0im@resource.calendar.google.com",
+  plating:"c_1883i0lhp21mki0fjdcns7g7utu9m@resource.calendar.google.com",
+  tasting:"c_1880nd2rejch2goik913etf1h74s0@resource.calendar.google.com",
+  terrace:"c_1880otbp8hroei3shhea821sb4hk6@resource.calendar.google.com",
+  roasting:"c_1886m24fajs6ogign62i516jfi90g@resource.calendar.google.com",
+  baking:"c_188d9qvkp3t1mhh5ng6j2ihrpo32u@resource.calendar.google.com",
+  interview1:"c_1884g854nt6tait9l1nb8t2q5drbi@resource.calendar.google.com",
+  interview2:"c_188eum51bqr4ahlhhql5f0q8ibrem@resource.calendar.google.com",
+  party:"c_1889imd8vvm2kgv1n3kla2jrrupb4@resource.calendar.google.com",
+  flavor:"c_1886t5oe9cpo0hnfj6osjtueqnhcc@resource.calendar.google.com",
+  searing:"c_188ao0q0b06sgge3n4m4pt0e7nkoo@resource.calendar.google.com"
+};
+// 현황판이 계산한 각 방의 "사용 가능 시작/끝" 저장 → 예약 시 안내된 시각 그대로 사용
+const PICK_SLOT={};
+// '예약' 클릭 → 그 회의실이 초대된 구글 캘린더 예약창을 본인 계정으로 새 탭에 염 (안내된 시각부터 기본 1시간)
+function bookRoom(cal,name,key){
+  const q=15*60000;
+  const slot=PICK_SLOT[key];
+  let s=(slot&&slot.start)?slot.start:Math.floor(Date.now()/q)*q;
+  let e=s+60*60000; // 기본 1시간
+  if(slot&&slot.end&&e>slot.end) e=slot.end; // 다음 예약 전까지로 제한
+  const f=(ms)=>{const d=new Date(ms),p=n=>('0'+n).slice(-2);return ''+d.getUTCFullYear()+p(d.getUTCMonth()+1)+p(d.getUTCDate())+'T'+p(d.getUTCHours())+p(d.getUTCMinutes())+'00Z';};
+  const url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(name)+'&add='+encodeURIComponent(cal)+'&dates='+f(s)+'/'+f(e);
+  window.open(url,'_blank','noopener');
+}
 
 const TYPES = {
   general:  {label:"일반 회의실",   eyebrow:"회의실 장비 이용 가이드",   kind:"standard", video:false, pick:"#FFFFFF", side:""},
@@ -544,7 +581,9 @@ function viewPicker(){
     let btns="";
     list.forEach(([k,r])=>{
       const t=TYPES[r.type];
-      btns+=`<a class="pbtn" href="?room=${k}" style="--tc:${t.pick}"><span class="rn">${r.name}</span><span class="rt"><span class="tdot"></span>${r.tag||t.label}</span><span class="pk-st" id="pk-st-${k}">확인 중…</span><span class="arr">→</span></a>`;
+      const cal=ROOM_CAL[k];
+      const book=cal?`<button type="button" class="pbtn-book" onclick="bookRoom('${cal}','${r.name}','${k}')">＋ 예약</button>`:'';
+      btns+=`<div class="pbtn" style="--tc:${t.pick}"><a class="pbtn-open" href="?room=${k}"><span class="rn">${r.name}</span><span class="rt"><span class="tdot"></span>${r.tag||t.label}</span><span class="pk-st" id="pk-st-${k}">확인 중…</span></a>${book}</div>`;
     });
     grps+=`<div class="pgrp"><h3>${o} 사무실 <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
   });
@@ -579,17 +618,29 @@ function loadSchedule(key){
 function pickAvail(events){
   events=events||[];
   const now=Date.now();
-  const busy=events.some(e=>now>=e.start&&now<e.end);
   const MG=15*60000;
   const _eod=new Date();_eod.setHours(23,59,59,0);const eod=_eod.getTime();
-  const nx=events.filter(e=>e.start>now).sort((a,b)=>a.start-b.start);
+  const sorted=events.slice().sort((a,b)=>a.start-b.start);
+  const busy=events.some(e=>now>=e.start&&now<e.end);
+  const nx=sorted.filter(e=>e.start>now);
   const nextStart=nx.length?nx[0].start:eod;
   const availableNow=!busy && (nextStart-now)>=MG;
-  if(busy) return {cls:'busy',txt:'사용 중'};
-  if(!availableNow) return {cls:'prep',txt:'곧 회의 시작'};
-  const sR=Math.floor(now/MG)*MG;
-  const tt=nx.length?(fmt(sR)+'~'+fmt(nextStart)):(fmt(sR)+'부터');
-  return {cls:'free',txt:'지금 사용 가능 · '+tt};
+  const durTxt=(a,b)=>{const m=Math.round((b-a)/60000);return m>=60?(Math.floor(m/60)+'시간'+(m%60?' '+(m%60)+'분':'')):(m+'분');};
+  const slot=(s,endMs,open)=> open ? (fmt(s)+' 이후부터 쭉 가능') : (fmt(s)+'~'+fmt(endMs)+' ('+durTxt(s,endMs)+') 예약 가능');
+  if(availableNow){
+    const sR=Math.floor(now/MG)*MG;
+    return {cls:'free',txt:'지금 사용 가능 · '+slot(sR,nextStart,!nx.length),startMs:sR,endMs:nx.length?nextStart:null};
+  }
+  // 사용 중 / 곧 회의 시작 → 다음 사용 가능 시각(15분 이상 비는 첫 시점, 연속회의 감안)
+  let cursor=now, changed=true;
+  while(changed){ changed=false;
+    for(let i=0;i<sorted.length;i++){ const e=sorted[i]; if(e.end>cursor && e.start<=cursor+MG){ cursor=e.end; changed=true; } }
+  }
+  const base=busy?'사용 중':'곧 회의 시작';
+  const cls=busy?'busy':'prep';
+  if(cursor>=eod) return {cls:cls,txt:base+' · 오늘 종일',startMs:null,endMs:null};
+  const after=sorted.filter(e=>e.start>cursor);
+  return {cls:cls,txt:base+' · '+slot(cursor, after.length?after[0].start:eod, !after.length),startMs:cursor,endMs:after.length?after[0].start:null};
 }
 function loadPickerStatuses(){
   if(!CONFIG.appsScriptUrl){return;}
@@ -600,7 +651,7 @@ function loadPickerStatuses(){
   const cleanup=()=>{try{delete window[cb];s.remove();}catch(e){}};
   window[cb]=(data)=>{ if(done)return;done=true;
     if(data && data.rooms){
-      Object.keys(ROOMS).forEach(k=>{ const el=document.getElementById('pk-st-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){const a=pickAvail(rd.events||[]);el.className='pk-st '+a.cls;el.textContent=a.txt;} else {el.textContent='';} });
+      Object.keys(ROOMS).forEach(k=>{ const el=document.getElementById('pk-st-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){const a=pickAvail(rd.events||[]);el.className='pk-st '+a.cls;el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};} else {el.className='pk-st';el.textContent='예약 정보 없음';} });
     } else { loadPickerStatusesPerRoom(); } // 구버전 → 방별 폴백
     cleanup();
   };
@@ -617,7 +668,7 @@ function loadPickerStatusesPerRoom(){
       const s=document.createElement('script');
       let done=false;
       const cleanup=()=>{try{delete window[cb];s.remove();}catch(e){}};
-      window[cb]=(data)=>{ if(done)return;done=true; const el=document.getElementById('pk-st-'+k); if(el){const a=pickAvail((data&&data.events)||[]); el.className='pk-st '+a.cls; el.textContent=a.txt;} cleanup(); };
+      window[cb]=(data)=>{ if(done)return;done=true; const el=document.getElementById('pk-st-'+k); if(el){const a=pickAvail((data&&data.events)||[]); el.className='pk-st '+a.cls; el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};} cleanup(); };
       s.onerror=()=>{if(done)return;done=true;const el=document.getElementById('pk-st-'+k);if(el)el.textContent='';cleanup();};
       s.src=CONFIG.appsScriptUrl+'?room='+encodeURIComponent(k)+'&callback='+cb;
       document.head.appendChild(s);
