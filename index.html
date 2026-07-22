@@ -600,17 +600,20 @@ let lastEvents=null, everLoaded=false;
 
 function loadSchedule(key){
   if(!CONFIG.appsScriptUrl){renderSched([], 'loading');return;}
-  const cb='cb_'+Math.random().toString(36).slice(2);
-  const s=document.createElement('script');
   let done=false;
-  const cleanup=()=>{try{delete window[cb];s.remove();}catch(e){}};
-  const ok=(events)=>{if(done)return;done=true;lastEvents=events;everLoaded=true;renderSched(events,'ok');cleanup();};
+  const ok=(events)=>{if(done)return;done=true;lastEvents=events;everLoaded=true;renderSched(events,'ok');};
   // 실패/지연 시: 한 번이라도 불러온 적 있으면 마지막 정상 일정을 그대로 유지 (샘플 표시 안 함)
-  const fail=()=>{if(done)return;done=true; everLoaded?renderSched(lastEvents,'ok'):renderSched([], 'loading'); cleanup();};
-  window[cb]=(data)=>ok((data&&data.events)||[]);
-  s.onerror=fail;
-  s.src=CONFIG.appsScriptUrl+'?room='+encodeURIComponent(key)+'&callback='+cb;
-  document.head.appendChild(s);
+  const fail=()=>{if(done)return;done=true; everLoaded?renderSched(lastEvents,'ok'):renderSched([], 'loading');};
+  const base=CONFIG.appsScriptUrl+'?room='+encodeURIComponent(key);
+  // 1차: 쿠키 없이 fetch (로그인 계정 영향 없음=익명처럼). 2차: JSONP 폴백
+  fetch(base,{credentials:'omit'}).then(r=>r.json()).then(d=>ok((d&&d.events)||[])).catch(()=>{
+    const cb='cb_'+Math.random().toString(36).slice(2);
+    const s=document.createElement('script');
+    window[cb]=(data)=>{try{delete window[cb];s.remove();}catch(e){} ok((data&&data.events)||[]);};
+    s.onerror=fail;
+    s.src=base+'&callback='+cb;
+    document.head.appendChild(s);
+  });
   setTimeout(fail, 15000); // 응답 지연 허용치 (Apps Script 콜드스타트 대비)
 }
 
@@ -642,37 +645,39 @@ function pickAvail(events){
   const after=sorted.filter(e=>e.start>cursor);
   return {cls:cls,txt:base+' · '+slot(cursor, after.length?after[0].start:eod, !after.length),startMs:cursor,endMs:after.length?after[0].start:null};
 }
+function applyPickAll(data){ // 전체(all=1) 결과를 각 방 뱃지에 반영. rooms 없으면 false
+  if(!(data && data.rooms)) return false;
+  Object.keys(ROOMS).forEach(k=>{ const el=document.getElementById('pk-st-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){const a=pickAvail(rd.events||[]);el.className='pk-st '+a.cls;el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};} else {el.className='pk-st';el.textContent='예약 정보 없음';} });
+  return true;
+}
 function loadPickerStatuses(){
   if(!CONFIG.appsScriptUrl){return;}
-  // ① 전체 한 번에 받는 창구(all=1) 우선 시도 → 구버전(창구 없음)이면 방별 폴백
-  const cb='pkall_'+Math.random().toString(36).slice(2);
-  const s=document.createElement('script');
-  let done=false;
-  const cleanup=()=>{try{delete window[cb];s.remove();}catch(e){}};
-  window[cb]=(data)=>{ if(done)return;done=true;
-    if(data && data.rooms){
-      Object.keys(ROOMS).forEach(k=>{ const el=document.getElementById('pk-st-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){const a=pickAvail(rd.events||[]);el.className='pk-st '+a.cls;el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};} else {el.className='pk-st';el.textContent='예약 정보 없음';} });
-    } else { loadPickerStatusesPerRoom(); } // 구버전 → 방별 폴백
-    cleanup();
-  };
-  s.onerror=()=>{if(done)return;done=true;cleanup();loadPickerStatusesPerRoom();};
-  s.src=CONFIG.appsScriptUrl+'?all=1&callback='+cb;
-  document.head.appendChild(s);
-  setTimeout(()=>{if(!done){done=true;cleanup();loadPickerStatusesPerRoom();}},15000);
+  // 1차: 쿠키 없이 fetch(all=1) → 로그인 계정 영향 없음. 2차: JSONP all=1. 3차: 방별
+  fetch(CONFIG.appsScriptUrl+'?all=1',{credentials:'omit'}).then(r=>r.json()).then(d=>{ if(!applyPickAll(d)) loadPickerStatusesPerRoom(); }).catch(()=>{
+    const cb='pkall_'+Math.random().toString(36).slice(2);
+    const s=document.createElement('script'); let done=false;
+    const cleanup=()=>{try{delete window[cb];s.remove();}catch(e){}};
+    window[cb]=(data)=>{ if(done)return;done=true; if(!applyPickAll(data)) loadPickerStatusesPerRoom(); cleanup(); };
+    s.onerror=()=>{if(done)return;done=true;cleanup();loadPickerStatusesPerRoom();};
+    s.src=CONFIG.appsScriptUrl+'?all=1&callback='+cb;
+    document.head.appendChild(s);
+    setTimeout(()=>{if(!done){done=true;cleanup();loadPickerStatusesPerRoom();}},15000);
+  });
 }
 function loadPickerStatusesPerRoom(){
   if(!CONFIG.appsScriptUrl) return;
   Object.keys(ROOMS).forEach((k,i)=>{
     setTimeout(()=>{
-      const cb='pk_'+Math.random().toString(36).slice(2);
-      const s=document.createElement('script');
-      let done=false;
-      const cleanup=()=>{try{delete window[cb];s.remove();}catch(e){}};
-      window[cb]=(data)=>{ if(done)return;done=true; const el=document.getElementById('pk-st-'+k); if(el){const a=pickAvail((data&&data.events)||[]); el.className='pk-st '+a.cls; el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};} cleanup(); };
-      s.onerror=()=>{if(done)return;done=true;const el=document.getElementById('pk-st-'+k);if(el)el.textContent='';cleanup();};
-      s.src=CONFIG.appsScriptUrl+'?room='+encodeURIComponent(k)+'&callback='+cb;
-      document.head.appendChild(s);
-      setTimeout(()=>{if(!done){done=true;cleanup();}},15000);
+      const base=CONFIG.appsScriptUrl+'?room='+encodeURIComponent(k);
+      const use=(data)=>{ const el=document.getElementById('pk-st-'+k); if(el){const a=pickAvail((data&&data.events)||[]); el.className='pk-st '+a.cls; el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};} };
+      fetch(base,{credentials:'omit'}).then(r=>r.json()).then(use).catch(()=>{
+        const cb='pk_'+Math.random().toString(36).slice(2);
+        const s=document.createElement('script');
+        window[cb]=(data)=>{try{delete window[cb];s.remove();}catch(e){} use(data);};
+        s.onerror=()=>{try{delete window[cb];s.remove();}catch(e){}};
+        s.src=base+'&callback='+cb;
+        document.head.appendChild(s);
+      });
     }, i*80); // 살짝 시차를 두고 순차 호출
   });
 }
