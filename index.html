@@ -13,7 +13,7 @@
   .page{width:1920px;height:1080px;background:#fff;position:relative;display:flex;flex:none;overflow:hidden;transform-origin:center center;}
 
   /* ===== 사이드바 (코랄) ===== */
-  .side{width:460px;flex:0 0 460px;background:linear-gradient(155deg,#FF6A3A 0%,#FD3D00 100%);color:#fff;padding:48px 50px 30px;display:flex;flex-direction:column;position:relative;z-index:2;box-shadow:8px 0 24px rgba(0,0,0,0.16);}
+  .side{width:460px;flex:0 0 460px;background:linear-gradient(155deg,#FF6A3A 0%,#FD3D00 100%);color:#fff;padding:44px 50px;display:flex;flex-direction:column;position:relative;z-index:2;box-shadow:8px 0 24px rgba(0,0,0,0.16);}
   /* 화상회의실 : 그라데이션 없이 단색 로고 오렌지 */
   .side.solid{background:#FD3D00;}
   /* 임원 회의실 : 흰 배경 + 어두운 글씨 */
@@ -33,11 +33,11 @@
   .side.light .now-tag{color:#1F2124;}
   .logo{font-size:30px;font-weight:900;letter-spacing:3px;}
   .logo-img{height:44px;width:auto;display:block;}
-  .rtitle{margin-top:22px;font-size:42px;line-height:1.12;font-weight:800;letter-spacing:-0.03em;}
-  .hr{height:1px;background:rgba(255,255,255,0.28);margin:16px 0 12px;}
-  .ask{font-size:18px;line-height:1.5;}
+  .rtitle{margin-top:28px;font-size:42px;line-height:1.12;font-weight:800;letter-spacing:-0.03em;}
+  .hr{height:1px;background:rgba(255,255,255,0.28);margin:26px 0 22px;}
+  .ask{font-size:18px;line-height:1.4;}
   .ask .op{opacity:0.78;} .ask .sep{opacity:0.4;margin:0 10px;} .ask b{font-weight:600;}
-  .sched{margin-top:16px;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}
+  .sched{margin-top:30px;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}
   .sched-head{font-size:21px;font-weight:800;display:flex;align-items:center;gap:10px;margin-bottom:13px;}
   .sched-status{font-size:13px;font-weight:800;padding:4px 12px;border-radius:14px;background:#fff;color:#FD3D00;display:inline-flex;align-items:center;}
   .sched-status .sdot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px;}
@@ -46,17 +46,11 @@
   .sched-status.s-loading .sdot{background:#c0c4cc;}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
   .now-tag .blink{color:#FF2D55;animation:blink 1.1s infinite;}
-  .sch-item.free{background:#fff;border-left:4px solid #2FCB84;box-shadow:0 3px 12px rgba(0,0,0,0.16);}
-  .sch-item.free .t{color:#14A05C;}
-  .sch-item.free .n{color:#1C7D4A;opacity:1;}
-  .sch-item.free .free-tag{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:0.02em;color:#2FCB84;}
-  .sch-item.free .free-tag .blink{color:#2FCB84;animation:blink 1.1s infinite;}
-  .sch-item.soon{background:#fff;border-left:4px solid #2FCB84;box-shadow:0 3px 12px rgba(0,0,0,0.16);display:flex;align-items:center;gap:10px;}
-  .sch-item.soon .t{color:#14A05C;padding-left:10px;border-left:1.5px solid rgba(20,160,92,0.4);}
-  .sch-item.soon .soon-tag{font-size:12px;font-weight:800;margin-bottom:0;letter-spacing:0.02em;color:#14A05C;white-space:nowrap;}
-  .sch-item.soon .soon-tag .blink{color:#2FCB84;animation:blink 1.1s infinite;}
-  .sched-list.two .sch-item.soon{display:block;}
-  .sched-list.two .sch-item.soon .t{border-left:none;padding-left:0;margin-top:2px;}
+  .sch-item.free,.sch-item.soon{background:#fff;border-left:4px solid #2FCB84;box-shadow:0 3px 12px rgba(0,0,0,0.16);}
+  .sch-item.free .free-line,.sch-item.soon .soon-line{display:block;font-size:14px;font-weight:800;color:#14A05C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sch-item.free .free-line .blink,.sch-item.soon .soon-line .blink{color:#2FCB84;animation:blink 1.1s infinite;margin-right:2px;}
+  .sched-list.two .sch-item.free .free-line,.sched-list.two .sch-item.soon .soon-line{font-size:12.5px;}
+  .sched-list.dense .sch-item.free .free-line,.sched-list.dense .sch-item.soon .soon-line{font-size:11.5px;}
   .sched-list{display:flex;flex-direction:column;gap:6px;flex:1 1 auto;min-height:0;overflow:hidden;}
   .sched-list.two{display:block;column-count:2;column-gap:8px;}
   .sched-list.two .sch-item{break-inside:avoid;margin-bottom:5px;}
@@ -103,14 +97,16 @@
   .gc-ic{width:42px;height:42px;border-radius:12px;background:#FFECE9;display:inline-flex;align-items:center;justify-content:center;font-size:22px;flex:none;color:#FD3D00;}
   .gc-ey{font-size:14px;font-weight:700;color:#FD3D00;letter-spacing:0.04em;}
   .gc-tt{font-size:20px;font-weight:800;}
-  .imgslot{width:100%;height:250px;margin:16px 0 4px;border-radius:16px;background:#F1F2F4;border:2px dashed #D7DADF;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9aa0a6;text-align:center;padding:8px;}
+  .imgslot{width:100%;height:300px;margin:16px 0 4px;border-radius:16px;background:#F1F2F4;border:2px dashed #D7DADF;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9aa0a6;text-align:center;padding:8px;}
   .imgslot.anim{border-style:solid;border-color:#E7E9ED;background:#F7F8FA;overflow:hidden;padding:10px;}
   .anim-svg{width:100%;height:100%;display:block;}
   /* HDMI (5.5s): 노트북 자판쪽 포트에 꽂기 → TV 미러링 / 뽑으면 TV엔 가이드화면 */
   @keyframes hdmiPlug2{0%{transform:translateX(24px)}12.5%{transform:translateX(0)}50%{transform:translateX(0)}62.5%{transform:translateX(24px)}100%{transform:translateX(24px)}}
   @keyframes tvGuide{0%,10%{opacity:1}16%,50%{opacity:0}58%,100%{opacity:1}}
   @keyframes tvMirror{0%,16%{opacity:0}22%,50%{opacity:1}56%,100%{opacity:0}}
-  .hdmi-plug2{animation:hdmiPlug2 8s ease-in-out infinite}
+  @keyframes hdmiCable{0%{d:path("M165 76 C 172 96, 174 116, 167 122")}12.5%{d:path("M165 76 C 160 95, 152 113, 143 122")}50%{d:path("M165 76 C 160 95, 152 113, 143 122")}62.5%{d:path("M165 76 C 172 96, 174 116, 167 122")}100%{d:path("M165 76 C 172 96, 174 116, 167 122")}}
+  .hdmi-conn{animation:hdmiPlug2 8s ease-in-out infinite}
+  .hdmi-cable{animation:hdmiCable 8s ease-in-out infinite}
   .tv-guide{animation:tvGuide 8s ease-in-out infinite}
   .tv-mirror{animation:tvMirror 8s ease-in-out infinite}
   /* Windows (10s): Win+K → 캐스트 선택 → TV 연결허용 → 허용 → 무선 미러링 */
@@ -164,18 +160,19 @@
   .bottomrow{display:flex;gap:16px;margin-top:auto;align-items:stretch;}
   .bottomrow .gsection{flex:1;margin-bottom:0;}
   .toprow{display:flex;gap:16px;align-items:stretch;}
-  .toprow .gsection{flex:1;margin-bottom:0;}
-  .btmwrap .gsection{margin-bottom:0;}
-  .main-std{padding-top:0;padding-bottom:0;}
-  .inner.std{justify-content:space-evenly;gap:0;}
+  .toprow .gsection{flex:1 1 auto;margin-bottom:0;}
+  .btmwrap{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;}
+  .btmwrap .gsection{margin-bottom:0;flex:1 1 auto;display:flex;flex-direction:column;justify-content:flex-start;min-height:0;}
+  .main-std{padding-top:55px;padding-bottom:55px;}
+  .inner.std{justify-content:flex-start;gap:28px;}
   /* 상단 말풍선 (에티켓 옆, 같은 높이) */
-  .topbubble{flex:0 0 380px;background:transparent;display:flex;flex-direction:column;justify-content:center;gap:34px;padding:8px 6px;position:relative;overflow:visible;}
+  .topbubble{flex:0 0 300px;margin-left:-52px;background:transparent;display:flex;flex-direction:column;justify-content:center;gap:24px;padding:8px 6px;position:relative;overflow:visible;}
   .topbubble .arw{position:absolute;pointer-events:none;opacity:0.9;}
-  .topbubble .arw-etq{top:-6px;right:-8px;}
+  .topbubble .arw-etq{top:-16px;right:-18px;}
   .topbubble .arw-conn{bottom:-40px;left:34px;transform:scaleX(-1);}
   .topbubble .cb{max-width:86%;padding:16px 22px;font-size:19px;font-weight:800;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,0.10);}
   .topbubble .cb-top{align-self:flex-end;background:#fff;color:#3A3D42;border:1px solid #E4E7EC;border-radius:20px 6px 20px 20px;}
-  .topbubble .cb-bot{align-self:flex-start;background:linear-gradient(150deg,#FF6A3D,#FD3D00);color:#fff;border-radius:20px 20px 20px 6px;}
+  .topbubble .cb-bot{align-self:flex-start;margin-left:52px;background:linear-gradient(150deg,#FF6A3D,#FD3D00);color:#fff;border-radius:20px 20px 20px 6px;}
   /* 사이드바 Guest Wi-Fi */
   .wifi-side{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;gap:11px;}
   .wifi-side .ws-h{font-size:16px;font-weight:800;}
@@ -183,6 +180,14 @@
   .wifi-side .ws-qr{width:150px;height:150px;flex:none;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#9aa0a6;overflow:hidden;padding:6px;}
   .wifi-side .ws-qr-img{width:100%;height:100%;object-fit:contain;display:block;}
   .wifi-side .ql{min-width:30px;text-align:center;display:inline-block;font-size:11.5px;font-weight:800;color:#FD3D00;background:#fff;padding:3px 8px;border-radius:6px;}
+  /* 가이드 우측상단 Guest Wi-Fi 카드 (밝은 배경용, QR 크게) */
+  .wifi-guide{flex:0 0 378px;margin-left:auto;background:#fff;border:2px solid #E1E4E9;border-radius:22px;box-shadow:0 6px 22px rgba(0,0,0,0.09);padding:16px 20px;display:flex;flex-direction:row;align-items:center;gap:18px;}
+  .wifi-guide .wg-qr{width:170px;height:170px;flex:none;background:#fff;border:1px solid #ECEEF1;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:5px;font-size:12px;color:#9aa0a6;}
+  .wifi-guide .wg-qr img{width:100%;height:100%;object-fit:contain;display:block;}
+  .wifi-guide .wg-side{display:flex;flex-direction:column;gap:11px;min-width:0;}
+  .wifi-guide .wg-h{font-size:19px;font-weight:800;color:#FD3D00;}
+  .wifi-guide .wg-c{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#1F2124;white-space:nowrap;}
+  .wifi-guide .wg-c .ql{flex:none;min-width:34px;text-align:center;font-size:11.5px;font-weight:800;color:#fff;background:#FD3D00;padding:3px 8px;border-radius:6px;}
   /* 연결 가이드 : HDMI(1) + 무선그룹(2, Mac|Win + 공용 말풍선 1개) */
   .conn3{display:grid;grid-template-columns:1fr 2fr;gap:22px;}
   .conn4{display:grid;grid-template-columns:1fr 1fr 2fr;gap:16px;}
@@ -190,7 +195,7 @@
   .wpair{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;min-width:0;}
   .wpair.one{grid-template-columns:1fr;}
   .wgroup > .tip{margin-top:0;}
-  .conn4 .imgslot{height:150px;margin:14px 0 4px;}
+  .conn4 .imgslot{height:185px;margin:14px 0 4px;}
   .conn4 .gcard{padding:20px;}
   .conn4 .gc-tt{font-size:17px;}
   .conn4 ol.steps{gap:9px;margin-top:12px;}
@@ -211,7 +216,7 @@
   .etq-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
   .etq-item{display:flex;flex-direction:column;align-items:center;gap:12px;}
   .etq-circle{width:76px;height:76px;border-radius:50%;background:#FFECE9;display:flex;align-items:center;justify-content:center;font-size:34px;}
-  .etq-item span{font-size:16px;font-weight:600;}
+  .etq-item span{font-size:16px;font-weight:600;text-align:center;}
   .ulm{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:13px;}
   .ulm li{display:flex;gap:11px;align-items:flex-start;font-size:16px;line-height:1.5;}
   .ulm .dot{color:#FD3D00;font-weight:800;}
@@ -279,8 +284,8 @@ const ARW_ETQ='<svg class="arw arw-etq" viewBox="0 0 74 34" width="46" height="2
 const ARW_CONN='<svg class="arw arw-conn" viewBox="0 0 50 70" width="30" height="42" fill="none" stroke="#FD3D00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6 C 42 22, 24 42, 26 62"/><path d="M26 62 l-7 -10 M26 62 l7 -10"/></svg>';
 function bubbleTop(t){
   const iv=(t.kind==="interview");
-  const top=iv?"좋은 인터뷰 문화 만들기":"일하기 좋은 회의 문화 만들기 🙏";
-  const bot=iv?"조용한 환경 유지해요 🤫":"연결은 5초면 끝! 바로 회의 시작 👍";
+  const top=iv?"좋은 인터뷰<br>문화 만들기":"일하기 좋은<br>회의 문화 만들기 🙏";
+  const bot=iv?"조용한 환경<br>유지해요 🤫":"연결은 5초면 끝!<br>바로 회의 시작 👍";
   const arrows=iv?"":ARW_ETQ+ARW_CONN;
   return `<div class="topbubble"><div class="cb cb-top">${top}</div><div class="cb cb-bot">${bot}</div>${arrows}</div>`;
 }
@@ -288,6 +293,14 @@ function wifiSide(){ return `<div class="wifi-side">
     <div class="ws-h">Guest Wi-Fi</div>
     <div class="ws-qr"><img src="qr.png" alt="Guest Wi-Fi QR" class="ws-qr-img" onerror="this.replaceWith(document.createTextNode('QR'))"></div>
     <div class="ws-cred"><span class="ql">ID</span> WAD_Guest <span class="ql">PW</span> guest!@#</div>
+  </div>`; }
+function wifiGuide(){ return `<div class="wifi-guide">
+    <div class="wg-qr"><img src="qr.png" alt="Guest Wi-Fi QR" onerror="this.replaceWith(document.createTextNode('QR'))"></div>
+    <div class="wg-side">
+      <div class="wg-h">Guest Wi-Fi</div>
+      <div class="wg-c"><span class="ql">ID</span> WAD_Guest</div>
+      <div class="wg-c"><span class="ql">PW</span> guest!@#</div>
+    </div>
   </div>`; }
 function sidebar(room,t){
   return `<aside class="side ${room.side!==undefined?room.side:(t.side||'')}">
@@ -298,9 +311,6 @@ function sidebar(room,t){
     <div class="sched">
       <div class="sched-head">Today's Schedule <span class="sched-status" id="schStatus">…</span></div>
       <div class="sched-list" id="schList"><div class="sch-empty">불러오는 중…</div></div>
-    </div>
-    <div class="side-bottom">
-      ${wifiSide()}
     </div>
   </aside>`;
 }
@@ -316,9 +326,10 @@ const ANIM_HDMI = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRat
     <rect x="144" y="37" width="30" height="0.8" fill="#fff" opacity="0.4"/>
     <text x="144" y="43" font-size="2.7" fill="#fff" opacity="0.9">Today's Schedule</text>
     <rect x="144" y="45" width="30" height="5.5" rx="1.5" fill="#fff"/><rect x="144" y="52.5" width="30" height="5.5" rx="1.5" fill="#fff" opacity="0.25"/><rect x="144" y="60" width="30" height="5.5" rx="1.5" fill="#fff" opacity="0.25"/>
-    <rect x="144" y="69" width="30" height="16" rx="2" fill="#fff" opacity="0.16"/><rect x="146" y="72" width="11" height="11" rx="1.5" fill="#fff"/><text x="159" y="77" font-size="2.8" font-weight="800" fill="#fff">Guest</text><text x="159" y="81" font-size="2.8" font-weight="800" fill="#fff">Wi-Fi</text>
+    <rect x="144" y="67.5" width="30" height="5.5" rx="1.5" fill="#fff" opacity="0.25"/><rect x="144" y="75" width="30" height="5.5" rx="1.5" fill="#fff" opacity="0.25"/>
     <text x="189" y="20" font-size="3" font-weight="800" fill="#8A9099">회의실 사용 에티켓</text>
-    <g fill="#FFECE9"><circle cx="192" cy="29" r="4.5"/><circle cx="207" cy="29" r="4.5"/><circle cx="222" cy="29" r="4.5"/><circle cx="237" cy="29" r="4.5"/><circle cx="252" cy="29" r="4.5"/></g>
+    <g fill="#FFECE9"><circle cx="191" cy="29" r="4"/><circle cx="202" cy="29" r="4"/><circle cx="213" cy="29" r="4"/><circle cx="224" cy="29" r="4"/><circle cx="235" cy="29" r="4"/></g>
+    <text x="255" y="16.5" text-anchor="middle" font-size="2.6" font-weight="800" fill="#8A9099">Guest Wi-Fi</text><rect x="246" y="18" width="18" height="17" rx="2" fill="#fff" stroke="#E7E9ED" stroke-width="0.5"/><g fill="#3A3D42"><rect x="248" y="20" width="4" height="4"/><rect x="258" y="20" width="4" height="4"/><rect x="248" y="29" width="4" height="4"/><rect x="254" y="25" width="2.5" height="2.5"/><rect x="257" y="29.5" width="3" height="3"/><rect x="253" y="21" width="2" height="2"/></g>
     <rect x="189" y="39" width="52" height="11" rx="4" fill="#FD3D00"/><text x="192" y="46.5" font-size="3" font-weight="800" fill="#fff">일하기 좋은 회의문화</text>
     <text x="189" y="56" font-size="2.9" font-weight="800" fill="#3A3D42">TV에 노트북 화면 연결하기</text>
     <rect x="189" y="58" width="24" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/><rect x="216" y="58" width="24" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/><rect x="243" y="58" width="22" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/>
@@ -341,7 +352,7 @@ const ANIM_HDMI = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRat
   <rect x="70" y="93" width="10" height="2.4" rx="1" fill="#21A366" opacity="0.55"/><rect x="86" y="105" width="10" height="2.4" rx="1" fill="#21A366" opacity="0.55"/>
   <path d="M40 120 h80 l5 11 H35 z" fill="#4a4f55"/><rect x="46" y="122" width="68" height="4" rx="1" fill="#5a5f66"/>
   <rect x="120" y="120" width="6" height="8" rx="1" fill="#22252a"/>
-  <g class="hdmi-plug2"><path d="M165 76 C 155 96, 148 112, 143 120" fill="none" stroke="#2b2b2b" stroke-width="4" stroke-linecap="round"/><rect x="126" y="117" width="17" height="11" rx="2" fill="#2b2b2b"/><rect x="121" y="120" width="5" height="5" fill="#E9B84A"/></g>
+  <path class="hdmi-cable" d="M165 76 C 172 96, 174 116, 167 122" fill="none" stroke="#2b2b2b" stroke-width="4" stroke-linecap="round"/><g class="hdmi-conn"><rect x="126" y="117" width="17" height="11" rx="2" fill="#2b2b2b"/><rect x="121" y="120" width="5" height="5" fill="#E9B84A"/></g>
   </g>
 </svg>`;
 const ANIM_WIN = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRatio="xMidYMid meet" font-family="Pretendard,sans-serif">
@@ -354,9 +365,10 @@ const ANIM_WIN = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRati
     <rect x="144" y="37" width="30" height="0.8" fill="#fff" opacity="0.4"/>
     <text x="144" y="43" font-size="2.7" fill="#fff" opacity="0.9">Today's Schedule</text>
     <rect x="144" y="45" width="30" height="5.5" rx="1.5" fill="#fff"/><rect x="144" y="52.5" width="30" height="5.5" rx="1.5" fill="#fff" opacity="0.25"/><rect x="144" y="60" width="30" height="5.5" rx="1.5" fill="#fff" opacity="0.25"/>
-    <rect x="144" y="69" width="30" height="16" rx="2" fill="#fff" opacity="0.16"/><rect x="146" y="72" width="11" height="11" rx="1.5" fill="#fff"/><text x="159" y="77" font-size="2.8" font-weight="800" fill="#fff">Guest</text><text x="159" y="81" font-size="2.8" font-weight="800" fill="#fff">Wi-Fi</text>
+    <rect x="144" y="67.5" width="30" height="5.5" rx="1.5" fill="#fff" opacity="0.25"/><rect x="144" y="75" width="30" height="5.5" rx="1.5" fill="#fff" opacity="0.25"/>
     <text x="189" y="20" font-size="3" font-weight="800" fill="#8A9099">회의실 사용 에티켓</text>
-    <g fill="#FFECE9"><circle cx="192" cy="29" r="4.5"/><circle cx="207" cy="29" r="4.5"/><circle cx="222" cy="29" r="4.5"/><circle cx="237" cy="29" r="4.5"/><circle cx="252" cy="29" r="4.5"/></g>
+    <g fill="#FFECE9"><circle cx="191" cy="29" r="4"/><circle cx="202" cy="29" r="4"/><circle cx="213" cy="29" r="4"/><circle cx="224" cy="29" r="4"/><circle cx="235" cy="29" r="4"/></g>
+    <text x="255" y="16.5" text-anchor="middle" font-size="2.6" font-weight="800" fill="#8A9099">Guest Wi-Fi</text><rect x="246" y="18" width="18" height="17" rx="2" fill="#fff" stroke="#E7E9ED" stroke-width="0.5"/><g fill="#3A3D42"><rect x="248" y="20" width="4" height="4"/><rect x="258" y="20" width="4" height="4"/><rect x="248" y="29" width="4" height="4"/><rect x="254" y="25" width="2.5" height="2.5"/><rect x="257" y="29.5" width="3" height="3"/><rect x="253" y="21" width="2" height="2"/></g>
     <rect x="189" y="39" width="52" height="11" rx="4" fill="#FD3D00"/><text x="192" y="46.5" font-size="3" font-weight="800" fill="#fff">일하기 좋은 회의문화</text>
     <text x="189" y="56" font-size="2.9" font-weight="800" fill="#3A3D42">TV에 노트북 화면 연결하기</text>
     <rect x="189" y="58" width="24" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/><rect x="216" y="58" width="24" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/><rect x="243" y="58" width="22" height="26" rx="2" fill="#F7F8FA" stroke="#E7E9ED" stroke-width="0.6"/>
@@ -379,7 +391,7 @@ const ANIM_WIN = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRati
   </g>
   <rect x="194" y="94" width="16" height="8" fill="#14161a"/><rect x="178" y="102" width="48" height="6" rx="3" fill="#14161a"/>
   <g transform="translate(-12,10)">
-  <g class="cast-wave" fill="none" stroke="#2FCB84" stroke-linecap="round"><path d="M113 74 a13 13 0 0 1 20 0" stroke-width="2.6"/><path d="M117 79 a8 8 0 0 1 12 0" stroke-width="2.6"/><path d="M121 84 a3.6 3.6 0 0 1 4.8 0" stroke-width="2.6"/><circle cx="123.4" cy="88" r="1.9" fill="#2FCB84"/></g>
+  <g class="cast-wave" transform="translate(2 -16) rotate(-10 123 81)" fill="none" stroke="#2FCB84" stroke-width="2.4" stroke-linecap="round"><path d="M110.28 80.05 A15 15 0 0 1 135.72 80.05"/><path d="M114.52 82.70 A10 10 0 0 1 131.48 82.70"/><path d="M118.76 85.35 A5 5 0 0 1 127.24 85.35"/><circle cx="123" cy="88" r="2.1" fill="#2FCB84" stroke="none"/></g>
   <ellipse cx="80" cy="138" rx="54" ry="5" fill="#000" opacity="0.1"/>
   <rect x="40" y="80" width="80" height="40" rx="3" fill="#2b2f36"/><rect x="43" y="83" width="74" height="34" rx="2" fill="#fff"/>
   <rect x="43" y="83" width="74" height="4.5" fill="#21A366"/><rect x="43" y="87.5" width="74" height="3.5" fill="#EEF1F4"/><rect x="43" y="87.5" width="9" height="29.5" fill="#EEF1F4"/>
@@ -468,8 +480,8 @@ function mainStandard(room,t){
     ? guideSection("회의실 이용 가이드","화상회의 참여 &amp; 노트북 화면 연결","conn4",CARD_VIDEO+wiredGroup+wgroup)
     : guideSection("TV에 노트북 화면 연결하기","유선·무선 방법을 골라 연결하세요","conn3",wiredGroup+wgroup);
   const etq = etqSection("회의실 사용 에티켓","다음 사용자를 위해 함께 지켜주세요",
-    [["⏰","이용시간 준수"],[PWR_OFF,"TV 전원 끄지 마세요"],["🗑️","쓰레기 정리"],["🪑","자리 정리"],["💡","소등 후 퇴실"]]);
-  return `<main class="main main-std"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}</div><div class="btmwrap">${sec}</div></div></main>`;
+    [["⏰","이용시간 준수"],[PWR_OFF,"TV전원 OFF금지"],["🗑️","쓰레기 정리"],["🪑","자리 정리"],["💡","소등 후 퇴실"]]);
+  return `<main class="main main-std"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}${wifiGuide()}</div><div class="btmwrap">${sec}</div></div></main>`;
 }
 
 function mainInterview(room,t){
@@ -568,14 +580,12 @@ function renderSched(events,mode){
   const itemsHtml=items.sort((a,b)=>a.start-b.start).map(e=>{
     if(e.__slot){
       if(e.active){
-        const tt=e.hasNext?('지금 – '+fmt(e.end)):'지금 바로 사용 가능';
-        let sub;
-        if(e.hasNext){ let m=Math.floor((e.end-now)/60000); m=Math.floor(m/15)*15; const dur=m<60?(m+'분'):(Math.floor(m/60)+'시간'+(m%60?' '+(m%60)+'분':'')); sub='약 '+dur+' 여유 · 지금 예약!'; }
-        else { sub='지금 바로 예약하세요!'; }
-        return `<div class="sch-item free"><div class="free-tag"><span class="blink">●</span> 사용 가능</div><div class="t">${tt}</div><div class="n">${sub}</div></div>`;
+        const q=15*60000; let sR=Math.ceil(now/q)*q; if(sR>=e.end) sR=now;
+        const tt=e.hasNext?(fmt(sR)+'~'+fmt(e.end)):(fmt(sR)+' 이후');
+        return `<div class="sch-item free"><span class="free-line"><span class="blink">●</span> 사용 가능 <b>${tt}</b></span></div>`;
       }
-      const tt=e.hasNext?(fmt(e.start)+' – '+fmt(e.end)):(fmt(e.start)+' 이후');
-      return `<div class="sch-item soon"><div class="soon-tag"><span class="blink">●</span> 예약 가능 시간대</div><div class="t">${tt}</div></div>`;
+      const tt=e.hasNext?(fmt(e.start)+'~'+fmt(e.end)):(fmt(e.start)+' 이후');
+      return `<div class="sch-item soon"><span class="soon-line"><span class="blink">●</span> 예약 가능 <b>${tt}</b></span></div>`;
     }
     const on=now>=e.start&&now<e.end, past=e.end<=now;
     const cls='sch-item'+(on?' now':'')+(past?' past':'');
