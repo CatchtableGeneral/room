@@ -193,13 +193,20 @@
   .wifi-guide .wg-c{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#1F2124;white-space:nowrap;}
   .wifi-guide .wg-c .ql{flex:none;min-width:34px;text-align:center;font-size:11.5px;font-weight:800;color:#fff;background:#FD3D00;padding:3px 8px;border-radius:6px;}
   /* 화상회의실 전용 */
-  .main-video .btmwrap{gap:14px;}
-  .main-video .imgslot{height:200px;}
-  .main-video .btmwrap .vguide{flex:0 0 auto;}
-  .vguide .vrow{display:flex;gap:18px;margin-top:4px;}
-  .vguide .vstep{flex:1;display:flex;gap:10px;align-items:center;font-size:16px;font-weight:600;line-height:1.45;color:#3A3D42;background:#FAFBFC;border:1px solid #E7E9ED;border-radius:14px;padding:13px 16px;}
-  .vguide .vstep .num{flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:#FD3D00;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-  .vguide .vstep .tip-ic{font-size:18px;flex:none;}
+  .vc3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .main-video .imgslot{height:250px;}
+  .main-video .btmwrap .gsection{justify-content:center;}
+  /* 화상회의 참가 애니메이션 */
+  .vc-list{animation:vcList 7s ease-in-out infinite}
+  .vc-meet{animation:vcMeet 7s ease-in-out infinite}
+  .vc-btn{animation:vcBtnPress 7s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  .vc-ripple{animation:vcRipple 7s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  .vc-joined{animation:vcJoined 7s ease-in-out infinite}
+  @keyframes vcList{0%,45%{opacity:1}52%,93%{opacity:0}98%,100%{opacity:1}}
+  @keyframes vcMeet{0%,46%{opacity:0}53%,93%{opacity:1}98%,100%{opacity:0}}
+  @keyframes vcBtnPress{0%,30%{transform:scale(1)}39%{transform:scale(0.88)}47%,100%{transform:scale(1)}}
+  @keyframes vcRipple{0%,33%{opacity:0;transform:scale(0.4)}41%{opacity:0.85;transform:scale(1)}52%,100%{opacity:0;transform:scale(1.9)}}
+  @keyframes vcJoined{0%,60%{opacity:0}68%,90%{opacity:1}96%,100%{opacity:0}}
   /* 연결 가이드 : HDMI(1) + 무선그룹(2, Mac|Win + 공용 말풍선 1개) */
   .conn3{display:grid;grid-template-columns:1fr 2fr;gap:22px;}
   .conn4{display:grid;grid-template-columns:1fr 1fr 2fr;gap:16px;}
@@ -478,13 +485,30 @@ const ANIM_WIN = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRati
 </svg>`;
 const CARD_VIDEO = `
     <section class="gcard">
-      <div class="gc-head"><span class="gc-ic">📹</span><div><div class="gc-ey">화상회의</div><div class="gc-tt">회의 참가</div></div></div>
-      <div class="imgslot">회의실 태블릿 화면 영역</div>
+      <div class="gc-head"><span class="gc-ic">📹</span><div><div class="gc-ey">화상회의</div><div class="gc-tt">'참여'만 누르면 끝</div></div></div>
+      <div class="imgslot anim"><svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRatio="xMidYMid meet" font-family="Pretendard,sans-serif">
+        <rect x="30" y="12" width="220" height="112" rx="8" fill="#14161a"/><rect x="35" y="17" width="210" height="94" rx="4" fill="#202124"/>
+        <rect x="132" y="124" width="16" height="8" fill="#14161a"/><rect x="110" y="132" width="60" height="5" rx="2" fill="#14161a"/>
+        <g class="vc-list">
+          <text x="45" y="33" font-size="6.5" font-weight="800" fill="#e8eaed">오늘 회의</text>
+          <rect x="43" y="42" width="194" height="34" rx="6" fill="#2a2c30"/><rect x="43" y="42" width="4" height="34" rx="2" fill="#8ab4f8"/>
+          <text x="54" y="56" font-size="7" font-weight="700" fill="#e8eaed">주간 팀 미팅</text>
+          <text x="54" y="67" font-size="5.5" fill="#9aa0a6">14:00 – 15:00 · Google Meet</text>
+          <g class="vc-btn"><rect x="195" y="50" width="38" height="18" rx="9" fill="#FD3D00"/><text x="214" y="62.5" font-size="7.5" font-weight="800" fill="#fff" text-anchor="middle">참여</text></g>
+          <circle class="vc-ripple" cx="214" cy="59" r="10" fill="none" stroke="#FD3D00" stroke-width="1.6"/>
+        </g>
+        <g class="vc-meet">
+          <rect x="43" y="22" width="95" height="50" rx="5" fill="#3c4043"/><circle cx="90" cy="42" r="8" fill="#5f6368"/><text x="90" y="65" font-size="5.5" fill="#c9ccd1" text-anchor="middle">회의실 카메라</text>
+          <rect x="142" y="22" width="95" height="50" rx="5" fill="#303134"/><circle cx="189" cy="42" r="8" fill="#5f6368"/><text x="189" y="65" font-size="5.5" fill="#9aa0a6" text-anchor="middle">참가자</text>
+          <g class="vc-joined"><rect x="92" y="76" width="96" height="14" rx="7" fill="#1e3a29"/><text x="140" y="85.5" font-size="6.5" font-weight="700" fill="#81c995" text-anchor="middle">회의에 참여했어요</text></g>
+          <g><circle cx="120" cy="102" r="7" fill="#3c4043"/><circle cx="140" cy="102" r="7" fill="#3c4043"/><circle cx="160" cy="102" r="7" fill="#ea4335"/></g>
+        </g>
+      </svg></div>
       <ol class="steps">
-        <li><span class="num">1</span><span>예약된 회의 선택 후 <b>‘참가’</b> 터치</span></li>
-        <li><span class="num">2</span><span>카메라·마이크가 켜지고 TV가 <b>회의 화면</b>으로 전환</span></li>
+        <li><span class="num">1</span><span>고정 PC 화면에서 예약된 회의의 <b>'참여'</b> 터치</span></li>
+        <li><span class="num">2</span><span>카메라·마이크·화면이 <b>자동</b>으로 켜져요</span></li>
       </ol>
-      <div class="tip"><span class="tip-ic">💡</span><span class="tip-tx">회의가 없으면 <b>‘참가’</b> 후 코드(ID)를 입력하세요</span></div>
+      <div class="tip"><span class="tip-ic">💡</span><span class="tip-tx">카메라·마이크는 이미 세팅돼 있어요 · 회의 만들 때 <b>이 회의실</b>을 추가하세요</span></div>
     </section>`;
 const CARD_INTERVIEW = `
     <section class="gcard">
@@ -495,6 +519,69 @@ const CARD_INTERVIEW = `
         <li><span class="num">3</span><span><b>인터뷰 후</b> · 자리 정리 후 바로 비워주기</span></li>
       </ol>
       <div class="tip"><span class="tip-ic">🔒</span><span class="tip-tx">지원자 <b>자료·메모는 반드시 회수·파기</b>해 주세요</span></div>
+    </section>`;
+// ===== 화상회의실 =====
+const ANIM_VC_JOIN = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRatio="xMidYMid meet" font-family="Pretendard,sans-serif">
+  <rect x="30" y="12" width="220" height="112" rx="8" fill="#14161a"/>
+  <rect x="35" y="17" width="210" height="94" rx="4" fill="#202124"/>
+  <rect x="132" y="124" width="16" height="8" fill="#14161a"/><rect x="110" y="132" width="60" height="5" rx="2" fill="#14161a"/>
+  <g class="vc-list">
+    <text x="45" y="33" font-size="6.5" font-weight="800" fill="#e8eaed">오늘 회의</text>
+    <rect x="43" y="42" width="194" height="34" rx="6" fill="#2a2c30"/><rect x="43" y="42" width="4" height="34" rx="2" fill="#8ab4f8"/>
+    <text x="54" y="56" font-size="7" font-weight="700" fill="#e8eaed">주간 팀 미팅</text>
+    <text x="54" y="67" font-size="5.5" fill="#9aa0a6">14:00 – 15:00 · Google Meet</text>
+    <g class="vc-btn"><rect x="197" y="50" width="34" height="18" rx="9" fill="#FD3D00"/><text x="214" y="62.5" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">참가</text></g>
+    <circle class="vc-ripple" cx="214" cy="59" r="10" fill="none" stroke="#FD3D00" stroke-width="1.6"/>
+  </g>
+  <g class="vc-meet">
+    <rect x="43" y="22" width="95" height="50" rx="5" fill="#3c4043"/><circle cx="90" cy="42" r="8" fill="#5f6368"/><text x="90" y="65" font-size="5.5" fill="#c9ccd1" text-anchor="middle">회의실 카메라</text>
+    <rect x="142" y="22" width="95" height="50" rx="5" fill="#303134"/><circle cx="189" cy="42" r="8" fill="#5f6368"/><text x="189" y="65" font-size="5.5" fill="#9aa0a6" text-anchor="middle">참가자</text>
+    <g class="vc-joined"><rect x="92" y="76" width="96" height="14" rx="7" fill="#1e3a29"/><text x="140" y="85.5" font-size="6.5" font-weight="700" fill="#81c995" text-anchor="middle">회의에 참여했어요</text></g>
+    <g><circle cx="120" cy="102" r="7" fill="#3c4043"/><circle cx="140" cy="102" r="7" fill="#3c4043"/><circle cx="160" cy="102" r="7" fill="#ea4335"/></g>
+  </g>
+</svg>`;
+const VC_CODE = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRatio="xMidYMid meet" font-family="Pretendard,sans-serif">
+  <rect x="30" y="16" width="220" height="106" rx="8" fill="#14161a"/><rect x="35" y="21" width="210" height="96" rx="4" fill="#202124"/>
+  <text x="140" y="44" font-size="8" font-weight="800" fill="#e8eaed" text-anchor="middle">회의 코드 입력</text>
+  <rect x="58" y="56" width="164" height="24" rx="6" fill="#303134" stroke="#3c4043" stroke-width="1"/>
+  <text x="70" y="72" font-size="9" fill="#9aa0a6" letter-spacing="2">abc-defg-hij</text>
+  <rect x="98" y="90" width="84" height="20" rx="10" fill="#FD3D00"/><text x="140" y="104" font-size="8.5" font-weight="800" fill="#fff" text-anchor="middle">참가</text>
+</svg>`;
+const VC_OWN = `<svg class="anim-svg" viewBox="0 0 280 150" preserveAspectRatio="xMidYMid meet" font-family="Pretendard,sans-serif">
+  <rect x="96" y="40" width="88" height="54" rx="4" fill="#2b2f36"/><rect x="99" y="43" width="82" height="48" rx="2" fill="#fff"/>
+  <path d="M90 94 h100 l6 12 H84 z" fill="#4a4f55"/><rect x="96" y="96" width="88" height="4" rx="1" fill="#5a5f66"/>
+  <rect x="30" y="62" width="30" height="15" rx="2" fill="#3A3D42"/><rect x="34" y="65" width="22" height="4" fill="#8ab4f8"/><path d="M60 69 C 78 69, 80 66, 96 66" fill="none" stroke="#3A3D42" stroke-width="3.5"/>
+  <text x="45" y="55" font-size="7.5" font-weight="800" fill="#3A3D42" text-anchor="middle">USB-A</text><text x="45" y="90" font-size="6" fill="#8A9099" text-anchor="middle">카메라·마이크</text>
+  <rect x="220" y="62" width="30" height="14" rx="2" fill="#1c1c1c"/><path d="M220 69 C 202 69, 200 66, 184 66" fill="none" stroke="#1c1c1c" stroke-width="3.5"/>
+  <text x="235" y="55" font-size="7.5" font-weight="800" fill="#3A3D42" text-anchor="middle">HDMI</text><text x="235" y="90" font-size="6" fill="#8A9099" text-anchor="middle">화면 출력</text>
+</svg>`;
+const CARD_VC1 = `
+    <section class="gcard">
+      <div class="gc-head"><span class="gc-ic">🖥️</span><div><div class="gc-ey">원클릭</div><div class="gc-tt">회의 참가하기</div></div></div>
+      <div class="imgslot anim">${ANIM_VC_JOIN}</div>
+      <ol class="steps">
+        <li><span class="num">1</span><span>화면에서 예약된 회의의 <b>'참가'</b> 터치</span></li>
+        <li><span class="num">2</span><span>카메라·마이크·화면이 <b>자동</b>으로 켜져요</span></li>
+      </ol>
+      <div class="tip"><span class="tip-ic">💡</span><span class="tip-tx">카메라·마이크는 고정 PC에 <b>상시 연결</b>돼 있어 따로 꽂을 필요 없어요</span></div>
+    </section>`;
+const CARD_VC2 = `
+    <section class="gcard">
+      <div class="gc-head"><span class="gc-ic">🔑</span><div><div class="gc-ey">회의가 안 보이면</div><div class="gc-tt">회의코드로 참가</div></div></div>
+      <div class="imgslot">${VC_CODE}</div>
+      <ol class="steps">
+        <li><span class="num">1</span><span><b>'참가'</b>를 누른 뒤 회의코드를 입력</span></li>
+        <li><span class="num">2</span><span>Zoom <b>회의 ID</b> · 구글밋 <b>회의 코드</b></span></li>
+      </ol>
+    </section>`;
+const CARD_VC3 = `
+    <section class="gcard">
+      <div class="gc-head"><span class="gc-ic">💻</span><div><div class="gc-ey">본인 노트북으로</div><div class="gc-tt">직접 연결해 참가</div></div></div>
+      <div class="imgslot">${VC_OWN}</div>
+      <ol class="steps">
+        <li><span class="num">1</span><span>책상의 <b>USB-A(카메라·마이크)</b>와 <b>HDMI</b>를 노트북에 연결</span></li>
+        <li><span class="num">2</span><span>내 노트북에서 회의에 <b>참가</b></span></li>
+      </ol>
     </section>`;
 const CTRL_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="3.5" y="5" width="17" height="6" rx="3"/><rect x="3.5" y="13" width="17" height="6" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg>';
 const MIRROR_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 19l-3.2 3.4h6.4z" fill="currentColor" stroke="none"/></svg>';
@@ -565,18 +652,10 @@ function mainInterview(room,t){
 }
 
 function mainVideo(room,t){
-  const wiredGroup = `<div class="wgroup"><div class="wpair one">${CARD_WIRED}</div>${WIRED_TIP}</div>`;
-  const wgroup = `<div class="wgroup"><div class="wpair">${cardMac(room)}${cardWin(room)}</div>${WL_TIP}</div>`;
-  const videoSec = `<div class="gsection vguide"><div class="etq-h"><span class="etq-bar"></span><h3>화상회의 참여</h3><span class="s">예약된 회의에 바로 참가하세요</span></div>
-    <div class="vrow">
-      <div class="vstep"><span class="num">1</span><span>회의실 태블릿에서 <b>예약된 회의</b> 선택 후 <b>'참가'</b> 터치</span></div>
-      <div class="vstep"><span class="num">2</span><span>카메라·마이크가 켜지고 TV가 <b>회의 화면</b>으로 전환</span></div>
-      <div class="vstep"><span class="tip-ic">💡</span><span>회의가 없으면 <b>'참가'</b> 후 코드(ID)를 입력하세요</span></div>
-    </div></div>`;
-  const mirror = guideSection("TV 미러링 가이드","유선·무선으로 노트북 화면 연결","conn3",wiredGroup+wgroup);
+  const sec = guideSection("화상회의 하기","예약된 회의에서 '참가'만 누르면 끝","vc3",CARD_VC1+CARD_VC2+CARD_VC3);
   const etq = etqSection("회의실 사용 에티켓","다음 사용자를 위해 함께 지켜주세요",
     [["⏰","이용시간 준수"],[PWR_OFF,"TV전원 OFF금지"],["🗑️","쓰레기 정리"],["🪑","자리 정리"],["💡","소등 후 퇴실"]]);
-  return `<main class="main main-std main-video"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}${wifiGuide()}</div><div class="btmwrap">${videoSec}${mirror}</div></div></main>`;
+  return `<main class="main main-std main-video"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}${wifiGuide()}</div><div class="btmwrap">${sec}</div></div></main>`;
 }
 
 function viewPicker(){
@@ -766,7 +845,7 @@ function render(){
     const t=TYPES[room.type]||TYPES.general;
     window.__ivRoom=(t.kind==="interview"); // 인터뷰룸이면 예약 시간대에 검정 커버
     page.style.width='1920px';page.style.height='1080px';page.style.background='#fff';
-    page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):(t.video?mainVideo(room,t):mainStandard(room,t)));
+    page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):mainStandard(room,t));
     document.title=room.name+' · 회의실 가이드';
     // 15초 주기 폴링(+지터) → 서버가 요청 시 최신화하므로 신선도 ≈ 폴링 주기(약 15초)
     const calKey=room.cal||key;
