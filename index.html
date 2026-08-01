@@ -67,6 +67,10 @@
   .sch-item{background:rgba(255,255,255,0.15);border-radius:11px;padding:10px 14px;border-left:4px solid rgba(255,255,255,0.65);}
   .sch-item .t{font-size:16px;font-weight:800;white-space:nowrap;}
   .sch-item .n{font-size:14.5px;opacity:0.92;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sch-item.hasjoin{display:flex;align-items:center;gap:10px;}
+  .sch-item.hasjoin .sch-main{flex:1;min-width:0;}
+  .sch-join{flex:none;background:#fff;color:#FD3D00;text-decoration:none;font-size:15px;font-weight:800;padding:9px 18px;border-radius:10px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+  .sch-join:hover{background:#FFF1EC;}
   .sch-item.now{background:#fff;border-left:4px solid #FF2D55;box-shadow:0 3px 12px rgba(0,0,0,0.16);}
   .sch-item.now .t{color:#FD3D00;}
   .sch-item.now .n{color:#D6321E;opacity:1;}
@@ -816,8 +820,10 @@ function renderSched(events,mode){
       return `<div class="sch-item soon"><span class="soon-line"><span class="blink">●</span> 예약 가능 <b>${tt}</b></span></div>`;
     }
     const on=now>=e.start&&now<e.end, past=e.end<=now;
-    const cls='sch-item'+(on?' now':'')+(past?' past':'');
-    return `<div class="${cls}">${on?'<div class="now-tag"><span class="blink">●</span> 진행 중</div>':''}<div class="t">${fmt(e.start)} – ${fmt(e.end)}</div><div class="n">${e.title||"예약됨"}</div></div>`;
+    const canJoin=window.__videoRoom && e.meet && !past; // 화상회의실 + Meet 링크 있고 안 지난 회의
+    const cls='sch-item'+(on?' now':'')+(past?' past':'')+(canJoin?' hasjoin':'');
+    const jb=canJoin?`<a class="sch-join" href="${e.meet}" target="_blank" rel="noopener">참여</a>`:'';
+    return `<div class="${cls}"><div class="sch-main">${on?'<div class="now-tag"><span class="blink">●</span> 진행 중</div>':''}<div class="t">${fmt(e.start)} – ${fmt(e.end)}</div><div class="n">${e.title||"예약됨"}</div></div>${jb}</div>`;
   }).join("");
   // 자동 맞춤: 1열로 그려보고, 세로/가로로 넘치면 2열 → 그래도 넘치면 촘촘 모드
   listEl.className='sched-list';
@@ -841,11 +847,12 @@ function render(){
     page.style.background='transparent';
     page.innerHTML=viewPicker();
     loadPickerStatuses();
-    window.__ivRoom=false; window.__coverAlways=false; const _c=document.getElementById('iv-cover'); if(_c)_c.style.display='none';
+    window.__ivRoom=false; window.__coverAlways=false; window.__videoRoom=false; const _c=document.getElementById('iv-cover'); if(_c)_c.style.display='none';
   } else {
     const t=TYPES[room.type]||TYPES.general;
     window.__ivRoom=(t.kind==="interview"); // 인터뷰룸이면 예약(인터뷰) 시간대에 검정 커버
     window.__coverAlways=(room.type==="exec"); // 임원용은 상시 검정+로고 커버
+    window.__videoRoom=!!t.video; // 화상회의실이면 스케줄에 '참여' 버튼
     { const _cov0=document.getElementById('iv-cover'); if(_cov0) _cov0.style.display=window.__coverAlways?'flex':'none'; }
     page.style.width='1920px';page.style.height='1080px';page.style.background='#fff';
     page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):mainStandard(room,t));
