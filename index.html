@@ -789,7 +789,7 @@ function renderSched(events,mode){
   // 인터뷰룸: 지금 진행 중인 예약의 제목에 인터뷰 키워드가 있을 때만 검정 커버 (일반 회의는 가이드 유지)
   const _cur=events.find(e=>now>=e.start&&now<e.end);
   const _isIv=!!(_cur && (_cur.iv || /인터뷰|면접|interview/i.test(_cur.title||''))); // careers@ 예약(iv) 또는 제목 키워드
-  try{ const cov=document.getElementById('iv-cover'); if(cov) cov.style.display=(window.__ivRoom && _isIv)?'flex':'none'; }catch(e){}
+  try{ const cov=document.getElementById('iv-cover'); if(cov) cov.style.display=(window.__coverAlways || (window.__ivRoom && _isIv))?'flex':'none'; }catch(e){}
   if(loading && !events.length){listEl.className='sched-list';listEl.innerHTML=`<div class="sch-empty">일정을 불러오는 중…</div>`;return;}
   // 지금 비어있으면 "사용 가능" 슬롯을 타임라인에 카드로 끼워넣기 (진행중 카드와 동일 뷰)
   let items=events.slice();
@@ -840,10 +840,12 @@ function render(){
     page.style.background='transparent';
     page.innerHTML=viewPicker();
     loadPickerStatuses();
-    window.__ivRoom=false; const _c=document.getElementById('iv-cover'); if(_c)_c.style.display='none';
+    window.__ivRoom=false; window.__coverAlways=false; const _c=document.getElementById('iv-cover'); if(_c)_c.style.display='none';
   } else {
     const t=TYPES[room.type]||TYPES.general;
-    window.__ivRoom=(t.kind==="interview"); // 인터뷰룸이면 예약 시간대에 검정 커버
+    window.__ivRoom=(t.kind==="interview"); // 인터뷰룸이면 예약(인터뷰) 시간대에 검정 커버
+    window.__coverAlways=(room.type==="exec"); // 임원용은 상시 검정+로고 커버
+    { const _cov0=document.getElementById('iv-cover'); if(_cov0) _cov0.style.display=window.__coverAlways?'flex':'none'; }
     page.style.width='1920px';page.style.height='1080px';page.style.background='#fff';
     page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):mainStandard(room,t));
     document.title=room.name+' · 회의실 가이드';
