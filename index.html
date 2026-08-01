@@ -861,8 +861,9 @@ function render(){
     loadPickerStatuses();
     window.__ivRoom=false; window.__coverAlways=false; window.__videoRoom=false; const _c=document.getElementById('iv-cover'); if(_c)_c.style.display='none';
   } else {
-    const t=TYPES[room.type]||TYPES.general;
-    window.__ivRoom=(t.kind==="interview"); // 인터뷰룸이면 예약(인터뷰) 시간대에 검정 커버
+    const isIvRoom=(room.type==="interview");
+    const t=isIvRoom?TYPES.general:(TYPES[room.type]||TYPES.general); // 인터뷰룸도 내용은 일반회의실과 동일하게
+    window.__ivRoom=isIvRoom; // 커버는 방 타입 기준 (내용은 일반이어도 인터뷰 시간엔 검정 커버 유지)
     window.__coverAlways=(room.type==="exec"); // 임원용은 상시 검정+로고 커버
     window.__videoRoom=!!t.video; // 화상회의실이면 스케줄에 '참여' 버튼
     { const _cov0=document.getElementById('iv-cover'); if(_cov0) _cov0.style.display=window.__coverAlways?'flex':'none'; }
