@@ -69,8 +69,10 @@
   .sch-item .n{font-size:14.5px;opacity:0.92;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .sch-item.hasjoin{display:flex;align-items:center;gap:10px;}
   .sch-item.hasjoin .sch-main{flex:1;min-width:0;}
-  .sch-join{flex:none;background:#fff;color:#FD3D00;text-decoration:none;font-size:15px;font-weight:800;padding:9px 18px;border-radius:10px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
-  .sch-join:hover{background:#FFF1EC;}
+  .sch-join{flex:none;background:rgba(255,255,255,0.18);color:#fff;text-decoration:none;font-size:14px;font-weight:800;padding:8px 17px;border-radius:9px;white-space:nowrap;border:1.5px solid rgba(255,255,255,0.8);}
+  .sch-join:hover{background:#fff;color:#FD3D00;}
+  .sch-item.now .sch-join{background:#fff;color:#FD3D00;border-color:#FD3D00;}
+  .sch-item.now .sch-join:hover{background:#FD3D00;color:#fff;}
   .sch-item.now{background:#fff;border-left:4px solid #FF2D55;box-shadow:0 3px 12px rgba(0,0,0,0.16);}
   .sch-item.now .t{color:#FD3D00;}
   .sch-item.now .n{color:#D6321E;opacity:1;}
@@ -199,8 +201,15 @@
   .wifi-guide .wg-c .ql{flex:none;min-width:34px;text-align:center;font-size:11.5px;font-weight:800;color:#fff;background:#FD3D00;padding:3px 8px;border-radius:6px;}
   /* 화상회의실 전용 */
   .vc3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-  .main-video .imgslot{height:250px;}
+  .main-video{padding-top:44px;padding-bottom:44px;}
+  .main-video .inner.std{gap:32px;}
+  .main-video .imgslot{height:235px;}
+  .main-video .btmwrap{gap:18px;}
   .main-video .btmwrap .gsection{justify-content:center;}
+  .vbanner{display:flex;align-items:center;gap:14px;flex:0 0 auto;background:#FFF1EC;border:2px solid #FFD3C4;border-radius:18px;padding:18px 28px;}
+  .vbanner .vb-ic{font-size:26px;flex:none;}
+  .vbanner .vb-tx{font-size:19px;font-weight:700;color:#B24435;line-height:1.4;}
+  .vbanner .vb-tx b{color:#FD3D00;font-weight:800;}
   /* 화상회의 참가 애니메이션 */
   .vc-list{animation:vcList 7s ease-in-out infinite}
   .vc-meet{animation:vcMeet 7s ease-in-out infinite}
@@ -657,10 +666,13 @@ function mainInterview(room,t){
 }
 
 function mainVideo(room,t){
-  const sec = guideSection("화상회의 하기","예약된 회의에서 '참가'만 누르면 끝","vc3",CARD_VC1+CARD_VC2+CARD_VC3);
+  const wiredGroup = `<div class="wgroup"><div class="wpair one">${CARD_WIRED}</div>${WIRED_TIP}</div>`;
+  const wgroup = `<div class="wgroup"><div class="wpair">${cardMac(room)}${cardWin(room)}</div>${WL_TIP}</div>`;
+  const banner = `<div class="vbanner"><span class="vb-ic">📹</span><span class="vb-tx">화상회의는 왼쪽 스케줄에서 <b>'참여'</b>만 누르면 끝 · 회의가 종료되면 <b>창을 닫아주세요</b></span></div>`;
+  const guide = guideSection("회의실 이용 가이드","유선·무선으로 노트북 화면 연결","conn3",wiredGroup+wgroup);
   const etq = etqSection("회의실 사용 에티켓","다음 사용자를 위해 함께 지켜주세요",
     [["⏰","이용시간 준수"],[PWR_OFF,"TV전원 OFF금지"],["🗑️","쓰레기 정리"],["🪑","자리 정리"],["💡","소등 후 퇴실"]]);
-  return `<main class="main main-std main-video"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}${wifiGuide()}</div><div class="btmwrap">${sec}</div></div></main>`;
+  return `<main class="main main-std main-video"><div class="inner std"><div class="toprow">${bubbleTop(t)}${etq}${wifiGuide()}</div><div class="btmwrap">${banner}${guide}</div></div></main>`;
 }
 
 function viewPicker(){
@@ -855,7 +867,7 @@ function render(){
     window.__videoRoom=!!t.video; // 화상회의실이면 스케줄에 '참여' 버튼
     { const _cov0=document.getElementById('iv-cover'); if(_cov0) _cov0.style.display=window.__coverAlways?'flex':'none'; }
     page.style.width='1920px';page.style.height='1080px';page.style.background='#fff';
-    page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):mainStandard(room,t));
+    page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):(t.video?mainVideo(room,t):mainStandard(room,t)));
     document.title=room.name+' · 회의실 가이드';
     // 15초 주기 폴링(+지터) → 서버가 요청 시 최신화하므로 신선도 ≈ 폴링 주기(약 15초)
     const calKey=room.cal||key;
