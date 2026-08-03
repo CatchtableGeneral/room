@@ -272,8 +272,9 @@
   .pbtn .rn{font-size:20px;font-weight:700;color:#F5F6F8;letter-spacing:-0.5px;}
   .pbtn .rt{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#aab0bc;}
   .pbtn .rt .tdot{width:7px;height:7px;border-radius:50%;background:var(--tc);box-shadow:0 0 8px var(--tc);}
-  .pbtn .pk-st{font-size:12.5px;font-weight:700;margin-top:7px;display:inline-flex;align-items:center;gap:6px;color:#8b8f9c;}
-  .pbtn .pk-st::before{content:"";width:7px;height:7px;border-radius:50%;background:#6b7078;display:inline-block;flex:none;}
+  .pbtn .pk-st{font-size:12.5px;font-weight:700;margin-top:7px;display:flex;align-items:flex-start;gap:6px;color:#8b8f9c;line-height:1.45;word-break:keep-all;}
+  .pbtn .pk-st::before{content:"";width:7px;height:7px;border-radius:50%;background:#6b7078;display:inline-block;flex:none;margin-top:4px;}
+  .pbtn .pk-mt{margin-top:4px;padding-left:13px;font-size:12px;font-weight:600;color:#FF9FAB;line-height:1.4;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pbtn .pk-st.free{color:#2FCB84;}
   .pbtn .pk-st.free::before{background:#2FCB84;box-shadow:0 0 8px #2FCB84;}
   .pbtn .pk-st.busy{color:#FF7A8C;}
@@ -345,21 +346,21 @@ function bookRoom(cal,name,key){
 const TYPES = {
   general:  {label:"일반 회의실",   eyebrow:"회의실 장비 이용 가이드",   kind:"standard", video:false, pick:"#FFFFFF", side:""},
   interview:{label:"면접 우선",     eyebrow:"인터뷰 전용 공간",          kind:"interview",             pick:"#35D19A", side:""},
-  exec:     {label:"임원 전용",     eyebrow:"회의실 장비 이용 가이드",   kind:"standard", video:false, pick:"#FFC933", side:""},
+  exec:     {label:"C레벨 전용",     eyebrow:"회의실 장비 이용 가이드",   kind:"standard", video:false, pick:"#FFC933", side:""},
   video:    {label:"화상회의 우선", eyebrow:"회의실 겸용 · 이용 가이드", kind:"standard", video:true,  pick:"#5AA9F5", side:""}
 };
 const ROOMS = {
-  cuisine:{name:"Cuisine Room",type:"general",office:"판교A"},savor:{name:"Savor Room",type:"general",office:"판교A"},
-  corkage:{name:"Corkage Room",type:"general",office:"판교A"},dining:{name:"Dining Room",type:"general",office:"판교A"},
-  pairing:{name:"Pairing Room",type:"general",office:"판교A"},gourmet:{name:"Gourmet Room",type:"general",office:"판교A"},
-  cooking:{name:"Cooking Room",type:"general",office:"판교A"},plating:{name:"Plating Room",type:"general",office:"판교A"},
-  tasting:{name:"Tasting Room",type:"general",office:"판교A"},exec1:{name:"임원용1",type:"exec",office:"판교A"},
-  exec2:{name:"임원용2",type:"exec",office:"판교A"},exec3:{name:"임원용3",type:"exec",office:"판교A"},
-  winery:{name:"Winery Room",type:"exec",office:"판교B"},terrace:{name:"Terrace Room",type:"general",office:"판교B"},
-  roasting:{name:"Roasting Room",type:"general",office:"판교B"},baking:{name:"Baking Room",type:"general",office:"판교B"},
-  interview1:{name:"Interview Room1",type:"interview",office:"판교B"},interview2:{name:"Interview Room2",type:"interview",office:"판교B"},
-  party:{name:"Party Room",type:"video",office:"판교B"},flavor:{name:"Flavor Room",type:"general",office:"페이"},
-  searing:{name:"Searing Room",type:"general",office:"부산"}
+  cuisine:{name:"Cuisine Room",type:"general",office:"판교사무실 A"},savor:{name:"Savor Room",type:"general",office:"판교사무실 A"},
+  corkage:{name:"Corkage Room",type:"general",office:"판교사무실 A"},dining:{name:"Dining Room",type:"general",office:"판교사무실 A"},
+  pairing:{name:"Pairing Room",type:"general",office:"판교사무실 A"},gourmet:{name:"Gourmet Room",type:"general",office:"판교사무실 A"},
+  cooking:{name:"Cooking Room",type:"general",office:"판교사무실 A"},plating:{name:"Plating Room",type:"general",office:"판교사무실 A"},
+  tasting:{name:"Tasting Room",type:"general",office:"판교사무실 A"},exec1:{name:"쪽방1",type:"exec",office:"판교사무실 A"},
+  exec2:{name:"쪽방2",type:"exec",office:"판교사무실 A"},exec3:{name:"쪽방3",type:"exec",office:"판교사무실 A"},
+  winery:{name:"Winery Room",type:"exec",office:"판교사무실 B",tag:"사장님그로스 아르바이트 업무공간"},terrace:{name:"Terrace Room",type:"general",office:"판교사무실 B"},
+  roasting:{name:"Roasting Room",type:"general",office:"판교사무실 B"},baking:{name:"Baking Room",type:"general",office:"판교사무실 B"},
+  interview1:{name:"Interview Room1",type:"interview",office:"판교사무실 B"},interview2:{name:"Interview Room2",type:"interview",office:"판교사무실 B"},
+  party:{name:"Party Room",type:"video",office:"판교사무실 B"},flavor:{name:"Flavor Room",type:"general",office:"페이 사무실"},
+  searing:{name:"Searing Room",type:"general",office:"부산 사무실"}
 };
 
 const ARW_ETQ='<svg class="arw arw-etq" viewBox="0 0 74 34" width="46" height="21" fill="none" stroke="#FD3D00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30 C 24 4, 50 20, 66 20"/><path d="M66 20 l-11 -6 M66 20 l-11 6"/></svg>';
@@ -385,8 +386,11 @@ function wifiGuide(){ return `<div class="wifi-guide">
     </div>
   </div>`; }
 function sidebar(room,t){
+  const isPay=((room.office||"").indexOf("페이")===0);        // 페이 사무실(Flavor Room 등)은 캐치테이블페이 로고
+  const logoSrc=isPay?"logo_pay.png":"logo.png";
+  const logoTxt=isPay?"CATCHTABLE PAY":"CATCHTABLE";
   return `<aside class="side ${room.side!==undefined?room.side:(t.side||'')}">
-    <div class="logo"><img src="logo.png" alt="CATCHTABLE" class="logo-img" onerror="this.replaceWith(document.createTextNode('CATCHTABLE'))"></div>
+    <div class="logo"><img src="${logoSrc}" alt="${logoTxt}" class="logo-img" onerror="this.replaceWith(document.createTextNode('${logoTxt}'))"></div>
     <h1 class="rtitle">${room.name}</h1>
     <div class="hr"></div>
     <div class="ask"><span class="op">문의</span><span class="sep">|</span><b>슬랙 #help-총무</b></div>
@@ -684,9 +688,9 @@ function viewPicker(){
       const t=TYPES[r.type];
       const cal=ROOM_CAL[k];
       const book=cal?`<button type="button" class="pbtn-book" onclick="bookRoom('${cal}','${r.name}','${k}')">＋ 예약</button>`:'';
-      btns+=`<div class="pbtn" style="--tc:${t.pick}"><a class="pbtn-open" href="?room=${k}"><span class="rn">${r.name}</span><span class="rt"><span class="tdot"></span>${r.tag||t.label}</span><span class="pk-st" id="pk-st-${k}">확인 중…</span></a>${book}</div>`;
+      btns+=`<div class="pbtn" style="--tc:${t.pick}"><a class="pbtn-open" href="?room=${k}"><span class="rn">${r.name}</span><span class="rt"><span class="tdot"></span>${r.tag||t.label}</span><span class="pk-st" id="pk-st-${k}">확인 중…</span><span class="pk-mt" id="pk-mt-${k}" style="display:none"></span></a>${book}</div>`;
     });
-    grps+=`<div class="pgrp"><h3>${o} 사무실 <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
+    grps+=`<div class="pgrp"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
   });
   return `<div class="picker"><div class="pk-brand"><span class="dot"></span>CATCHTABLE</div>
     <div class="pk-title">회의실을 선택하세요</div>
@@ -725,7 +729,9 @@ function pickAvail(events){
   const MG=15*60000;
   const _eod=new Date();_eod.setHours(23,59,59,0);const eod=_eod.getTime();
   const sorted=events.slice().sort((a,b)=>a.start-b.start);
-  const busy=events.some(e=>now>=e.start&&now<e.end);
+  const _cur=events.find(e=>now>=e.start&&now<e.end);       // 지금 진행 중인 회의
+  const title=_cur?(_cur.title||''):'';
+  const busy=!!_cur;
   const nx=sorted.filter(e=>e.start>now);
   const nextStart=nx.length?nx[0].start:eod;
   const availableNow=!busy && (nextStart-now)>=MG;
@@ -733,7 +739,7 @@ function pickAvail(events){
   const slot=(s,endMs,open)=> open ? (fmt(s)+' 이후부터 쭉 가능') : (fmt(s)+'~'+fmt(endMs)+' ('+durTxt(s,endMs)+') 예약 가능');
   if(availableNow){
     const sR=Math.floor(now/MG)*MG;
-    return {cls:'free',txt:'지금 사용 가능 · '+slot(sR,nextStart,!nx.length),startMs:sR,endMs:nx.length?nextStart:null};
+    return {cls:'free',txt:'지금 사용 가능 · '+slot(sR,nextStart,!nx.length),startMs:sR,endMs:nx.length?nextStart:null,title:''};
   }
   // 사용 중 / 곧 회의 시작 → 다음 사용 가능 시각(15분 이상 비는 첫 시점, 연속회의 감안)
   let cursor=now, changed=true;
@@ -742,13 +748,18 @@ function pickAvail(events){
   }
   const base=busy?'사용 중':'곧 회의 시작';
   const cls=busy?'busy':'prep';
-  if(cursor>=eod) return {cls:cls,txt:base+' · 오늘 종일',startMs:null,endMs:null};
+  if(cursor>=eod) return {cls:cls,txt:base+' · 오늘 종일',startMs:null,endMs:null,title:title};
   const after=sorted.filter(e=>e.start>cursor);
-  return {cls:cls,txt:base+' · '+slot(cursor, after.length?after[0].start:eod, !after.length),startMs:cursor,endMs:after.length?after[0].start:null};
+  return {cls:cls,txt:base+' · '+slot(cursor, after.length?after[0].start:eod, !after.length),startMs:cursor,endMs:after.length?after[0].start:null,title:title};
+}
+function pkMeet(k,title){ // 진행 중 회의 제목 줄 표시/숨김
+  const mt=document.getElementById('pk-mt-'+k); if(!mt)return;
+  if(title){ mt.textContent='진행 중 · '+title; mt.style.display='block'; }
+  else { mt.textContent=''; mt.style.display='none'; }
 }
 function applyPickAll(data){ // 전체(all=1) 결과를 각 방 뱃지에 반영. rooms 없으면 false
   if(!(data && data.rooms)) return false;
-  Object.keys(ROOMS).forEach(k=>{ const el=document.getElementById('pk-st-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){const a=pickAvail(rd.events||[]);el.className='pk-st '+a.cls;el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};} else {el.className='pk-st';el.textContent='예약 정보 없음';} });
+  Object.keys(ROOMS).forEach(k=>{ const el=document.getElementById('pk-st-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){const a=pickAvail(rd.events||[]);el.className='pk-st '+a.cls;el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};pkMeet(k,a.title);} else {el.className='pk-st';el.textContent='예약 정보 없음';pkMeet(k,'');} });
   return true;
 }
 function loadPickerStatuses(){
@@ -770,7 +781,7 @@ function loadPickerStatusesPerRoom(){
   Object.keys(ROOMS).forEach((k,i)=>{
     setTimeout(()=>{
       const base=CONFIG.appsScriptUrl+'?room='+encodeURIComponent(k);
-      const use=(data)=>{ const el=document.getElementById('pk-st-'+k); if(el){const a=pickAvail((data&&data.events)||[]); el.className='pk-st '+a.cls; el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};} };
+      const use=(data)=>{ const el=document.getElementById('pk-st-'+k); if(el){const a=pickAvail((data&&data.events)||[]); el.className='pk-st '+a.cls; el.textContent=a.txt;PICK_SLOT[k]={start:a.startMs,end:a.endMs};pkMeet(k,a.title);} };
       fetch(base,{credentials:'omit'}).then(r=>r.json()).then(use).catch(()=>{
         const cb='pk_'+Math.random().toString(36).slice(2);
         const s=document.createElement('script');
