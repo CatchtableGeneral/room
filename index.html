@@ -52,6 +52,7 @@
   .sched-status.s-loading .sdot{background:#c0c4cc;}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
   .now-tag .blink{color:#FF2D55;animation:blink 1.1s infinite;}
+  .sch-item.now .t .blink{color:#FF2D55;animation:blink 1.1s infinite;margin-right:3px;}
   .sch-item.free,.sch-item.soon{background:#fff;border-left:4px solid #2FCB84;box-shadow:0 3px 12px rgba(0,0,0,0.16);}
   .sch-item.free .free-line,.sch-item.soon .soon-line{display:block;font-size:14px;font-weight:800;color:#14A05C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .sch-item.free .free-line .blink,.sch-item.soon .soon-line .blink{color:#2FCB84;animation:blink 1.1s infinite;margin-right:2px;}
@@ -89,6 +90,25 @@
   .pill{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.32);padding:11px 20px;border-radius:999px;font-size:17px;font-weight:600;}
   .bubble{align-self:flex-start;background:#fff;color:#FD3D00;padding:17px 24px;border-radius:22px 22px 22px 6px;font-size:20px;font-weight:700;line-height:1.4;box-shadow:0 16px 32px rgba(0,0,0,0.22), 0 4px 12px rgba(0,0,0,0.14);}
 
+  /* ===== 테스트룸 초안: 왼쪽 스케줄 확대 ===== */
+  .side.schbig{width:560px;flex:0 0 560px;flex-basis:560px;padding:34px 44px;}
+  /* 위쪽(로고·방이름·문의)은 컴팩트하게 → 스케줄에 세로 공간 몰아주기 */
+  .side.schbig .logo-img{height:34px;}
+  .side.schbig .rtitle{margin-top:16px;font-size:34px;}
+  .side.schbig .hr{margin:16px 0 14px;}
+  .side.schbig .ask{font-size:15px;}
+  .side.schbig .sched{margin-top:20px;}
+  .side.schbig .sched-head{font-size:26px;margin-bottom:16px;}
+  .side.schbig .sched-status{font-size:15px;padding:5px 14px;}
+  .side.schbig .sched-list{gap:7px;}
+  .side.schbig .sch-item{padding:11px 18px;border-radius:13px;}
+  .side.schbig .sch-item .t{font-size:21px;line-height:1.3;}
+  .side.schbig .sch-item .n{font-size:17px;margin-top:5px;line-height:1.3;}
+  .side.schbig .sch-item.past{padding:6px 18px;}   /* 끝난 회의는 한 줄이라 더 얇게 */
+  .side.schbig .sch-item.past .n{margin-top:0;}
+  .side.schbig .sch-item.free .free-line,.side.schbig .sch-item.soon .soon-line{font-size:17px;}
+  .side.schbig .sch-item.past .t{font-size:15px;}
+  .side.schbig .sch-item.past .n{font-size:13.5px;}
   /* ===== 메인 ===== */
   .main{flex:1;padding:44px 60px;display:flex;flex-direction:column;justify-content:flex-start;background:#F5F3ED;overflow:hidden;}
   .inner{width:100%;max-width:1460px;height:100%;margin:0 auto;display:flex;flex-direction:column;}
@@ -388,7 +408,7 @@ const ROOMS = {
   interview1:{name:"Interview Room1",type:"interview",office:"판교사무실 B"},interview2:{name:"Interview Room2",type:"interview",office:"판교사무실 B"},
   party:{name:"Party Room",type:"video",office:"판교사무실 B"},flavor:{name:"Flavor Room",type:"general",office:"페이 사무실"},
   searing:{name:"Searing Room",type:"general",office:"부산 사무실"},
-  test:{name:"테스트 회의실",type:"general",office:"테스트"}
+  test:{name:"테스트 회의실",type:"general",office:"테스트",cal:"plating"}  // 초안: 플레이팅룸 실제 일정 사용
 };
 
 const ARW_ETQ='<svg class="arw arw-etq" viewBox="0 0 74 34" width="46" height="21" fill="none" stroke="#FD3D00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30 C 24 4, 50 20, 66 20"/><path d="M66 20 l-11 -6 M66 20 l-11 6"/></svg>';
@@ -405,7 +425,9 @@ function wifiSide(){ return `<div class="wifi-side">
     <div class="ws-qr"><img src="qr.png" alt="Guest Wi-Fi QR" class="ws-qr-img" onerror="this.replaceWith(document.createTextNode('QR'))"></div>
     <div class="ws-cred"><span class="ql">ID</span> WAD_Guest <span class="ql">PW</span> guest!@#</div>
   </div>`; }
-function wifiGuide(){ return `<div class="wifi-guide">
+function wifiGuide(){
+  if(window.__draft) return '';   // 초안: Wi-Fi 칸 통째로 제거
+  return `<div class="wifi-guide">
     <div class="wg-qr"><img src="qr.png" alt="Guest Wi-Fi QR" onerror="this.replaceWith(document.createTextNode('QR'))"></div>
     <div class="wg-side">
       <div class="wg-h">Guest Wi-Fi</div>
@@ -417,7 +439,7 @@ function sidebar(room,t){
   const isPay=((room.office||"").indexOf("페이")===0);        // 페이 사무실(Flavor Room 등)은 캐치테이블페이 로고
   const logoSrc=isPay?"logo_pay.png":"logo.png";
   const logoTxt=isPay?"CATCHTABLE PAY":"CATCHTABLE";
-  return `<aside class="side ${room.side!==undefined?room.side:(t.side||'')}">
+  return `<aside class="side ${room.side!==undefined?room.side:(t.side||'')} ${window.__draft?'schbig':''}">
     <div class="logo"><img src="${logoSrc}" alt="${logoTxt}" class="logo-img" onerror="this.replaceWith(document.createTextNode('${logoTxt}'))"></div>
     <h1 class="rtitle">${room.name}</h1>
     <div class="hr"></div>
@@ -740,11 +762,12 @@ let lastEvents=null, everLoaded=false;
 
 // 테스트/데모용 샘플 일정 (스크린샷용). 지금은 여유 + 예정 회의 2건이 보이는 상태.
 function sampleEvents(){
-  const now=Date.now(), M=60000;
-  return [
-    {title:"주간 팀 회의",       start:now+90*M,  end:now+150*M},
-    {title:"신규 입사자 온보딩", start:now+180*M, end:now+240*M}
-  ];
+  const M=60000, base=Math.floor(Date.now()/(30*M))*30*M; // 30분 정렬
+  const names=["주간 팀 스크럼","제품 리뷰 미팅","1:1 면담","디자인 싱크","신규 입사자 온보딩",
+               "마케팅 캠페인 회의","스프린트 플래닝","고객사 미팅","QA 점검 회의","분기 회고 미팅"];
+  const evs=[]; let s=base-30*M;            // 첫 건은 '진행 중'처럼 보이게
+  for(let i=0;i<10;i++){ evs.push({title:names[i], start:s, end:s+60*M}); s+=60*M; }
+  return evs;
 }
 function loadSchedule(key){
   if(key==="test"){ renderSched(sampleEvents(),'ok'); return; }  // 테스트 방: 백엔드 대신 샘플 표시
@@ -889,8 +912,13 @@ function renderSched(events,mode){
     const on=now>=e.start&&now<e.end, past=e.end<=now;
     const canJoin=window.__videoRoom && e.meet && !past; // 화상회의실 + Meet 링크 있고 안 지난 회의
     const cls='sch-item'+(on?' now':'')+(past?' past':'')+(canJoin?' hasjoin':'');
+    const timeTxt=fmt(e.start)+' – '+fmt(e.end);
+    if(past){ // 끝난 회의: 시간+제목 한 줄
+      return `<div class="${cls}"><span class="t">${timeTxt}</span><span class="n">${e.title||"예약됨"}</span></div>`;
+    }
     const jb=canJoin?`<a class="sch-join" href="${e.meet}" target="_blank" rel="noopener">참여</a>`:'';
-    return `<div class="${cls}"><div class="sch-main">${on?'<div class="now-tag"><span class="blink">●</span> 진행 중</div>':''}<div class="t">${fmt(e.start)} – ${fmt(e.end)}</div><div class="n">${e.title||"예약됨"}</div></div>${jb}</div>`;
+    const tLine=on?`<span class="blink">●</span> 진행 중 · ${timeTxt}`:timeTxt;  // 진행중은 시간과 한 줄로(2줄 유지)
+    return `<div class="${cls}"><div class="sch-main"><div class="t">${tLine}</div><div class="n">${e.title||"예약됨"}</div></div>${jb}</div>`;
   }).join("");
   // 자동 맞춤: 1열로 그려보고, 세로/가로로 넘치면 2열 → 그래도 넘치면 촘촘 모드
   listEl.className='sched-list';
@@ -972,6 +1000,7 @@ function render(){
     const isIvRoom=(room.type==="interview");
     const t=isIvRoom?TYPES.general:(TYPES[room.type]||TYPES.general); // 인터뷰룸도 내용은 일반회의실과 동일하게
     window.__isPicker=false;
+    window.__draft=(key==='test'); // 테스트룸 = 새 디자인 초안(왼쪽 스케줄 확대 + QR 제거)
     window.__ivRoom=isIvRoom; // 커버는 방 타입 기준 (내용은 일반이어도 인터뷰 시간엔 검정 커버 유지)
     window.__coverAlways=(room.type==="exec"); // 임원용은 상시 검정+로고 커버
     window.__videoRoom=!!t.video; // 화상회의실이면 스케줄에 '참여' 버튼
