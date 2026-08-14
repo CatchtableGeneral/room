@@ -106,9 +106,189 @@
   .side.schbig .sch-item .n{font-size:17px;margin-top:5px;line-height:1.3;}
   .side.schbig .sch-item.past{padding:6px 18px;}   /* 끝난 회의는 한 줄이라 더 얇게 */
   .side.schbig .sch-item.past .n{margin-top:0;}
+  /* 시안 B: 스케줄 패널 대폭 확대 (가이드는 오른쪽으로 밀려 좁아짐) */
+  .side.schbig.schbigB{width:900px;flex:0 0 900px;flex-basis:900px;}
+  .side.schbig.schbigB .sched-list{column-count:2;column-gap:14px;display:block;}
+  .side.schbig.schbigB .sch-item{break-inside:avoid;margin-bottom:8px;}
+  .side.schbig.schbigB .rtitle{font-size:40px;}
+  /* 시안 C: 스케줄 최대(2열, 1100px) + 가이드는 오른쪽에 좁게 유지 */
+  .side.schbig.schbigC{width:1100px;flex:0 0 1100px;flex-basis:1100px;}
+  .side.schbig.schbigC .rtitle{font-size:44px;}
+  .side.schbig.schbigC .sched-head{font-size:28px;}
+  .side.schbig.schbigC .sched-list{column-count:2;column-gap:16px;display:block;}
+  .side.schbig.schbigC .sch-item{break-inside:avoid;margin-bottom:9px;}
+  .side.schbig.schbigC .sch-item .t{font-size:22px;}
+  .side.schbig.schbigC .sch-item .n{font-size:18px;}
   .side.schbig .sch-item.free .free-line,.side.schbig .sch-item.soon .soon-line{font-size:17px;}
   .side.schbig .sch-item.past .t{font-size:15px;}
   .side.schbig .sch-item.past .n{font-size:13.5px;}
+  /* ===== 시안 공통: 세로 스택(스케줄 존 + 가이드) ===== */
+  .vcol{width:100%;height:100%;display:flex;flex-direction:column;}
+  .vcol .main{flex:1 1 auto;min-height:0;}
+  .szone{flex:0 0 auto;background:linear-gradient(120deg,#FF6A3A 0%,#FD3D00 100%);color:#fff;}
+  .szone.szone-bot{background:linear-gradient(120deg,#FD3D00 0%,#FF6A3A 100%);}
+  .szone-in{padding:26px 60px;}
+  .dhd{display:flex;align-items:center;gap:20px;}
+  .dhd-logo{height:30px;width:auto;}
+  .dhd-rt{font-size:32px;font-weight:800;letter-spacing:-0.02em;flex:1;}
+  .dhd-st{font-size:16px;padding:6px 16px;flex:none;}
+  /* A: 가로 타임라인 */
+  .tl{position:relative;height:150px;margin-top:26px;}
+  .tl-track{position:absolute;inset:0;background:rgba(255,255,255,0.12);border-radius:16px;}
+  .tl-tick{position:absolute;top:0;bottom:0;border-left:1px dashed rgba(255,255,255,0.28);}
+  .tl-tick span{position:absolute;bottom:-24px;left:-16px;font-size:13px;font-weight:700;color:rgba(255,255,255,0.85);}
+  .tl-blk{position:absolute;top:18px;bottom:18px;background:#fff;color:#FD3D00;border-radius:11px;padding:9px 12px;overflow:hidden;box-shadow:0 5px 14px rgba(0,0,0,0.22);display:flex;flex-direction:column;justify-content:center;}
+  .tl-blk.on{background:#FFE7E3;outline:3px solid #fff;}
+  .tl-blk.past{opacity:0.5;}
+  .tl-t{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tl-tm{font-size:12px;font-weight:700;opacity:0.85;margin-top:2px;}
+  .tl-now{position:absolute;top:-8px;bottom:-8px;width:3px;background:#14161C;border-radius:2px;}
+  .tl-now span{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;background:#14161C;color:#fff;padding:2px 8px;border-radius:7px;white-space:nowrap;}
+  /* B: Now / Next 카드 */
+  .nn{display:flex;gap:22px;margin-top:22px;align-items:stretch;}
+  .nn-now{flex:1.7;background:#fff;color:#1F2124;border-radius:20px;padding:26px 32px;box-shadow:0 12px 30px rgba(0,0,0,0.22);display:flex;flex-direction:column;justify-content:center;min-height:190px;}
+  .nn-now .nn-lbl{font-size:17px;font-weight:800;color:#FF2D55;}
+  .nn-now.free .nn-lbl{color:#14A05C;}
+  .nn-now .nn-title{font-size:38px;font-weight:800;margin-top:10px;letter-spacing:-0.02em;}
+  .nn-now .nn-time{font-size:21px;color:#5A5F66;margin-top:8px;font-weight:600;}
+  .nn-col{flex:1;display:flex;flex-direction:column;gap:16px;min-width:0;}
+  .nn-next{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.32);border-radius:16px;padding:18px 22px;}
+  .nn-next .nn-lbl{font-size:14px;font-weight:800;opacity:0.9;}
+  .nn-next .nn-title{font-size:23px;font-weight:800;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .nn-next .nn-time{font-size:15px;opacity:0.9;margin-top:3px;}
+  .nn-rest{flex:1;min-height:0;overflow:hidden;}
+  .nn-rest-h{font-size:13px;font-weight:800;opacity:0.85;margin-bottom:7px;letter-spacing:0.03em;}
+  .nn-ri{font-size:15px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.16);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .nn-ri span{font-weight:800;margin-right:9px;}
+  /* C: 하단 가로 스트립 */
+  .strip{display:flex;gap:16px;margin-top:18px;overflow:hidden;}
+  .stc{flex:0 0 300px;background:#fff;color:#1F2124;border-radius:16px;padding:18px 22px;box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+  .stc.on{background:#FFE7E3;outline:3px solid #fff;}
+  .stc-tm{font-size:15px;font-weight:800;color:#FD3D00;}
+  .stc-t{font-size:21px;font-weight:800;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .stc-now{font-size:13px;font-weight:800;color:#FF2D55;margin-top:6px;}
+  .stc.empty{flex:1;color:#fff;background:rgba(255,255,255,0.14);box-shadow:none;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  /* D: 출발안내판 보드 (오렌지) */
+  .board{margin-top:22px;display:flex;flex-direction:column;gap:10px;}
+  .bd-row{display:flex;align-items:center;gap:24px;background:rgba(255,255,255,0.13);border-left:5px solid rgba(255,255,255,0.45);border-radius:11px;padding:14px 26px;}
+  .bd-row.on{background:#fff;border-left-color:#fff;box-shadow:0 6px 16px rgba(0,0,0,0.18);}
+  .bd-tm{flex:0 0 200px;font-size:27px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:0.5px;}
+  .bd-nm{flex:1;font-size:27px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bd-row.on .bd-tm,.bd-row.on .bd-nm{color:#FD3D00;}
+  .bd-st{flex:0 0 auto;font-size:17px;font-weight:800;padding:7px 16px;border-radius:999px;}
+  .bd-st.on{background:#FD3D00;color:#fff;}
+  .bd-st.soon{background:rgba(255,255,255,0.22);color:#fff;}
+  .bd-empty{justify-content:center;color:#fff;opacity:0.85;font-size:22px;}
+  .bd-more{font-size:16px;font-weight:700;color:#fff;opacity:0.85;padding:4px 26px;}
+  /* E: 카운트다운 히어로 */
+  .szone.szone-hero .szone-in{padding-bottom:36px;}
+  .cd{margin-top:20px;text-align:center;}
+  .cd-lbl{font-size:22px;font-weight:800;opacity:0.95;}
+  .cd-big{font-size:96px;font-weight:900;line-height:1.05;letter-spacing:-0.03em;margin-top:6px;}
+  .cd-sub{font-size:20px;font-weight:600;opacity:0.9;margin-top:8px;}
+  .cd.free .cd-big{font-size:80px;}
+  /* F: 오전/오후 2분할 */
+  .ampm{display:flex;gap:22px;margin-top:22px;}
+  .ap-col{flex:1;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.2);border-radius:18px;padding:18px 22px;min-height:230px;}
+  .ap-h{font-size:20px;font-weight:800;margin-bottom:12px;letter-spacing:0.04em;opacity:0.95;}
+  .ap-i{display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.16);}
+  .ap-i.on{background:rgba(255,255,255,0.14);border-radius:8px;padding:10px 12px;margin:0 -12px;}
+  .ap-i.past{opacity:0.5;}
+  .ap-tm{flex:0 0 128px;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
+  .ap-nm{flex:1;font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ap-empty{opacity:0.7;font-size:16px;padding:12px 0;}
+  /* G: 반원 데이-클락 */
+  .clockwrap{width:100%;max-width:560px;height:250px;display:block;margin:8px auto 0;}
+  .ck-track{stroke:rgba(255,255,255,0.16);stroke-width:26;stroke-linecap:round;}
+  .ck-seg{stroke:#fff;stroke-width:26;stroke-linecap:round;}
+  .ck-seg.on{stroke:#FFD9CF;}
+  .ck-seg.past{stroke:rgba(255,255,255,0.4);}
+  .ck-tk{fill:rgba(255,255,255,0.85);font-size:15px;font-weight:700;}
+  .ck-now{stroke:#14161C;stroke-width:3.5;}
+  .ck-nowdot{fill:#14161C;stroke:#fff;stroke-width:2;}
+  .ck-c1{fill:#fff;font-size:16px;font-weight:800;}
+  .ck-c2{fill:#fff;font-size:24px;font-weight:800;}
+  /* ===== 시안 공통: 1080 프레임을 꽉 채우도록 균형 ===== */
+  .vcol{overflow:hidden;}
+  /* 스케줄 존은 내용 높이만큼, 가이드(main)가 나머지를 꽉 채움 */
+  .vcol .szone{flex:0 0 auto;}
+  .vcol .szone-in{padding:26px 64px;}
+  /* 가이드 2단: 왼쪽(말풍선↑/에티켓↓) | 오른쪽(미러링: 유선|무선) */
+  .vcol .dguide{flex:1 1 auto;min-height:0;overflow:hidden;background:#F5F3ED;padding:24px 64px;display:flex;}
+  .vcol .dg-in{width:100%;height:100%;display:flex;flex-direction:row;gap:18px;align-items:stretch;}
+  .vcol .dg-left{flex:0 0 19%;display:flex;flex-direction:column;gap:16px;min-height:0;}
+  /* 말풍선: 위쪽, 대각 유지 (cb-top 오른쪽위 / cb-bot 왼쪽아래) */
+  .vcol .dg-left .topbubble{flex:0 0 auto;margin-left:0;padding:2px 0 4px;gap:16px;overflow:visible;}
+  .vcol .dg-left .topbubble .cb{max-width:84%;margin-left:0;}
+  .vcol .dg-left .topbubble .cb-top{align-self:flex-end;}
+  .vcol .dg-left .topbubble .cb-bot{align-self:flex-start;}
+  /* 에티켓: 아래쪽, 폭 좁게·세로로 넉넉하게 (하단 라인 가이드와 맞춤) */
+  .vcol .dg-left > .gsection{flex:1 1 auto;margin-bottom:0;display:flex;flex-direction:column;min-height:0;}
+  .vcol .dg-left .etq-h{flex-wrap:wrap;margin-bottom:6px;}
+  .vcol .dg-left .etq-h .s{flex-basis:100%;margin-top:4px;}
+  .vcol .dg-left .etq-grid{grid-template-columns:1fr !important;flex:1 1 auto;align-content:space-between;gap:10px;}
+  .vcol .dg-left .etq-item{flex-direction:row;align-items:center;gap:14px;}
+  .vcol .dg-left .etq-item span{text-align:left;font-size:16px;}
+  .vcol .dg-left .etq-circle{width:46px;height:46px;font-size:22px;flex:none;}
+  /* 오른쪽: 미러링 = 유선(좌 세로) | 무선(우 세로: Win↑ / Mac↓) */
+  .vcol .dg-right{flex:1 1 auto;min-width:0;display:flex;}
+  .vcol .dg-right > .gsection{flex:1 1 auto;margin-bottom:0;display:flex;flex-direction:column;min-height:0;}
+  .vcol .conn2col{display:flex;gap:14px;flex:1 1 auto;min-height:0;margin-top:2px;}
+  .vcol .cc-col{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0;}
+  .vcol .cc-col .gcard{flex:1 1 auto;min-height:0;}
+  .vcol .cc-col .tip{flex:0 0 auto;}
+  .vcol .cc-wl{flex:1.68;}                                  /* 유선=Win 폭 동일, Mac은 좁게 되도록 */
+  .vcol .wl-pair{flex:1 1 auto;display:flex;gap:12px;min-height:0;}
+  .vcol .wl-pair > .gcard{flex:1 1 0;min-width:0;}           /* Windows (= 유선과 동일 폭) */
+  .vcol .wl-pair > .gcard:last-child{flex:0.68 1 0;}         /* Mac: 목업 없어 좁게 */
+  /* 카드 세로형: 헤더 → 스텝 → 애니메이션(아래, 남는 공간 채움) — 텍스트는 기존 크기 */
+  .vcol .dg-right .gcard{display:flex;flex-direction:column;padding:14px 20px;}
+  .vcol .dg-right .gc-head{order:1;flex:0 0 auto;}
+  .vcol .dg-right .gc-ic{width:42px;height:42px;font-size:22px;}
+  .vcol .dg-right .gc-ey{font-size:14px;}
+  .vcol .dg-right .gc-tt{font-size:20px;}
+  .vcol .dg-right ol.steps{order:2;flex:0 0 auto;margin-top:10px;gap:11px;}
+  .vcol .dg-right ol.steps li{font-size:17px;line-height:1.5;}
+  .vcol .dg-right .num{width:28px;height:28px;flex-basis:28px;font-size:15px;}
+  .vcol .dg-right .imgslot{order:3;flex:1 1 auto;min-height:90px;margin:12px 0 0;align-self:stretch;}
+  .vcol .dg-right .tip{font-size:15px;padding:11px 15px;margin-top:0;}
+  .vcol .dhd-rt{font-size:32px;}
+  .vcol .dhd-logo{height:30px;}
+  .vcol .main{padding:26px 60px;overflow:hidden;flex:1 1 auto;min-height:0;}
+  .vcol .main-std{padding-top:0;padding-bottom:0;}
+  .vcol .inner.std{gap:18px;height:100%;justify-content:space-between;}   /* 위·아래로 벌려 여백 없앰 */
+  .vcol .btmwrap{justify-content:center;}
+  .vcol .btmwrap .gsection{justify-content:center;}
+  .vcol .imgslot{height:180px;margin:12px 0 4px;}
+  .vcol .gsection{padding:18px 26px;margin-bottom:0;}
+  .vcol .gcard{padding:18px;}
+  .vcol .gc-tt{font-size:18px;}
+  .vcol ol.steps{gap:9px;margin-top:12px;}
+  .vcol ol.steps li{font-size:15px;line-height:1.45;}
+  .vcol .tip{padding:11px 15px;font-size:14px;margin-top:12px;}
+  .vcol .topbubble{flex-basis:270px;}
+  .vcol .topbubble .cb{font-size:19px;padding:15px 22px;}
+  .vcol .etq-h h3{font-size:21px;}
+  .vcol .etq-circle{width:64px;height:64px;font-size:30px;}
+  .vcol .etq-item span{font-size:15px;}
+  /* 존별: 스케줄 콘텐츠도 존을 채우게 키움 */
+  .vcol .tl{height:190px;margin-top:26px;}
+  .vcol .nn{margin-top:24px;gap:22px;}
+  .vcol .nn-now{min-height:240px;padding:30px 36px;}
+  .vcol .nn-now .nn-title{font-size:40px;}
+  .vcol .nn-now .nn-time{font-size:22px;}
+  .vcol .nn-next{padding:22px 26px;}
+  .vcol .board{margin-top:22px;gap:10px;}
+  .vcol .bd-row{padding:16px 28px;gap:24px;}
+  .vcol .bd-tm{flex-basis:200px;font-size:27px;}
+  .vcol .bd-nm{font-size:27px;}
+  .vcol .bd-st{font-size:17px;padding:7px 16px;}
+  .vcol .ampm{margin-top:22px;gap:24px;}
+  .vcol .ap-col{min-height:320px;padding:22px 28px;}
+  .vcol .ap-h{font-size:23px;margin-bottom:14px;}
+  .vcol .ap-i{padding:12px 0;}
+  .vcol .ap-tm{font-size:18px;}
+  .vcol .ap-nm{font-size:19px;}
   /* ===== 메인 ===== */
   .main{flex:1;padding:44px 60px;display:flex;flex-direction:column;justify-content:flex-start;background:#F5F3ED;overflow:hidden;}
   .inner{width:100%;max-width:1460px;height:100%;margin:0 auto;display:flex;flex-direction:column;}
@@ -303,8 +483,10 @@
 
   /* ===== 방 선택 (B 다크) ===== */
   .picker{position:relative;width:100%;height:100%;padding:40px 64px;color:#fff;display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
-  .pk-test{position:absolute;top:30px;left:50%;transform:translateX(-50%);z-index:5;display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:#cfd3db;text-decoration:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);border-radius:999px;padding:8px 16px;transition:background .15s ease,border-color .15s ease,color .15s ease;}
-  .pk-test:hover{background:rgba(255,255,255,0.12);border-color:#FD3D00;color:#fff;}
+  .pk-test{position:absolute;top:26px;left:50%;transform:translateX(-50%);z-index:5;display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);border-radius:999px;padding:5px 8px;}
+  .pk-test .pk-test-lbl{font-size:13px;font-weight:700;color:#8b8f9c;padding:0 6px;}
+  .pk-test a{font-size:13px;font-weight:800;color:#cfd3db;text-decoration:none;padding:5px 13px;border-radius:999px;transition:background .15s ease,color .15s ease;}
+  .pk-test a:hover{background:#FD3D00;color:#fff;}
   .pk-brand{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:800;letter-spacing:2.5px;color:#FD3D00;}
   .pk-brand .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,#FD3D00,#D63400);box-shadow:0 0 12px rgba(253,61,0,0.9);}
   .pk-title{font-size:34px;font-weight:800;letter-spacing:-1.5px;margin-top:8px;color:#F7F8FA;}
@@ -408,7 +590,11 @@ const ROOMS = {
   interview1:{name:"Interview Room1",type:"interview",office:"판교사무실 B"},interview2:{name:"Interview Room2",type:"interview",office:"판교사무실 B"},
   party:{name:"Party Room",type:"video",office:"판교사무실 B"},flavor:{name:"Flavor Room",type:"general",office:"페이 사무실"},
   searing:{name:"Searing Room",type:"general",office:"부산 사무실"},
-  test:{name:"테스트 회의실",type:"general",office:"테스트",cal:"plating"}  // 초안: 플레이팅룸 실제 일정 사용
+  test:{name:"Plating Room",type:"general",office:"테스트",cal:"plating"},   // 시안 A: 사이드바 확대 + 가이드
+  test2:{name:"Plating Room",type:"general",office:"테스트",cal:"plating"},  // 시안 B: 스케줄 대폭 확대
+  test4:{name:"Plating Room",type:"general",office:"테스트",cal:"plating"},  // 시안 D: 출발안내판 보드
+  test6:{name:"Plating Room",type:"general",office:"테스트",cal:"plating"}   // 시안 F: 오전/오후 2분할
+
 };
 
 const ARW_ETQ='<svg class="arw arw-etq" viewBox="0 0 74 34" width="46" height="21" fill="none" stroke="#FD3D00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30 C 24 4, 50 20, 66 20"/><path d="M66 20 l-11 -6 M66 20 l-11 6"/></svg>';
@@ -439,7 +625,8 @@ function sidebar(room,t){
   const isPay=((room.office||"").indexOf("페이")===0);        // 페이 사무실(Flavor Room 등)은 캐치테이블페이 로고
   const logoSrc=isPay?"logo_pay.png":"logo.png";
   const logoTxt=isPay?"CATCHTABLE PAY":"CATCHTABLE";
-  return `<aside class="side ${room.side!==undefined?room.side:(t.side||'')} ${window.__draft?'schbig':''}">
+  const vcls='';  // (구 사이드바 확대 시안 제거됨 — 현재 시안은 draftLayout이 담당)
+  return `<aside class="side ${room.side!==undefined?room.side:(t.side||'')} ${vcls}">
     <div class="logo"><img src="${logoSrc}" alt="${logoTxt}" class="logo-img" onerror="this.replaceWith(document.createTextNode('${logoTxt}'))"></div>
     <h1 class="rtitle">${room.name}</h1>
     <div class="hr"></div>
@@ -671,7 +858,7 @@ function cardMac(room){ return `
       <div class="gc-head"><span class="gc-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="#1F2124"><path d="M17.05 12.53c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.63-1.71-3.2-1.73-1.36-.14-2.66.8-3.35.8-.69 0-1.76-.78-2.9-.76-1.49.02-2.87.87-3.64 2.2-1.55 2.7-.4 6.7 1.11 8.9.74 1.07 1.62 2.28 2.77 2.24 1.11-.04 1.53-.72 2.87-.72 1.34 0 1.72.72 2.9.7 1.2-.02 1.96-1.09 2.69-2.17.85-1.24 1.2-2.44 1.22-2.5-.03-.01-2.34-.9-2.36-3.57zM14.88 5.9c.61-.74 1.02-1.77.91-2.8-.88.04-1.94.59-2.57 1.32-.56.65-1.05 1.7-.92 2.7.98.08 1.98-.5 2.58-1.22z"/></svg></span><div><div class="gc-ey">무선 연결</div><div class="gc-tt">Mac 사용자 <span class="wl-badge" style="vertical-align:middle;margin-left:4px;">유선 권장</span></div></div></div>
       <div class="imgslot mac-cable"><div><div class="mc-ic">${hdmiIcon(52,33)}</div><div class="mc-t">HDMI 케이블 권장</div><div class="mc-s">무선보다 선명한 4K 화면</div></div></div>
       <ol class="steps">
-        <li><span class="num">1</span><span>AirPlay는 최대 <b>1080p</b> — <b>유선(HDMI)</b> 권장</span></li>
+        <li><span class="num">1</span><span>AirPlay는 <b>4K 미지원</b><br>유선(HDMI) 권장</span></li>
       </ol>
     </section>`; }
 function cardWin(room){ return `
@@ -729,10 +916,10 @@ function mainVideo(room,t){
 }
 
 function viewPicker(){
-  const offices=[];Object.entries(ROOMS).forEach(([k,r])=>{if(k==='test')return;if(!offices.includes(r.office))offices.push(r.office);});
+  const offices=[];Object.entries(ROOMS).forEach(([k,r])=>{if(k.indexOf('test')===0)return;if(!offices.includes(r.office))offices.push(r.office);});
   let grps="";
   offices.forEach(o=>{
-    const list=Object.entries(ROOMS).filter(([k,r])=>r.office===o && k!=='test');
+    const list=Object.entries(ROOMS).filter(([k,r])=>r.office===o && k.indexOf('test')!==0);
     let btns="";
     list.forEach(([k,r])=>{
       const t=TYPES[r.type];
@@ -742,7 +929,7 @@ function viewPicker(){
     });
     grps+=`<div class="pgrp"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
   });
-  return `<div class="picker"><a class="pk-test" href="?room=test">🧪 테스트</a><div class="pk-brand"><span class="dot"></span>CATCHTABLE</div>
+  return `<div class="picker"><div class="pk-test"><span class="pk-test-lbl">🧪 테스트</span><a href="?room=test">A</a><a href="?room=test2">B</a><a href="?room=test4">D</a><a href="?room=test6">F</a></div><div class="pk-brand"><span class="dot"></span>CATCHTABLE</div>
     <div class="pk-title">회의실을 선택하세요</div>
     <div class="pk-sub">이 화면에서 사용할 회의실을 한 번만 누르면, 이후 그 방 가이드가 표시됩니다</div>${grps}</div>`;
 }
@@ -864,8 +1051,7 @@ function loadPickerStatusesPerRoom(){
 function renderSched(events,mode){
   events=events||[];
   const loading=(mode==='loading');
-  const listEl=document.getElementById('schList'),stEl=document.getElementById('schStatus');
-  if(!listEl)return;
+  const stEl=document.getElementById('schStatus');
   const now=Date.now();const busy=events.some(e=>now>=e.start&&now<e.end);
   const MINGAP=15*60000; // 구글 캘린더 15분 단위 → 15분 미만 빈틈은 사용 불가
   const _eod=new Date();_eod.setHours(23,59,59,0);const eodMs=_eod.getTime();
@@ -885,6 +1071,12 @@ function renderSched(events,mode){
   const _cur=events.find(e=>now>=e.start&&now<e.end);
   const _isIv=!!(_cur && (_cur.iv || /인터뷰|면접|interview/i.test(_cur.title||''))); // careers@ 예약(iv) 또는 제목 키워드
   window.__coverBase=(window.__coverAlways || (window.__ivRoom && _isIv)); refreshCover();
+  // 시안(테스트룸) 형태별 분기 — 세로 리스트 대신 다른 형태로 렌더
+  if(window.__variant==='test'){ renderTL(events,now); return; }   // A: 상단 가로 타임라인
+  if(window.__variant==='test2'){ renderNN(events,now); return; }  // B: Now/Next 카드
+  if(window.__variant==='test4'){ renderBoard(events,now); return; }     // D: 출발안내판
+  if(window.__variant==='test6'){ renderAmPm(events,now); return; }      // F: 오전/오후
+  const listEl=document.getElementById('schList'); if(!listEl)return;
   if(loading && !events.length){listEl.className='sched-list';listEl.innerHTML=`<div class="sch-empty">일정을 불러오는 중…</div>`;return;}
   // 지금 비어있으면 "사용 가능" 슬롯을 타임라인에 카드로 끼워넣기 (진행중 카드와 동일 뷰)
   let items=events.slice();
@@ -927,6 +1119,87 @@ function renderSched(events,mode){
   if(over()){ listEl.className='sched-list two'; if(over()){ listEl.className='sched-list two dense'; } }
 }
 
+/* ===== 시안(테스트룸) 형태별 스케줄 렌더 ===== */
+function draftHeader(room){
+  const isPay=((room.office||'').indexOf('페이')===0);
+  const logoSrc=isPay?'logo_pay.png':'logo.png', logoTxt=isPay?'CATCHTABLE PAY':'CATCHTABLE';
+  return `<div class="dhd"><img src="${logoSrc}" alt="${logoTxt}" class="dhd-logo" onerror="this.replaceWith(document.createTextNode('${logoTxt}'))"><h1 class="dhd-rt">${room.name}</h1><span class="sched-status dhd-st" id="schStatus">…</span></div>`;
+}
+// 상단 가로 스케줄 아래: 왼쪽(말풍선↑/에티켓↓) | 오른쪽(미러링: 유선 좌열 | 무선 우열[Win↑/Mac↓])
+function draftGuide(room,t){
+  const wired=`<div class="cc-col cc-wired">${CARD_WIRED}${WIRED_TIP}</div>`;
+  const wl=`<div class="cc-col cc-wl"><div class="wl-pair">${cardWin(room)}${cardMac(room)}</div>${WL_TIP}</div>`;
+  const guide=guideSection("TV 미러링 가이드","유선·무선으로 노트북 화면 연결","conn2col",wired+wl);
+  const etq=etqSection("회의실 사용 에티켓","다음 사용자를 위해 지켜주세요",
+    [["⏰","이용시간 준수"],[PWR_OFF,"TV전원 OFF금지"],["🗑️","쓰레기 정리"],["🪑","자리 정리"],["💡","소등 후 퇴실"]]);
+  return `<main class="main dguide"><div class="dg-in"><div class="dg-left">${bubbleTop(t)}${etq}</div><div class="dg-right">${guide}</div></div></main>`;
+}
+function draftLayout(room,t,key){
+  const guide=draftGuide(room,t); // 에티켓·가이드를 세로로 (상단 가로 바 아래)
+  if(key==='test2'){ // B: Now / Next 대형 카드
+    return `<div class="vcol"><div class="szone"><div class="szone-in">${draftHeader(room)}<div class="nn"><div class="nn-now" id="nnNow"></div><div class="nn-col"><div class="nn-next" id="nnNext"></div><div class="nn-rest" id="nnRest"></div></div></div></div></div>${guide}</div>`;
+  }
+  if(key==='test4'){ // D: 출발안내판 보드 (오렌지)
+    return `<div class="vcol"><div class="szone"><div class="szone-in">${draftHeader(room)}<div class="board" id="schBoard"></div></div></div>${guide}</div>`;
+  }
+  if(key==='test6'){ // F: 오전/오후 2분할 보드
+    return `<div class="vcol"><div class="szone"><div class="szone-in">${draftHeader(room)}<div class="ampm"><div class="ap-col"><div class="ap-h">오전</div><div class="ap-list" id="schAM"></div></div><div class="ap-col"><div class="ap-h">오후</div><div class="ap-list" id="schPM"></div></div></div></div></div>${guide}</div>`;
+  }
+  // A(test): 상단 가로 타임라인
+  return `<div class="vcol"><div class="szone"><div class="szone-in">${draftHeader(room)}<div class="tl" id="schTL"></div></div></div>${guide}</div>`;
+}
+// A: 하루(08:00~20:00) 가로 타임라인
+function renderTL(events,now){
+  const el=document.getElementById('schTL'); if(!el)return;
+  const d0=new Date();d0.setHours(8,0,0,0);const d1=new Date();d1.setHours(20,0,0,0);
+  const S=d0.getTime(),E=d1.getTime(),R=E-S;
+  const pct=ms=>Math.max(0,Math.min(100,(ms-S)/R*100));
+  let ticks='';for(let h=8;h<=20;h+=2){const t=new Date();t.setHours(h,0,0,0);ticks+=`<div class="tl-tick" style="left:${pct(t.getTime())}%"><span>${('0'+h).slice(-2)}:00</span></div>`;}
+  const blocks=events.slice().sort((a,b)=>a.start-b.start).map(e=>{const l=pct(e.start),w=Math.max(1.5,pct(e.end)-l);const on=now>=e.start&&now<e.end,past=e.end<=now;return `<div class="tl-blk${on?' on':''}${past?' past':''}" style="left:${l}%;width:${w}%"><span class="tl-t">${e.title||'예약됨'}</span><span class="tl-tm">${fmt(e.start)}~${fmt(e.end)}</span></div>`;}).join('');
+  const nowM=(now>=S&&now<=E)?`<div class="tl-now" style="left:${pct(now)}%"><span>지금 ${fmt(now)}</span></div>`:'';
+  el.innerHTML=`<div class="tl-track">${ticks}${blocks}${nowM}</div>`;
+}
+// B: 지금 / 다음 대형 카드 + 이후 미니 리스트
+function renderNN(events,now){
+  const cur=events.find(e=>now>=e.start&&now<e.end);
+  const up=events.filter(e=>e.start>now).sort((a,b)=>a.start-b.start);
+  const nowEl=document.getElementById('nnNow'),nextEl=document.getElementById('nnNext'),restEl=document.getElementById('nnRest');
+  if(nowEl){ nowEl.className='nn-now'+(cur?' busy':' free');
+    nowEl.innerHTML=cur
+      ? `<div class="nn-lbl">● 지금 진행 중</div><div class="nn-title">${cur.title||'예약됨'}</div><div class="nn-time">${fmt(cur.start)} – ${fmt(cur.end)}</div>`
+      : `<div class="nn-lbl free">● 지금 사용 가능</div><div class="nn-title">비어 있어요</div><div class="nn-time">${up.length?('다음 회의 '+fmt(up[0].start)+' 전까지 이용 가능'):'오늘 남은 예약 없음'}</div>`;
+  }
+  if(nextEl){ const nx=up[0];
+    nextEl.innerHTML=nx?`<div class="nn-lbl">다음 회의</div><div class="nn-title">${nx.title||'예약됨'}</div><div class="nn-time">${fmt(nx.start)} – ${fmt(nx.end)}</div>`:`<div class="nn-lbl">다음 회의</div><div class="nn-title" style="opacity:.55">예정 없음</div>`;
+  }
+  if(restEl){ const rest=up.slice(1,6);
+    restEl.innerHTML=rest.length?('<div class="nn-rest-h">이후 일정</div>'+rest.map(e=>`<div class="nn-ri"><span>${fmt(e.start)}</span> ${e.title||'예약됨'}</div>`).join('')):'';
+  }
+}
+function durTxt2(mins){ mins=Math.max(0,mins); return mins>=60?(Math.floor(mins/60)+'시간'+(mins%60?' '+(mins%60)+'분':'')):(mins+'분'); }
+// D: 출발안내판 보드 — 완료 일정 제외, 다가오는 것 최대 N건만(넘치면 '외 N건')
+function renderBoard(events,now){
+  const el=document.getElementById('schBoard'); if(!el)return;
+  const CAP=7;
+  const list=events.filter(e=>e.end>now).sort((a,b)=>a.start-b.start); // 완료 제외
+  let rows=list.slice(0,CAP).map(e=>{
+    const on=now>=e.start&&now<e.end;
+    const st=on?'<span class="bd-st on"><span class="blink">●</span> 진행 중</span>':'<span class="bd-st soon">예정</span>';
+    return `<div class="bd-row${on?' on':''}"><span class="bd-tm">${fmt(e.start)} – ${fmt(e.end)}</span><span class="bd-nm">${e.title||'예약됨'}</span>${st}</div>`;
+  }).join('');
+  if(list.length>CAP) rows+=`<div class="bd-more">외 ${list.length-CAP}건 더 예정</div>`;
+  el.innerHTML=list.length? rows : '<div class="bd-row bd-empty">남은 예약이 없습니다</div>';
+}
+// F: 오전 / 오후 2분할
+function renderAmPm(events,now){
+  const am=document.getElementById('schAM'),pm=document.getElementById('schPM'); if(!am||!pm)return;
+  const noon=new Date();noon.setHours(12,0,0,0);const N=noon.getTime();
+  const mk=e=>{const on=now>=e.start&&now<e.end,past=e.end<=now;return `<div class="ap-i${on?' on':''}${past?' past':''}"><span class="ap-tm">${fmt(e.start)}–${fmt(e.end)}</span><span class="ap-nm">${e.title||'예약됨'}</span></div>`;};
+  const A=events.filter(e=>e.start<N).sort((a,b)=>a.start-b.start);
+  const P=events.filter(e=>e.start>=N).sort((a,b)=>a.start-b.start);
+  am.innerHTML=A.length?A.map(mk).join(''):'<div class="ap-empty">오전 일정 없음</div>';
+  pm.innerHTML=P.length?P.map(mk).join(''):'<div class="ap-empty">오후 일정 없음</div>';
+}
 function fit(){
   const page=document.getElementById('page');
   // 화면 비율에 따라 자동 판별(기본 auto):
@@ -1000,14 +1273,18 @@ function render(){
     const isIvRoom=(room.type==="interview");
     const t=isIvRoom?TYPES.general:(TYPES[room.type]||TYPES.general); // 인터뷰룸도 내용은 일반회의실과 동일하게
     window.__isPicker=false;
-    window.__draft=(key==='test'); // 테스트룸 = 새 디자인 초안(왼쪽 스케줄 확대 + QR 제거)
+    window.__draft=(key.indexOf('test')===0); window.__variant=key; // 테스트룸 시안 A/B/C
     window.__ivRoom=isIvRoom; // 커버는 방 타입 기준 (내용은 일반이어도 인터뷰 시간엔 검정 커버 유지)
     window.__coverAlways=(room.type==="exec"); // 임원용은 상시 검정+로고 커버
     window.__videoRoom=!!t.video; // 화상회의실이면 스케줄에 '참여' 버튼
     setCoverLogo((room.office||'').indexOf('페이')===0);  // 페이 사무실이면 커버도 페이 로고
     window.__coverBase=window.__coverAlways; refreshCover();
     page.style.width='1920px';page.style.height='1080px';page.style.background=dark?'#14161C':'#fff';
-    page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):(t.video?mainVideo(room,t):mainStandard(room,t)));
+    if(window.__draft){
+      page.innerHTML=draftLayout(room,t,key); // 시안 A/B/C: 스케줄 표현 형태를 다르게
+    } else {
+      page.innerHTML=sidebar(room,t)+(t.kind==="interview"?mainInterview(room,t):(t.video?mainVideo(room,t):mainStandard(room,t)));
+    }
     document.title=room.name+' · 회의실 가이드';
     // 15초 주기 폴링(+지터) → 서버가 요청 시 최신화하므로 신선도 ≈ 폴링 주기(약 15초)
     const calKey=room.cal||key;
