@@ -1004,7 +1004,7 @@ function viewPicker(){
   });
   const grps=big+(small?`<div class="pgrp-stack">${small}</div>`:'');
   return `<div class="picker board">
-    <div class="pk-top"><div class="pk-brand"><span class="dot"></span>CATCHTABLE</div><div class="pk-topr"><div class="pk-dt"><div class="pk-date" id="pkDate">—</div><div class="pk-clock" id="pkClock">—</div></div><button class="pk-rot" onclick="cycleRotate()" title="세로(9:16) / 가로(16:9) 전환">⇅</button></div></div>
+    <div class="pk-top"><div class="pk-brand"><span class="dot"></span>CATCHTABLE</div><div class="pk-topr"><div class="pk-dt"><div class="pk-date" id="pkDate">—</div><div class="pk-clock" id="pkClock">—</div></div></div></div>
     <div class="pk-headrow"><div class="pk-title">회의실 실시간 현황</div><div class="pk-summary" id="pkSummary"></div></div><div class="pk-cols">${grps}</div></div>`;
 }
 
@@ -1016,14 +1016,16 @@ function positionTestButton(){
   if(g){ t.style.left=(g.offsetLeft+g.offsetWidth/2)+'px'; }
 }
 function getParam(n){const m=new RegExp('[?&]'+n+'=([^&]+)').exec(location.search);return m?decodeURIComponent(m[1]):null;}
-// 현황판 세로 전환: 회전 대신 9:16 세로 레이아웃(1080×1920)으로 다시 그림. 버튼 토글, 이 기기에 저장.
+// 현황판 세로 전환: 9:16 세로 레이아웃(1080×1920)으로 다시 그리고, 스틱이 가로로만 출력하므로 90° 회전해 채움.
+// 회전 방향이 반대면 ?rot=270 (또는 코드의 90→270). 버튼 토글, 이 기기에 저장.
 function isPortraitMode(){ try{return localStorage.getItem('boardPortrait')==='1';}catch(e){return false;} }
 function cycleRotate(){ try{localStorage.setItem('boardPortrait', isPortraitMode()?'0':'1');}catch(e){} applyPortrait(); }
 function applyPortrait(){
   const page=document.getElementById('page'); if(!page) return;
-  let P = window.__isPicker && isPortraitMode();
-  const f=getParam('rot'); if(f!==null) P=(f==='1'||f==='90');   // ?rot=1 강제 세로
-  window.__portrait=P; window.__rotAngle=0;   // 회전 없음 — 레이아웃만 9:16
+  // 화면 해상도(가로/세로 비율)를 감지해서 자동 전환 — 버튼/회전 없음
+  let P = window.__isPicker && (window.innerHeight > window.innerWidth);
+  const f=getParam('rot'); if(f==='0') P=false; else if(f==='1') P=true;  // 테스트용 강제 옵션
+  window.__portrait=P; window.__rotAngle=0;
   page.classList.toggle('portrait',P);
   page.style.width=(P?1080:1920)+'px'; page.style.height=(P?1920:1080)+'px';
   fit();
