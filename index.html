@@ -505,6 +505,16 @@
   .pk-sub{font-size:14px;color:#8b8f9c;margin-top:6px;font-weight:500;}
   /* ── 실시간 현황 보드 ── */
   .picker.board .pk-top{display:flex;align-items:center;justify-content:space-between;}
+  .picker.board .pk-topr{display:flex;align-items:center;gap:18px;}
+  .pk-rot{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);color:#cfd3db;width:46px;height:46px;border-radius:12px;font-size:24px;cursor:pointer;line-height:1;}
+  .pk-rot:hover{background:#FD3D00;color:#fff;border-color:#FD3D00;}
+  /* 세로 모드: 사무실 세로로 쌓음 (1080×1920). A=3열 / B=3열 / 페이·부산=3열그리드에 나란히 */
+  .page.portrait .picker.board .pk-cols{flex-direction:column;gap:22px;}
+  .page.portrait .picker.board .pgrp{flex:none !important;width:100%;}
+  .page.portrait .picker.board .pg-a .pgrid,
+  .page.portrait .picker.board .pg-b .pgrid{grid-template-columns:repeat(3,1fr);}
+  .page.portrait .picker.board .pgrp-stack{flex:none !important;width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;}
+  .page.portrait .picker.board .pgrp-stack > .pgrp{width:auto;}   /* 페이=1열, 부산=2열 (3열 그리드) */
   .picker.board .pk-clock{font-size:34px;font-weight:800;color:#F7F8FA;font-variant-numeric:tabular-nums;letter-spacing:1px;}
   .picker.board .pk-headrow{display:flex;align-items:center;justify-content:space-between;margin-top:4px;gap:24px;}
   .picker.board .pk-title{margin-top:0;}
@@ -517,16 +527,29 @@
   .pbtn.st-free::before{background:#2FCB84;opacity:1;}
   .pbtn.st-busy::before{background:#FF2D55;opacity:1;}
   .pbtn.st-prep::before{background:#FF9500;opacity:1;}
-  .pbtn.st-free{background:rgba(47,203,132,0.09);border-color:rgba(47,203,132,0.32);}
   .pbtn.st-busy{background:rgba(255,45,85,0.08);border-color:rgba(255,45,85,0.28);}
-  .picker.board .pbtn .rn{font-size:20px;}
-  .picker.board .pbtn .pk-st{font-size:13.5px;margin-top:6px;}
-  .picker.board .pgrp h3{font-size:14px;}
+  /* 사용 가능: 크기 변화 없이 은은한 초록 빛(글로우)이 숨쉬듯 */
+  @keyframes freeGlow{0%,100%{box-shadow:0 0 0 0 rgba(47,203,132,0);}50%{box-shadow:0 0 26px 2px rgba(47,203,132,0.42);}}
+  .pbtn.st-free{background:rgba(47,203,132,0.10);border-color:rgba(47,203,132,0.45);animation:freeGlow 2.8s ease-in-out infinite;}
+  /* 보드 글씨 크게 (어느 화면·거리에서도 잘 보이게) */
+  .picker.board .pbtn .rn{font-size:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .picker.board .pbtn .pk-st{font-size:16px;margin-top:8px;font-weight:800;}
+  .picker.board .pbtn .pk-mt{font-size:14px;}
+  .picker.board .pgrp h3{font-size:16px;}
+  .picker.board .pk-summary{font-size:21px;}
+  .picker.board .pk-title{font-size:38px;}
+  .picker.board .pk-clock{font-size:38px;}
   /* 사무실을 컬럼으로 나란히: 왼쪽부터 A | B | 페이 | 부산 (방 수 비례 폭) */
   .picker.board .pk-cols{display:flex;gap:18px;align-items:flex-start;margin-top:16px;}
   .picker.board .pgrp{margin:0;min-width:0;}
-  .picker.board .pgrp-stack{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:16px;}  /* 1개짜리 사무실(페이·부산) 한 컬럼에 위아래 */
   .picker.board .pgrid{grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:11px;}
+  /* 가로뷰: A=3열 / B=2열 / 페이·부산=1열(한 컬럼에 위아래) — 카드 폭 균일 */
+  .picker.board .pg-a{flex:3 1 0;min-width:0;}
+  .picker.board .pg-a .pgrid{grid-template-columns:repeat(3,1fr);}
+  .picker.board .pg-b{flex:2 1 0;min-width:0;}
+  .picker.board .pg-b .pgrid{grid-template-columns:repeat(2,1fr);}
+  .picker.board .pgrp-stack{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:16px;}
+  .picker.board .pgrp-stack > .pgrp{width:100%;min-width:0;}
   .picker.board .pbtn{padding:13px 16px;}
   .picker.board .pbtn .rt{display:none;}          /* 태그(일반 회의실 등) 숨김 — 상태에 집중 */
   .picker.board .pbtn-book{font-size:11px;padding:4px 9px;top:10px;right:10px;}
@@ -958,7 +981,7 @@ function mainVideo(room,t){
 
 function viewPicker(){
   const offices=[];Object.entries(ROOMS).forEach(([k,r])=>{if(k.indexOf('test')===0)return;if(!offices.includes(r.office))offices.push(r.office);});
-  let big="", small="";  // big=자체 컬럼, small=1개짜리 사무실은 한 컬럼에 스택
+  let big="", small="", bigN=0;  // big=자체 컬럼(pg-a,pg-b…), small=1개짜리 사무실은 한 컬럼
   offices.forEach(o=>{
     const list=Object.entries(ROOMS).filter(([k,r])=>r.office===o && k.indexOf('test')!==0);
     let btns="";
@@ -968,12 +991,15 @@ function viewPicker(){
       const book=cal?`<button type="button" class="pbtn-book" onclick="bookRoom('${cal}','${r.name}','${k}')">＋ 예약</button>`:'';
       btns+=`<div class="pbtn" style="--tc:${t.pick}"><a class="pbtn-open" href="?room=${k}"><span class="rn">${r.name}</span><span class="rt"><span class="tdot"></span>${r.tag||t.label}</span><span class="pk-st" id="pk-st-${k}">확인 중…</span><span class="pk-mt" id="pk-mt-${k}" style="display:none"></span></a>${book}</div>`;
     });
-    const inner=`<h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div>`;
-    if(list.length<=1){ small+=`<div class="pgrp">${inner}</div>`; }
-    else { big+=`<div class="pgrp" style="flex:${Math.max(1,Math.ceil(list.length/4))} 1 0;">${inner}</div>`; }
+    if(list.length<=1){
+      small+=`<div class="pgrp"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
+    } else {
+      const cls=bigN===0?'pg-a':(bigN===1?'pg-b':'pg-x'); bigN++;   // 열 수는 CSS에서(가로/세로 다르게)
+      big+=`<div class="pgrp ${cls}"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
+    }
   });
   const grps=big+(small?`<div class="pgrp-stack">${small}</div>`:'');
-  return `<div class="picker board"><div class="pk-test"><span class="pk-test-lbl">🧪 테스트</span><a href="?room=test1">빈방</a><a href="?room=test2">사용중</a><a href="?room=test3">곧시작</a><a href="?room=test4">종일</a><a href="?room=test5">여유</a><a href="?room=testv">화상</a></div>
+  return `<div class="picker board">
     <div class="pk-top"><div class="pk-brand"><span class="dot"></span>CATCHTABLE</div><div class="pk-clock" id="pkClock">--:--</div></div>
     <div class="pk-headrow"><div class="pk-title">회의실 실시간 현황</div><div class="pk-summary" id="pkSummary"></div></div><div class="pk-cols">${grps}</div></div>`;
 }
@@ -986,6 +1012,15 @@ function positionTestButton(){
   if(g){ t.style.left=(g.offsetLeft+g.offsetWidth/2)+'px'; }
 }
 function getParam(n){const m=new RegExp('[?&]'+n+'=([^&]+)').exec(location.search);return m?decodeURIComponent(m[1]):null;}
+// 현황판 세로/가로: 화면 방향 자동 감지 (TV가 세로로 인식하면 뷰포트가 세로가 됨). ?rot=1로 강제 확인 가능.
+function applyPortrait(){
+  const page=document.getElementById('page'); if(!page) return;
+  const P=(window.__isPicker && (window.innerHeight>window.innerWidth || getParam('rot')==='1'));
+  window.__portrait=P;
+  page.classList.toggle('portrait',P);
+  page.style.width=(P?1080:1920)+'px'; page.style.height=(P?1920:1080)+'px';
+  fit();
+}
 function fmt(ms){const d=new Date(ms);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
 function setT(h,m){const d=new Date();d.setHours(h,m,0,0);return d.getTime();}
 // 마지막으로 성공한 실제 일정을 보관 → 오류·지연 시 샘플 대신 이 데이터를 유지
@@ -1232,7 +1267,8 @@ function fit(){
   //  · 비율이 많이 어긋난 화면(PC 브라우저 창 등) → 여백 방식(contain)으로 빠져 너무 커지지 않음.
   // 강제하려면 URL에 ?fit=cover(항상 꽉) / ?fit=contain(항상 여백) 을 붙이면 됨.
   const mode=(getParam('fit')||'auto').toLowerCase();
-  const rw=window.innerWidth/1920, rh=window.innerHeight/1080;
+  const pw=parseFloat(page.style.width)||1920, ph=parseFloat(page.style.height)||1080; // 세로 모드면 1080×1920
+  const rw=window.innerWidth/pw, rh=window.innerHeight/ph;
   const cover=Math.max(rw,rh), contain=Math.min(rw,rh);
   let base;
   if(mode==='cover') base=cover;
@@ -1308,8 +1344,8 @@ function render(){
     loadPickerStatuses();
     // 현황판 자동 갱신: 15초마다 캘린더 다시 조회 → 방금 잡은 일정도 곧 반영
     (function pollBoard(){ setTimeout(function(){ if(!getParam('room')){ loadPickerStatuses(); pollBoard(); } }, 15000); })();
-    positionTestButton();
     window.__isPicker=true; window.__ivRoom=false; window.__coverAlways=false; window.__videoRoom=false; window.__coverBase=false; setCoverLogo(false); refreshCover();
+    applyPortrait();   // 세로/가로 반영
   } else {
     const isIvRoom=(room.type==="interview");
     const t=isIvRoom?TYPES.general:(TYPES[room.type]||TYPES.general); // 인터뷰룸도 내용은 일반회의실과 동일하게
@@ -1323,6 +1359,7 @@ function render(){
     window.__videoRoom=!!t.video;
     setCoverLogo((room.office||'').indexOf('페이')===0);  // 페이 사무실이면 커버도 페이 로고
     window.__coverBase=window.__coverAlways; refreshCover();
+    window.__portrait=false; page.classList.remove('portrait'); // 방 가이드는 항상 가로
     page.style.width='1920px';page.style.height='1080px';page.style.background=dark?'#14161C':'#fff';
     if(window.__draft){
       page.innerHTML=draftLayout(room,t,key); // 확정 시안 B
@@ -1337,7 +1374,7 @@ function render(){
   }
   fit();
 }
-window.addEventListener('resize',fit);
+window.addEventListener('resize',applyPortrait);   // 회전/리사이즈 시 방향 자동 감지 후 맞춤
 render();
 startPixelShift();                        // 잔상 방지 초미세 픽셀 시프트 시작
 refreshCover();                           // 로드 시 커버 여부 반영
