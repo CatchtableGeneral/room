@@ -510,8 +510,9 @@
   .picker.board .pk-date{font-size:19px;font-weight:700;color:#aab0bc;margin-bottom:5px;}
   .pk-rot{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);color:#cfd3db;width:54px;height:54px;border-radius:14px;font-size:28px;cursor:pointer;line-height:1;flex:none;}
   .pk-rot:hover{background:#FD3D00;color:#fff;border-color:#FD3D00;}
-  /* 세로 모드: 사무실 세로로 쌓음 (1080×1920). A=3열 / B=3열 / 페이·부산=3열그리드에 나란히 */
+  /* 세로 모드: 섹터 박스 2개를 위아래로 쌓음. 각 박스 안은 세로 나열 */
   .page.portrait .picker.board .pk-cols{flex-direction:column;gap:22px;}
+  .page.portrait .picker.board .pk-sector{flex-direction:column;width:100%;gap:20px;padding:18px;}
   .page.portrait .picker.board .pgrp{flex:none !important;width:100%;}
   .page.portrait .picker.board .pg-a .pgrid,
   .page.portrait .picker.board .pg-b .pgrid{grid-template-columns:repeat(3,1fr);}
@@ -541,12 +542,13 @@
   .picker.board .pk-summary{font-size:21px;}
   .picker.board .pk-title{font-size:38px;}
   .picker.board .pk-clock{font-size:38px;}
-  /* 사무실을 컬럼으로 나란히: 왼쪽부터 A | B | 페이 | 부산 (방 수 비례 폭) */
-  .picker.board .pk-cols{display:flex;gap:26px;align-items:flex-start;margin-top:20px;}
+  /* 2개 섹터 박스로 묶음: [판교 A] | [판교 B + 페이·부산], 50:50 */
+  .picker.board .pk-cols{display:flex;gap:24px;align-items:stretch;margin-top:20px;}
+  .picker.board .pk-sector{flex:1 1 0;min-width:0;display:flex;gap:22px;align-items:flex-start;background:rgba(255,255,255,0.028);border:1px solid rgba(255,255,255,0.10);border-radius:18px;padding:20px;}
   .picker.board .pgrp{margin:0;min-width:0;}
   .picker.board .pgrid{grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px;}
   /* 가로뷰: A=3열 / B=2열 / 페이·부산=1열(한 컬럼에 위아래) — 카드 폭 균일 */
-  .picker.board .pg-a{flex:3 1 0;min-width:0;}
+  .picker.board .pg-a{flex:1 1 0;min-width:0;}
   .picker.board .pg-a .pgrid{grid-template-columns:repeat(3,1fr);}
   .picker.board .pg-b{flex:2 1 0;min-width:0;}
   .picker.board .pg-b .pgrid{grid-template-columns:repeat(2,1fr);}
@@ -985,7 +987,7 @@ function mainVideo(room,t){
 
 function viewPicker(){
   const offices=[];Object.entries(ROOMS).forEach(([k,r])=>{if(k.indexOf('test')===0)return;if(!offices.includes(r.office))offices.push(r.office);});
-  let big="", small="", bigN=0;  // big=자체 컬럼(pg-a,pg-b…), small=1개짜리 사무실은 한 컬럼
+  const bigArr=[]; let small="", bigN=0;  // bigArr=여러 방 있는 큰 사무실, small=1개짜리 사무실
   offices.forEach(o=>{
     const list=Object.entries(ROOMS).filter(([k,r])=>r.office===o && k.indexOf('test')!==0);
     let btns="";
@@ -999,10 +1001,13 @@ function viewPicker(){
       small+=`<div class="pgrp"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
     } else {
       const cls=bigN===0?'pg-a':(bigN===1?'pg-b':'pg-x'); bigN++;   // 열 수는 CSS에서(가로/세로 다르게)
-      big+=`<div class="pgrp ${cls}"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
+      bigArr.push(`<div class="pgrp ${cls}"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`);
     }
   });
-  const grps=big+(small?`<div class="pgrp-stack">${small}</div>`:'');
+  // 섹터 2개로 묶음: [판교 A] | [판교 B + 페이·부산]
+  const sectorL=bigArr[0]||"";
+  const sectorR=bigArr.slice(1).join("")+(small?`<div class="pgrp-stack">${small}</div>`:"");
+  const grps=`<div class="pk-sector pk-sector-l">${sectorL}</div><div class="pk-sector pk-sector-r">${sectorR}</div>`;
   return `<div class="picker board">
     <div class="pk-top"><div class="pk-brand"><span class="dot"></span>CATCHTABLE</div><div class="pk-topr"><div class="pk-dt"><div class="pk-date" id="pkDate">—</div><div class="pk-clock" id="pkClock">—</div></div></div></div>
     <div class="pk-headrow"><div class="pk-title">회의실 실시간 현황</div><div class="pk-summary" id="pkSummary"></div></div><div class="pk-cols">${grps}</div></div>`;
