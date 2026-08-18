@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>임원 회의실 문패</title>
+<style>
+  @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{width:100%;height:100%;overflow:hidden;font-family:"Pretendard",sans-serif;-webkit-font-smoothing:antialiased;user-select:none;}
+  body{background:#14161b;color:#fff;transition:background .5s ease;}
+  body.free{background:#12161a;}
+
+  .wrap{position:fixed;inset:0;display:flex;flex-direction:column;padding:5.5vmin 6vmin;cursor:pointer;}
+  /* 헤더 */
+  .dhead{display:flex;align-items:center;justify-content:space-between;flex:0 0 auto;}
+  .brand-logo{height:3.6vmin;width:auto;display:block;}
+  .rname{font-size:2.7vmin;font-weight:700;color:#8a9099;}
+
+  /* 본문: 좌(상태) | 우(시계) */
+  .body{flex:1 1 auto;display:flex;align-items:center;gap:6vmin;}
+  .lft{flex:1.15;display:flex;flex-direction:column;justify-content:center;min-width:0;}
+  .rgt{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right;border-left:0.5px solid #2a2d34;padding-left:6vmin;}
+
+  .chip{align-self:flex-start;display:inline-flex;align-items:center;background:#FD3D00;color:#fff;font-size:3.4vmin;font-weight:800;letter-spacing:0.02em;padding:1.3vmin 4vmin;border-radius:10vmin;margin-bottom:3vmin;}
+  .stat{font-size:13vmin;font-weight:900;letter-spacing:-0.02em;line-height:0.95;color:#fff;white-space:nowrap;}
+  .stat.exec{font-size:13vmin;color:#FD3D00;letter-spacing:-0.01em;}
+  .sub{font-size:2.8vmin;font-weight:500;color:#8a9099;margin-top:3vmin;}
+  /* 비어있음(임원전용 강조) */
+  .subrow{display:flex;align-items:center;gap:2vmin;margin-top:3.4vmin;}
+  .subrow .led{width:2.4vmin;height:2.4vmin;border-radius:50%;flex:none;}
+  .led-free{background:#2FCB84;box-shadow:0 0 2.6vmin rgba(47,203,132,0.55);animation:breathe 3.6s ease-in-out infinite;}
+  .led-busy{background:#F0453A;box-shadow:0 0 2.6vmin rgba(240,69,58,0.6);}
+  @keyframes breathe{0%,100%{opacity:0.45;}50%{opacity:1;}}
+  .subrow span:last-child{font-size:3vmin;font-weight:600;color:#c8ccd3;}
+
+  .clock .time{font-size:12vmin;font-weight:900;line-height:1;letter-spacing:0.01em;font-variant-numeric:tabular-nums;color:#F2F3F5;}
+  .clock .date{font-size:3.2vmin;font-weight:600;color:#8a9099;margin-top:1.6vmin;}
+
+  .hint{position:fixed;left:0;right:0;bottom:2.4vmin;text-align:center;font-size:2vmin;color:#4a4f57;font-weight:500;pointer-events:none;}
+
+  /* 설정(방이름) — 숨은 버튼 */
+  .gear{position:fixed;top:0;right:0;width:14vmin;height:14vmin;background:transparent;border:none;color:#fff;opacity:0.05;font-size:4vmin;cursor:pointer;display:flex;align-items:flex-start;justify-content:flex-end;padding:2.4vmin;}
+
+  /* 직책 선택 오버레이 */
+  .sel{position:fixed;inset:0;background:rgba(8,9,12,0.72);display:none;align-items:center;justify-content:center;z-index:10;padding:6vmin;backdrop-filter:blur(3px);}
+  .sel.on{display:flex;}
+  .selcard{width:min(94vw,900px);}
+  .seltitle{font-size:3.4vmin;font-weight:800;color:#fff;text-align:center;margin-bottom:1vmin;}
+  .selsub{font-size:2.4vmin;color:#8a9099;text-align:center;margin-bottom:4vmin;}
+  .selgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4vmin;}
+  .selbtn{background:#20242c;border:1px solid #333944;border-radius:2.6vmin;padding:5vmin 2vmin;font-size:5vmin;font-weight:900;color:#fff;cursor:pointer;transition:background .15s,border-color .15s;}
+  .selbtn:active{background:#FD3D00;border-color:#FD3D00;}
+  .selvac{grid-column:1 / -1;color:#2FCB84;font-size:4vmin;padding:3.4vmin;}
+  .selvac:active{background:#12A15C;border-color:#12A15C;color:#fff;}
+  .selclose{margin-top:3vmin;width:100%;background:transparent;border:none;color:#8a9099;font-size:2.6vmin;font-weight:600;padding:2vmin;cursor:pointer;}
+
+  /* 방이름 설정 */
+  .nameset{position:fixed;inset:0;background:rgba(8,9,12,0.8);display:none;align-items:center;justify-content:center;z-index:11;padding:6vmin;}
+  .nameset.on{display:flex;}
+  .nscard{background:#1b1e25;border:1px solid #2a2d34;border-radius:3vmin;padding:5vmin;width:min(90vw,620px);}
+  .nscard h2{font-size:3.4vmin;font-weight:800;margin-bottom:3vmin;}
+  .nscard input{width:100%;font-size:3vmin;padding:2.4vmin 2.8vmin;border:1px solid #333944;background:#14161b;color:#fff;border-radius:2vmin;font-family:inherit;}
+  .nscard .ok{margin-top:3vmin;width:100%;background:#FD3D00;color:#fff;border:none;border-radius:2.4vmin;padding:3vmin;font-size:3vmin;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body class="busy">
+  <div class="wrap" id="wrap">
+    <div class="dhead"><img class="brand-logo" src="logo_orange.png" alt="CATCHTABLE"><span class="rname" id="rname">임원 회의실</span></div>
+    <div class="body">
+      <div class="lft" id="lft"></div>
+      <div class="rgt"><div class="clock"><div class="time" id="time">—</div><div class="date" id="date">—</div></div></div>
+    </div>
+  </div>
+  <div class="hint">화면을 눌러 상태를 변경하세요</div>
+
+  <button class="gear" id="gear" aria-label="설정">⚙</button>
+
+  <div class="sel" id="sel">
+    <div class="selcard">
+      <div class="seltitle">지금 누가 사용하나요?</div>
+      <div class="selsub">직책을 누르면 사용 중으로 표시됩니다</div>
+      <div class="selgrid" id="selgrid"></div>
+      <button class="selclose" id="selclose">닫기</button>
+    </div>
+  </div>
+
+  <div class="nameset" id="nameset">
+    <div class="nscard">
+      <h2>방 이름 설정</h2>
+      <input id="rnameInput" type="text" placeholder="예: 임원 회의실 1">
+      <button class="ok" id="nsok">저장</button>
+    </div>
+  </div>
+
+<script>
+  var STATES=[{key:'ceo',label:'CEO'},{key:'cpo',label:'CPO'},{key:'cao',label:'CAO'}];
+  var LS_STATE='execDoor.state', LS_NAME='execDoor.roomName', LS_SINCE='execDoor.since';
+
+  function getState(){ return localStorage.getItem(LS_STATE)||'vacant'; }
+  function getName(){ return localStorage.getItem(LS_NAME)||'임원 회의실'; }
+  function pad(n){ return ('0'+n).slice(-2); }
+
+  function setState(k){
+    localStorage.setItem(LS_STATE,k);
+    if(k==='vacant') localStorage.removeItem(LS_SINCE);
+    else localStorage.setItem(LS_SINCE, Date.now());
+    render();
+  }
+  function setName(n){ localStorage.setItem(LS_NAME,n); render(); }
+
+  function render(){
+    var st=getState();
+    document.getElementById('rname').textContent=getName();
+    var lft=document.getElementById('lft');
+    if(st==='vacant'){
+      document.body.className='free';
+      lft.innerHTML='<div class="stat exec">임원 전용</div>'+
+                    '<div class="subrow"><span class="led led-free"></span><span>비어 있음 · 임원만 사용 가능</span></div>';
+    } else {
+      document.body.className='busy';
+      var lbl=(STATES.find(function(s){return s.key===st;})||{label:st.toUpperCase()}).label;
+      var since=localStorage.getItem(LS_SINCE), sub='사용 중입니다';
+      if(since){ var d=new Date(+since); sub=pad(d.getHours())+':'+pad(d.getMinutes())+' 부터 사용'; }
+      lft.innerHTML='<div class="chip">'+lbl+'</div>'+
+                    '<div class="stat">사용 중</div>'+
+                    '<div class="subrow"><span class="led led-busy"></span><span>'+sub+'</span></div>';
+    }
+  }
+
+  function buildSel(){
+    var g=document.getElementById('selgrid'); g.innerHTML='';
+    STATES.forEach(function(s){
+      var b=document.createElement('button'); b.className='selbtn'; b.textContent=s.label;
+      b.onclick=function(e){ e.stopPropagation(); setState(s.key); closeSel(); };
+      g.appendChild(b);
+    });
+    var v=document.createElement('button'); v.className='selbtn selvac'; v.textContent='비어 있음 (사용 종료)';
+    v.onclick=function(e){ e.stopPropagation(); setState('vacant'); closeSel(); };
+    g.appendChild(v);
+  }
+  function openSel(){ document.getElementById('sel').classList.add('on'); }
+  function closeSel(){ document.getElementById('sel').classList.remove('on'); }
+
+  document.getElementById('wrap').onclick=openSel;
+  document.getElementById('selclose').onclick=function(e){ e.stopPropagation(); closeSel(); };
+  document.getElementById('sel').onclick=function(e){ if(e.target===this) closeSel(); };
+
+  // 방 이름 설정 (숨은 기어)
+  document.getElementById('gear').onclick=function(e){ e.stopPropagation(); document.getElementById('rnameInput').value=getName(); document.getElementById('nameset').classList.add('on'); };
+  document.getElementById('nsok').onclick=function(e){ e.stopPropagation(); var v=document.getElementById('rnameInput').value.trim(); if(v) setName(v); document.getElementById('nameset').classList.remove('on'); };
+  document.getElementById('nameset').onclick=function(e){ if(e.target===this) this.classList.remove('on'); };
+
+  // 시계
+  function tick(){
+    var d=new Date(), wd=['일','월','화','수','목','금','토'][d.getDay()];
+    document.getElementById('time').textContent=pad(d.getHours())+':'+pad(d.getMinutes());
+    document.getElementById('date').textContent=d.getFullYear()+'.'+pad(d.getMonth()+1)+'.'+pad(d.getDate())+' ('+wd+')';
+    // 사용 시작 경과시간 갱신용(분 바뀔 때 자연 반영)
+  }
+
+  // 새 배포 자동 감지 → 새로고침
+  var _stamp=null;
+  function checkDeploy(){
+    if(location.protocol.indexOf('http')!==0) return;
+    fetch(location.pathname+'?_t='+Date.now(),{method:'HEAD',cache:'no-store'}).then(function(r){
+      var lm=r.headers.get('ETag')||r.headers.get('Last-Modified');
+      if(lm){ if(_stamp && lm!==_stamp) location.reload(); _stamp=lm; }
+    }).catch(function(){});
+  }
+
+  buildSel(); render(); tick();
+  setInterval(tick,1000);
+  checkDeploy(); setInterval(checkDeploy,5*60*1000);
+</script>
+</body>
+</html>
