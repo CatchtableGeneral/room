@@ -12,6 +12,7 @@
   .fit-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#EBECEE;overflow:hidden;}
   .fit-wrap.dark{background:radial-gradient(1100px 520px at 50% -8%, rgba(253,61,0,0.18), rgba(253,61,0,0) 62%), #0C0D11;}
   .page{width:1920px;height:1080px;background:#fff;position:relative;display:flex;flex:none;overflow:hidden;transform-origin:center center;}
+  .calframe{width:100%;height:100%;border:0;display:block;background:#14161b;}
   /* 인터뷰 진행 중 커버: 검정 배경 + 주황 로고만 (인터뷰룸 예약 시간대에만 표시) */
   #iv-cover{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999;}
   #iv-cover .iv-logo{font-size:72px;font-weight:900;letter-spacing:8px;color:#FD3D00;}
@@ -534,31 +535,38 @@
   /* 사용 가능: 아주 가벼운 테두리 밝기 펄스(그림자 애니 대신 → 렉 최소화) */
   @keyframes freeGlow{0%,100%{border-color:rgba(47,203,132,0.40);}50%{border-color:rgba(47,203,132,0.95);}}
   .pbtn.st-free{background:rgba(47,203,132,0.10);border-color:rgba(47,203,132,0.4);animation:freeGlow 3.4s ease-in-out infinite;}
-  /* 보드 글씨 크게 (어느 화면·거리에서도 잘 보이게) */
-  .picker.board .pbtn .rn{font-size:24px;white-space:normal;word-break:keep-all;line-height:1.22;}
-  .picker.board .pbtn .pk-st{font-size:16px;margin-top:8px;font-weight:800;white-space:normal;word-break:keep-all;line-height:1.5;}
-  .picker.board .pbtn .pk-mt{font-size:14px;white-space:normal;word-break:keep-all;line-height:1.35;}
+  /* 보드 카드 3줄: 이름 / 현재상태 / 사용가능시간 / 회의이름 — 전부 한 줄(줄나눔 없음) */
+  .picker.board .pbtn .rn{font-size:25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;display:block;}
+  .picker.board .pbtn .pk-state{font-size:20px;margin-top:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;color:#8b8f9c;}
+  .picker.board .pbtn .pk-state.free{color:#2FCB84;} .picker.board .pbtn .pk-state.busy{color:#FF6B7D;} .picker.board .pbtn .pk-state.prep{color:#FFB259;}
+  .picker.board .pbtn .pk-slot{font-size:16px;margin-top:5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;color:#aab0bc;}
+  .picker.board .pbtn .pk-meet{font-size:15px;margin-top:5px;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3;color:#6b7079;word-break:keep-all;}   /* 회의명 최대 2줄 */
+  .picker.board .pbtn .pk-meet.has-meet{color:#f0b090;}
+  .picker.board .pbtn-open:focus,.picker.board .pbtn:focus,.picker.board a:focus{outline:none;}   /* TV 브라우저 노란 포커스 테두리 제거 */
   .picker.board .pgrp h3{font-size:16px;}
   .picker.board .pk-summary{font-size:21px;}
   .picker.board .pk-title{font-size:38px;}
   .picker.board .pk-clock{font-size:38px;}
-  /* 2개 섹터 박스로 묶음: [판교 A] | [판교 B + 페이·부산], 50:50 */
-  .picker.board .pk-cols{display:flex;gap:24px;align-items:stretch;margin-top:20px;}
-  .picker.board .pk-sector{flex:1 1 0;min-width:0;display:flex;gap:22px;align-items:flex-start;background:rgba(255,255,255,0.028);border:1px solid rgba(255,255,255,0.10);border-radius:18px;padding:20px;}
+  /* 2개 섹터 박스로 묶음: [판교 A] | [판교 B + 페이], 50:50. 양쪽 다 3열 */
+  .picker.board .pk-cols{display:flex;gap:30px;align-items:stretch;margin-top:22px;}
+  .picker.board .pk-sector{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:26px;background:rgba(255,255,255,0.028);border:1px solid rgba(255,255,255,0.10);border-radius:18px;padding:28px;}
   .picker.board .pgrp{margin:0;min-width:0;}
-  .picker.board .pgrid{grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px;}
-  /* 가로뷰: A=3열 / B=2열 / 페이·부산=1열(한 컬럼에 위아래) — 카드 폭 균일 */
-  .picker.board .pg-a{flex:1 1 0;min-width:0;}
+  .picker.board .pgrid{grid-template-columns:repeat(3,1fr);gap:26px;align-items:stretch;}   /* 카드 간격 */
+  .picker.board .pbtn{height:212px;justify-content:center;box-sizing:border-box;}  /* 카드 높이 고정(2줄 회의명도 안 잘리게) → 전부 통일 */
+  .picker.board .cwrap{display:flex;flex-direction:column;gap:9px;align-self:start;}   /* 모든 카드: 라벨 슬롯 + 카드(정렬 통일) */
+  .picker.board .clabel{height:24px;line-height:24px;font-size:16px;font-weight:800;color:#FD3D00;letter-spacing:0.5px;padding-left:2px;}
+  /* 왼쪽=판교A 3열, 오른쪽=판교B 3열 + 그 아래 페이(파티룸 밑) */
   .picker.board .pg-a .pgrid{grid-template-columns:repeat(3,1fr);}
-  .picker.board .pg-b{flex:2 1 0;min-width:0;}
-  .picker.board .pg-b .pgrid{grid-template-columns:repeat(2,1fr);}
-  .picker.board .pgrp-stack{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:16px;}
-  .picker.board .pgrp-stack > .pgrp{width:100%;min-width:0;}
-  .picker.board .pbtn{padding:17px 20px;}
+  .picker.board .pg-b .pgrid{grid-template-columns:repeat(3,1fr);}
+  /* 판교B 안 작은 '페이' 영역 */
+  .picker.board .paygrp{border:1px dashed rgba(253,61,0,0.45);background:rgba(253,61,0,0.05);border-radius:14px;padding:10px 10px 12px;display:flex;flex-direction:column;gap:8px;}
+  .picker.board .pay-h{font-size:15px;font-weight:800;color:#FD3D00;letter-spacing:1px;padding-left:2px;}
+  .picker.board .paygrp .pbtn{padding:20px 24px;}
+  .picker.board .pbtn{padding:28px 32px;}
   .picker.board .pbtn .pk-st{word-break:keep-all;line-height:1.5;}   /* 줄바꿈: 한글 단어 안 쪼개짐 */
   .picker.board .pgrp h3{margin-bottom:12px;}
   .picker.board .pbtn .rt{display:none;}          /* 태그(일반 회의실 등) 숨김 — 상태에 집중 */
-  .picker.board .pbtn-book{font-size:11px;padding:4px 9px;top:10px;right:10px;}
+  .picker.board .pbtn-book{font-size:11px;font-weight:600;padding:2px 8px;top:8px;right:8px;border-radius:6px;}
   .pgrp{margin-top:18px;}
   .pgrp h3{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;color:#FD3D00;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;}
   .pgrp h3 .cnt{font-size:12px;font-weight:700;color:#aeb3bf;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:2px 10px;border-radius:20px;letter-spacing:0;text-transform:none;}
@@ -651,13 +659,11 @@ const ROOMS = {
   corkage:{name:"Corkage Room",type:"general",office:"판교사무실 A"},dining:{name:"Dining Room",type:"general",office:"판교사무실 A"},
   pairing:{name:"Pairing Room",type:"general",office:"판교사무실 A"},gourmet:{name:"Gourmet Room",type:"general",office:"판교사무실 A"},
   cooking:{name:"Cooking Room",type:"general",office:"판교사무실 A"},plating:{name:"Plating Room",type:"general",office:"판교사무실 A"},
-  tasting:{name:"Tasting Room",type:"general",office:"판교사무실 A"},exec1:{name:"쪽방1",type:"exec",office:"판교사무실 A"},
-  exec2:{name:"쪽방2",type:"exec",office:"판교사무실 A"},exec3:{name:"쪽방3",type:"exec",office:"판교사무실 A"},
+  tasting:{name:"Tasting Room",type:"general",office:"판교사무실 A"},
   winery:{name:"Winery Room",type:"exec",office:"판교사무실 B",tag:"사장님그로스 아르바이트 업무공간"},terrace:{name:"Terrace Room",type:"general",office:"판교사무실 B"},
   roasting:{name:"Roasting Room",type:"general",office:"판교사무실 B"},baking:{name:"Baking Room",type:"general",office:"판교사무실 B"},
   interview1:{name:"Interview Room1",type:"interview",office:"판교사무실 B"},interview2:{name:"Interview Room2",type:"interview",office:"판교사무실 B"},
   party:{name:"Party Room",type:"video",office:"판교사무실 B"},flavor:{name:"Flavor Room",type:"general",office:"페이 사무실"},
-  searing:{name:"Searing Room",type:"general",office:"부산 사무실"},
   test1:{name:"Plating Room",type:"general",office:"테스트",sample:"empty"}, // 비어있음
   test2:{name:"Plating Room",type:"general",office:"테스트",sample:"busy"},  // 사용 중
   test3:{name:"Plating Room",type:"general",office:"테스트",sample:"soon"},  // 곧 회의 시작
@@ -986,27 +992,24 @@ function mainVideo(room,t){
 }
 
 function viewPicker(){
-  const offices=[];Object.entries(ROOMS).forEach(([k,r])=>{if(k.indexOf('test')===0)return;if(!offices.includes(r.office))offices.push(r.office);});
-  const bigArr=[]; let small="", bigN=0;  // bigArr=여러 방 있는 큰 사무실, small=1개짜리 사무실
-  offices.forEach(o=>{
-    const list=Object.entries(ROOMS).filter(([k,r])=>r.office===o && k.indexOf('test')!==0);
-    let btns="";
-    list.forEach(([k,r])=>{
-      const t=TYPES[r.type];
-      const cal=ROOM_CAL[k];
-      const book=cal?`<button type="button" class="pbtn-book" onclick="bookRoom('${cal}','${r.name}','${k}')">＋ 예약</button>`:'';
-      btns+=`<div class="pbtn" style="--tc:${t.pick}"><a class="pbtn-open" href="?room=${k}"><span class="rn">${r.name}</span><span class="rt"><span class="tdot"></span>${r.tag||t.label}</span><span class="pk-st" id="pk-st-${k}">확인 중…</span><span class="pk-mt" id="pk-mt-${k}" style="display:none"></span></a>${book}</div>`;
-    });
-    if(list.length<=1){
-      small+=`<div class="pgrp"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`;
-    } else {
-      const cls=bigN===0?'pg-a':(bigN===1?'pg-b':'pg-x'); bigN++;   // 열 수는 CSS에서(가로/세로 다르게)
-      bigArr.push(`<div class="pgrp ${cls}"><h3>${o} <span class="cnt">${list.length}</span></h3><div class="pgrid">${btns}</div></div>`);
-    }
-  });
-  // 섹터 2개로 묶음: [판교 A] | [판교 B + 페이·부산]
-  const sectorL=bigArr[0]||"";
-  const sectorR=bigArr.slice(1).join("")+(small?`<div class="pgrp-stack">${small}</div>`:"");
+  // 카드 1개 렌더
+  const pkCard=(k)=>{
+    const r=ROOMS[k]; if(!r) return "";
+    const t=TYPES[r.type]; const cal=ROOM_CAL[k];
+    const book=cal?`<button type="button" class="pbtn-book" onclick="bookRoom('${cal}','${r.name}','${k}')">＋ 예약</button>`:'';
+    return `<div class="pbtn" style="--tc:${t.pick}"><a class="pbtn-open" href="?room=${k}"><span class="rn">${r.name}</span><span class="pk-state" id="pk-state-${k}">확인 중…</span><span class="pk-slot" id="pk-slot-${k}"></span><span class="pk-meet" id="pk-meet-${k}">—</span></a>${book}</div>`;
+  };
+  // 배치(3열): 왼쪽=판교 A / 오른쪽=판교 B + 페이(Flavor는 로스팅·베이킹 다음 칸, 일반 카드)
+  const leftKeys=['cuisine','savor','corkage','dining','pairing','gourmet','cooking','plating','tasting'];
+  // 모든 카드에 동일한 라벨 슬롯 → 전부 같은 높이에서 시작(위치 정렬). 페이만 라벨에 글씨.
+  const cell=(k,label)=>`<div class="cwrap"><div class="clabel">${label||''}</div>${pkCard(k)}</div>`;
+  const rightCells=[
+    cell('winery'),cell('terrace'),cell('party'),
+    cell('roasting'),cell('baking'),cell('flavor','페이 사무실'),
+    cell('interview1'),cell('interview2')
+  ].join('');
+  const sectorL=`<div class="pgrp pg-a"><h3>판교사무실 A</h3><div class="pgrid">${leftKeys.map(k=>cell(k)).join('')}</div></div>`;
+  const sectorR=`<div class="pgrp pg-b"><h3>판교사무실 B</h3><div class="pgrid">${rightCells}</div></div>`;
   const grps=`<div class="pk-sector pk-sector-l">${sectorL}</div><div class="pk-sector pk-sector-r">${sectorR}</div>`;
   return `<div class="picker board">
     <div class="pk-top"><div class="pk-brand"><span class="dot"></span>CATCHTABLE</div><div class="pk-topr"><div class="pk-dt"><div class="pk-date" id="pkDate">—</div><div class="pk-clock" id="pkClock">—</div></div></div></div>
@@ -1027,6 +1030,7 @@ function isPortraitMode(){ try{return localStorage.getItem('boardPortrait')==='1
 function cycleRotate(){ try{localStorage.setItem('boardPortrait', isPortraitMode()?'0':'1');}catch(e){} applyPortrait(); }
 function applyPortrait(){
   const page=document.getElementById('page'); if(!page) return;
+  if(window.__iframeView){ page.style.transform='none'; page.style.width='100vw'; page.style.height='100vh'; return; }  // 캘린더/문패 iframe은 뷰포트 꽉 채움
   // 화면 해상도(가로/세로 비율)를 감지해서 자동 전환 — 버튼/회전 없음
   let P = window.__isPicker && (window.innerHeight > window.innerWidth);
   const f=getParam('rot'); if(f==='0') P=false; else if(f==='1') P=true;  // 테스트용 강제 옵션
@@ -1082,40 +1086,44 @@ function pickAvail(events){
   const nx=sorted.filter(e=>e.start>now);
   const nextStart=nx.length?nx[0].start:eod;
   const availableNow=!busy && (nx.length===0 || (nextStart-now)>=MG); // 예정 회의 없거나 다음까지 15분 이상이면 사용 가능
-  const durTxt=(a,b)=>{const m=Math.round((b-a)/60000);return m>=60?(Math.floor(m/60)+'시간'+(m%60?' '+(m%60)+'분':'')):(m+'분');};
-  const slot=(s,endMs,open)=> open ? (fmt(s)+' 이후부터 쭉 가능') : (fmt(s)+'~'+fmt(endMs)+' ('+durTxt(s,endMs)+') 예약 가능');
   if(availableNow){
     const sR=Math.floor(now/MG)*MG;
-    return {cls:'free',txt:'지금 사용 가능 · '+slot(sR,nextStart,!nx.length),startMs:sR,endMs:nx.length?nextStart:null,title:''};
+    const slotTxt = (!nx.length) ? '이후 예정 없음' : ('~'+fmt(nextStart)+' 사용 가능');
+    return {cls:'free',state:'사용 가능',slotTxt:slotTxt,startMs:sR,endMs:nx.length?nextStart:null,title:''};
   }
   // 사용 중 / 곧 회의 시작 → 다음 사용 가능 시각(15분 이상 비는 첫 시점, 연속회의 감안)
   let cursor=now, changed=true;
   while(changed){ changed=false;
     for(let i=0;i<sorted.length;i++){ const e=sorted[i]; if(e.end>cursor && e.start<=cursor+MG){ cursor=e.end; changed=true; } }
   }
-  const base=busy?'사용 중':'곧 회의 시작';
+  const state=busy?'사용 중':'곧 시작';
   const cls=busy?'busy':'prep';
-  if(cursor>=eod) return {cls:cls,txt:base+' · 오늘 종일',startMs:null,endMs:null,title:title};
+  const showTitle = busy ? title : (nx.length ? (nx[0].title||'') : '');   // 곧 시작이면 다가오는 회의명 표시
+  if(cursor>=eod) return {cls:cls,state:state,slotTxt:'오늘 종일 사용',startMs:null,endMs:null,title:showTitle};
   const after=sorted.filter(e=>e.start>cursor);
-  return {cls:cls,txt:base+' · '+slot(cursor, after.length?after[0].start:eod, !after.length),startMs:cursor,endMs:after.length?after[0].start:null,title:title};
+  const slotTxt = after.length ? (fmt(cursor)+'~'+fmt(after[0].start)+' 가능') : (fmt(cursor)+' 이후 가능');
+  return {cls:cls,state:state,slotTxt:slotTxt,startMs:cursor,endMs:after.length?after[0].start:null,title:showTitle};
 }
-function pkMeet(k,title){ // 진행 중 회의 제목 줄 표시/숨김
-  const mt=document.getElementById('pk-mt-'+k); if(!mt)return;
-  if(title){ mt.textContent='진행 중 · '+title; mt.style.display='block'; }
-  else { mt.textContent=''; mt.style.display='none'; }
+function pkMeet(k,title){ // 회의 이름 줄 (없으면 — 로 자리 유지 → 카드 높이 통일)
+  const mt=document.getElementById('pk-meet-'+k); if(!mt)return;
+  if(title){ mt.textContent=title; mt.classList.add('has-meet'); }
+  else { mt.textContent='—'; mt.classList.remove('has-meet'); }
 }
 function applyPickAll(data){ // 전체(all=1) 결과를 각 방 뱃지에 반영. rooms 없으면 false
   if(!(data && data.rooms)) return false;
-  Object.keys(ROOMS).forEach(k=>{ if(k.indexOf('test')===0)return; const el=document.getElementById('pk-st-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){ setPickBadge(k,pickAvail(rd.events||[])); } else { setPickBadge(k,null); } });
+  Object.keys(ROOMS).forEach(k=>{ if(k.indexOf('test')===0)return; const el=document.getElementById('pk-state-'+k); if(!el)return; const rd=data.rooms[k]; if(rd){ setPickBadge(k,pickAvail(rd.events||[])); } else { setPickBadge(k,null); } });
   updatePickSummary();
   return true;
 }
 // 방 상태 뱃지 + 카드 상태색 반영 (a=null이면 정보없음)
 function setPickBadge(k,a){
-  const el=document.getElementById('pk-st-'+k); if(!el)return;
+  const el=document.getElementById('pk-state-'+k); if(!el)return;
+  const slotEl=document.getElementById('pk-slot-'+k);
   const pb=el.closest('.pbtn'); if(pb) pb.classList.remove('st-free','st-busy','st-prep');
-  if(!a){ el.className='pk-st'; el.textContent='예약 정보 없음'; pkMeet(k,''); return; }
-  el.className='pk-st '+a.cls; el.textContent=a.txt; PICK_SLOT[k]={start:a.startMs,end:a.endMs}; pkMeet(k,a.title);
+  if(!a){ el.className='pk-state'; el.textContent='예약 정보 없음'; if(slotEl) slotEl.textContent=''; pkMeet(k,''); return; }
+  el.className='pk-state '+a.cls; el.textContent=a.state;
+  if(slotEl) slotEl.textContent=a.slotTxt||'';
+  PICK_SLOT[k]={start:a.startMs,end:a.endMs}; pkMeet(k,a.title);
   if(pb && a.cls) pb.classList.add('st-'+a.cls);
 }
 // 상단 요약(사용가능/사용중/곧시작 개수)
@@ -1294,8 +1302,12 @@ function fit(){
   // 미세조정용(선택): ?safe=0.95 처럼 붙이면 그만큼 안쪽으로 줄여줌. 기본 1.
   let safe=parseFloat(getParam('safe'));
   if(!(safe>0.5 && safe<=1)) safe=1;
+  // 채움(cover) 상태일 때만 아주 살짝 오버스캔 → 상하좌우 미세 여백 + 픽셀시프트 슬라이버 제거
+  // ?bleed=0 붙이면 끔, ?bleed=1.01 처럼 값 조정 가능. 기본 1.006(약 0.6%)
+  let bleed=parseFloat(getParam('bleed'));
+  if(!(bleed>=1 && bleed<=1.05)){ bleed=(base===cover)?1.006:1; }
   // transform 스케일 (GPU 가속, 샤오미 등 정품 크로미움에서 선명)
-  const s=base*safe;
+  const s=base*safe*bleed;
   const rot=a?('rotate('+a+'deg) '):'';
   page.style.transform='translate('+__shift[0]+'px,'+__shift[1]+'px) '+rot+'scale('+s+')';
 }
@@ -1356,6 +1368,20 @@ function render(){
   page.classList.toggle('theme-dark',dark);
   fitw.classList.toggle('dark',!room);
   page.style.width='1920px';page.style.height='1080px';
+  window.__iframeView=false;
+  // ?room=calendar / ?room=door → 완성된 별도 파일을 화면 꽉 채워 iframe으로 표시
+  const IFRAME_VIEWS={calendar:{src:'calendar.html',title:'회의실 스케줄'}, door:{src:'exec_door.html',title:'C레벨 회의실 문패'}};
+  if(IFRAME_VIEWS[key]){
+    const v=IFRAME_VIEWS[key];
+    window.__iframeView=true; window.__isPicker=true; window.__coverAlways=false; window.__coverBase=false; window.__videoRoom=false;
+    fitw.classList.add('dark');
+    page.classList.remove('portrait'); window.__portrait=false; window.__rotAngle=0;
+    page.style.transform='none'; page.style.width='100vw'; page.style.height='100vh'; page.style.background='#14161b';
+    page.innerHTML='<iframe class="calframe" src="'+v.src+'" title="'+v.title+'"></iframe>';
+    setCoverLogo(false); refreshCover();
+    document.title=v.title;
+    return;   // fit() 안 함(뷰포트 꽉 채우고 내부 파일이 알아서 반응형)
+  }
   if(!room){
     page.style.background='transparent';
     page.innerHTML=viewPicker();
