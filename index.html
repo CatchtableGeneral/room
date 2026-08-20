@@ -1041,6 +1041,8 @@ function applyPortrait(){
 }
 function fmt(ms){const d=new Date(ms);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
 function setT(h,m){const d=new Date();d.setHours(h,m,0,0);return d.getTime();}
+// 인터뷰룸은 비공개 면접이라 실제 제목 숨기고 "인터뷰 일정"으로 통일
+function evTitle(e){ return window.__ivRoom ? '인터뷰 일정' : ((e&&e.title)?e.title:'예약됨'); }
 // 마지막으로 성공한 실제 일정을 보관 → 오류·지연 시 샘플 대신 이 데이터를 유지
 let lastEvents=null, everLoaded=false;
 
@@ -1123,7 +1125,10 @@ function setPickBadge(k,a){
   if(!a){ el.className='pk-state'; el.textContent='예약 정보 없음'; if(slotEl) slotEl.textContent=''; pkMeet(k,''); return; }
   el.className='pk-state '+a.cls; el.textContent=a.state;
   if(slotEl) slotEl.textContent=a.slotTxt||'';
-  PICK_SLOT[k]={start:a.startMs,end:a.endMs}; pkMeet(k,a.title);
+  let ttl=a.title;
+  if(ROOMS[k] && ROOMS[k].type==='interview'){ ttl=(a.cls==='free')?'':'인터뷰 일정'; }   // 인터뷰룸: 제목 숨김
+  else if(a.cls!=='free' && !ttl){ ttl='예약됨'; }                                        // 비공개/바쁨 예약 → "예약됨"
+  PICK_SLOT[k]={start:a.startMs,end:a.endMs}; pkMeet(k,ttl);
   if(pb && a.cls) pb.classList.add('st-'+a.cls);
 }
 // 상단 요약(사용가능/사용중/곧시작 개수)
@@ -1221,11 +1226,11 @@ function renderSched(events,mode){
     const cls='sch-item'+(on?' now':'')+(past?' past':'')+(canJoin?' hasjoin':'');
     const timeTxt=fmt(e.start)+' – '+fmt(e.end);
     if(past){ // 끝난 회의: 시간+제목 한 줄
-      return `<div class="${cls}"><span class="t">${timeTxt}</span><span class="n">${e.title||"예약됨"}</span></div>`;
+      return `<div class="${cls}"><span class="t">${timeTxt}</span><span class="n">${evTitle(e)}</span></div>`;
     }
     const jb=canJoin?`<a class="sch-join" href="${e.meet}" target="_blank" rel="noopener">참여</a>`:'';
     const tLine=on?`<span class="blink">●</span> 진행 중 · ${timeTxt}`:timeTxt;  // 진행중은 시간과 한 줄로(2줄 유지)
-    return `<div class="${cls}"><div class="sch-main"><div class="t">${tLine}</div><div class="n">${e.title||"예약됨"}</div></div>${jb}</div>`;
+    return `<div class="${cls}"><div class="sch-main"><div class="t">${tLine}</div><div class="n">${evTitle(e)}</div></div>${jb}</div>`;
   }).join("");
   // 자동 맞춤: 1열로 그려보고, 세로/가로로 넘치면 2열 → 그래도 넘치면 촘촘 모드
   listEl.className='sched-list';
@@ -1272,18 +1277,19 @@ function renderNN(events,now){
   const joinBtn=(e,cls)=> (window.__videoRoom && e) ? `<a class="nn-join${cls?' '+cls:''}" href="${e.meet||'#'}" target="_blank" rel="noopener">참여${cls?'':'하기'}</a>` : '';
   if(nowEl){ nowEl.className='nn-now'+(cur?' busy':' free');
     nowEl.innerHTML=cur
-      ? `<div class="nn-main"><div class="nn-lbl">● 지금 진행 중</div><div class="nn-title">${cur.title||'예약됨'}</div><div class="nn-time">${fmt(cur.start)} – ${fmt(cur.end)}</div></div>${joinBtn(cur,'')}`
+      ? `<div class="nn-main"><div class="nn-lbl">● 지금 진행 중</div><div class="nn-title">${evTitle(cur)}</div><div class="nn-time">${fmt(cur.start)} – ${fmt(cur.end)}</div></div>${joinBtn(cur,'')}`
       : `<div class="nn-main"><div class="nn-lbl free">● 지금 사용 가능</div><div class="nn-title">비어 있어요</div><div class="nn-time">${up.length?('다음 회의 '+fmt(up[0].start)+' 전까지 이용 가능'):'오늘 남은 예약 없음'}</div></div>`;
   }
   if(nextEl){ const nx=up[0];
-    nextEl.innerHTML=nx?`<div class="nn-main"><div class="nn-lbl">다음 회의</div><div class="nn-title">${nx.title||'예약됨'}</div><div class="nn-time">${fmt(nx.start)} – ${fmt(nx.end)}</div></div>${joinBtn(nx,'sm')}`:`<div class="nn-main"><div class="nn-lbl">다음 회의</div><div class="nn-title" style="opacity:.55">예정 없음</div></div>`;
+    nextEl.innerHTML=nx?`<div class="nn-main"><div class="nn-lbl">다음 회의</div><div class="nn-title">${evTitle(nx)}</div><div class="nn-time">${fmt(nx.start)} – ${fmt(nx.end)}</div></div>${joinBtn(nx,'sm')}`:`<div class="nn-main"><div class="nn-lbl">다음 회의</div><div class="nn-title" style="opacity:.55">예정 없음</div></div>`;
   }
   if(restEl){ const rest=up.slice(1,6);
-    restEl.innerHTML=rest.length?('<div class="nn-rest-h">이후 일정</div>'+rest.map(e=>`<div class="nn-ri"><span>${fmt(e.start)}</span> ${e.title||'예약됨'}</div>`).join('')):'';
+    restEl.innerHTML=rest.length?('<div class="nn-rest-h">이후 일정</div>'+rest.map(e=>`<div class="nn-ri"><span>${fmt(e.start)}</span> ${evTitle(e)}</div>`).join('')):'';
   }
 }
 function fit(){
   const page=document.getElementById('page');
+  if(window.__iframeView){ page.style.transform='none'; return; }   // 캘린더/문패 iframe은 스케일 안 함(확대 버그 방지)
   // 화면 비율에 따라 자동 판별(기본 auto):
   //  · 거의 16:9(회의실 TV 풀스크린) → 덮어서(cover) 꽉 채움. 회색 여백 0, 잘림 0.
   //  · 비율이 많이 어긋난 화면(PC 브라우저 창 등) → 여백 방식(contain)으로 빠져 너무 커지지 않음.
