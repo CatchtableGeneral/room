@@ -77,39 +77,46 @@
       <div class="cal-rows" id="rows"></div>
     </div>
   </div>
-  <div class="draft">초안 · 샘플 데이터</div>
+  <div class="draft" id="conn">연결 중…</div>
 
 <script>
   var START=8, END=23, TOTAL=(END-START)*60;
+  // ▼ 회의실 디스플레이(index)와 동일한 Apps Script 백엔드 ▼
+  var APPS_URL="https://script.google.com/macros/s/AKfycbyfD-wzNoO_j-t-k2J66D6vZOzpv8cftt7Bj9Ay-pBwTGDYuumrGD8osh3I9dx9uI4/exec";
   var TYPEC={
     general:{c:'#378ADD',b:'rgba(55,138,221,0.16)'},
     interview:{c:'#7F77DD',b:'rgba(127,119,221,0.16)'},
-    video:{c:'#1D9E75',b:'rgba(29,158,117,0.16)'}
+    video:{c:'#C15FB0',b:'rgba(193,95,176,0.18)'}
   };
-  function m(h,mm){return h*60+mm;}
 
+  // 방키(index/GAS와 동일) · 사무실 · 유형. 데이터는 백엔드에서 채움.
   var OFFICES=['판교 A','판교 B','페이'];
   var ROOMS=[
-    {n:'Cuisine',of:'판교 A',t:'general',ev:[{s:m(9,0),e:m(10,0),t:'주간 팀 미팅',by:'프로덕트팀'},{s:m(13,30),e:m(15,0),t:'로드맵 리뷰',by:'기획'},{s:m(19,0),e:m(20,0),t:'야간 운영 점검',by:'운영'}]},
-    {n:'Savor',of:'판교 A',t:'general',ev:[{s:m(10,30),e:m(11,30),t:'디자인 싱크',by:'디자인팀'}]},
-    {n:'Corkage',of:'판교 A',t:'general',ev:[{s:m(14,0),e:m(14,30),t:'1:1',by:'김리더'},{s:m(16,0),e:m(17,0),t:'스프린트 회고',by:'개발팀'}]},
-    {n:'Dining',of:'판교 A',t:'general',ev:[{s:m(11,0),e:m(12,0),t:'제휴 미팅',by:'BD'}]},
-    {n:'Pairing',of:'판교 A',t:'general',ev:[{s:m(9,30),e:m(10,30),t:'CS 주간',by:'운영'},{s:m(15,0),e:m(16,30),t:'채용 논의',by:'People'}]},
-    {n:'Gourmet',of:'판교 A',t:'general',ev:[{s:m(13,0),e:m(14,0),t:'마케팅 캠페인',by:'마케팅'}]},
-    {n:'Plating',of:'판교 A',t:'general',ev:[{s:m(10,0),e:m(11,0),t:'데이터 리뷰',by:'그로스'}]},
-    {n:'Terrace',of:'판교 B',t:'general',ev:[{s:m(9,0),e:m(9,50),t:'모닝 스탠드업',by:'플랫폼'},{s:m(14,0),e:m(15,30),t:'아키텍처 논의',by:'개발'}]},
-    {n:'Roasting',of:'판교 B',t:'general',ev:[{s:m(12,0),e:m(13,0),t:'점심 세미나',by:'전사'}]},
-    {n:'Baking',of:'판교 B',t:'general',ev:[{s:m(16,0),e:m(18,0),t:'파트너 워크샵',by:'세일즈'},{s:m(21,0),e:m(22,30),t:'배포 대기 점검',by:'플랫폼'}]},
-    {n:'Interview 1',of:'판교 B',t:'interview',ev:[{s:m(10,0),e:m(11,0),t:'면접 (경력)',by:'People'},{s:m(14,0),e:m(15,0),t:'면접 (신입)',by:'People'}]},
-    {n:'Interview 2',of:'판교 B',t:'interview',ev:[{s:m(11,0),e:m(12,0),t:'면접 (디자인)',by:'People'}]},
-    {n:'Party',of:'판교 B',t:'video',ev:[{s:m(13,0),e:m(14,30),t:'화상 전사 공유',by:'경영지원'},{s:m(19,0),e:m(21,0),t:'글로벌 화상 미팅',by:'BD'}]},
-    {n:'Flavor',of:'페이',t:'general',ev:[{s:m(15,0),e:m(16,0),t:'페이 정기회의',by:'페이팀'}]}
+    {n:'Cuisine',key:'cuisine',of:'판교 A',t:'general'},
+    {n:'Savor',key:'savor',of:'판교 A',t:'general'},
+    {n:'Corkage',key:'corkage',of:'판교 A',t:'general'},
+    {n:'Dining',key:'dining',of:'판교 A',t:'general'},
+    {n:'Pairing',key:'pairing',of:'판교 A',t:'general'},
+    {n:'Gourmet',key:'gourmet',of:'판교 A',t:'general'},
+    {n:'Cooking',key:'cooking',of:'판교 A',t:'general'},
+    {n:'Plating',key:'plating',of:'판교 A',t:'general'},
+    {n:'Tasting',key:'tasting',of:'판교 A',t:'general'},
+    {n:'Terrace',key:'terrace',of:'판교 B',t:'general'},
+    {n:'Roasting',key:'roasting',of:'판교 B',t:'general'},
+    {n:'Baking',key:'baking',of:'판교 B',t:'general'},
+    {n:'Interview 1',key:'interview1',of:'판교 B',t:'interview'},
+    {n:'Interview 2',key:'interview2',of:'판교 B',t:'interview'},
+    {n:'Party',key:'party',of:'판교 B',t:'video'},
+    {n:'Flavor',key:'flavor',of:'페이',t:'general'}
   ];
 
   function pad(n){return('0'+n).slice(-2);}
   function fmt(mins){return pad(Math.floor(mins/60))+':'+pad(mins%60);}
+  function toMin(ms){var d=new Date(ms);return d.getHours()*60+d.getMinutes();}
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function setConn(ok){var el=document.getElementById('conn');if(el)el.textContent=ok?'실시간 연동':'연결 재시도 중…';}
 
-  var REFS=[];   // 행별 참조 (상태 갱신용)
+  var REFS=[];   // 행별 참조 (상태·이벤트 갱신용)
   function build(){
     var rows=document.getElementById('rows'), ta=document.getElementById('taxis');
     REFS=[];
@@ -118,21 +125,11 @@
       rows.appendChild(hdr);
       ROOMS.filter(function(r){return r.of===of;}).forEach(function(r){
         var row=document.createElement('div'); row.className='rrow';
-        var tc=TYPEC[r.t]||TYPEC.general;
         var nm=document.createElement('div'); nm.className='rname';
         nm.innerHTML='<span class="dot"></span>'+r.n+'<span class="rstat"></span>';
         var tr=document.createElement('div'); tr.className='rtrack';
-        var evRefs=[];
-        (r.ev||[]).forEach(function(ev){
-          var left=(ev.s-START*60)/TOTAL*100, w=(ev.e-ev.s)/TOTAL*100;
-          var d=document.createElement('div'); d.className='ev'+((ev.e-ev.s)<45?' narrow':'');   // 45분 미만은 부제 숨김
-          d.style.left=left+'%'; d.style.width='calc('+w+'% - 4px)';
-          d.style.setProperty('--ec',tc.c); d.style.setProperty('--eb',tc.b);
-          d.innerHTML='<div class="et">'+ev.t+'</div><div class="em">'+fmt(ev.s)+'–'+fmt(ev.e)+' · '+ev.by+'</div>';
-          tr.appendChild(d); evRefs.push({el:d,ev:ev});
-        });
         row.appendChild(nm); row.appendChild(tr); rows.appendChild(row);
-        REFS.push({row:row,stat:nm.querySelector('.rstat'),ev:evRefs,track:tr});
+        REFS.push({row:row,stat:nm.querySelector('.rstat'),track:tr,key:r.key,t:r.t,ev:[]});
       });
     });
     // 시간 라벨 (1시간 간격) + 그리드선은 트랙 배경에서
@@ -200,6 +197,56 @@
     if(endB>p) add(p, endB);
   }
 
+  // 한 방의 일정 블록을 트랙에 다시 그림
+  function renderRoomEvents(rf, evs){
+    var tr=rf.track; tr.querySelectorAll('.ev').forEach(function(x){x.remove();});
+    var tc=TYPEC[rf.t]||TYPEC.general; rf.ev=[];
+    evs.forEach(function(ev){
+      var vs=Math.max(ev.s, START*60), ve=Math.min(ev.e, END*60);
+      if(ve<=vs) return;                        // 표시 범위(08~23시) 밖이면 스킵
+      var left=(vs-START*60)/TOTAL*100, w=(ve-vs)/TOTAL*100;
+      var d=document.createElement('div'); d.className='ev'+((ev.e-ev.s)<45?' narrow':'');
+      d.style.left=left+'%'; d.style.width='calc('+w+'% - 4px)';
+      d.style.setProperty('--ec',tc.c); d.style.setProperty('--eb',tc.b);
+      d.innerHTML='<div class="et">'+esc(ev.t)+'</div><div class="em">'+fmt(ev.s)+'–'+fmt(ev.e)+'</div>';
+      tr.appendChild(d); rf.ev.push({el:d,ev:ev});
+    });
+  }
+
+  // 백엔드(all=1) 응답 → 각 방에 반영
+  function applyData(data){
+    if(!(data && data.rooms)) return false;
+    REFS.forEach(function(rf){
+      var rd=data.rooms[rf.key], evs=[];
+      if(rd && rd.events){
+        rd.events.forEach(function(e){
+          var s=toMin(e.start), en=toMin(e.end);
+          if(en<=s) en=END*60;                  // 자정 넘김/이상값 방어
+          var t = (rf.t==='interview') ? '인터뷰 일정' : ((e.title&&e.title.length)?e.title:'예약됨'); // 인터뷰룸 제목 숨김
+          evs.push({s:s,e:en,t:t});
+        });
+        evs.sort(function(a,b){return a.s-b.s;});
+      }
+      renderRoomEvents(rf, evs);
+    });
+    refreshStatus(); setConn(true);
+    return true;
+  }
+
+  function loadReal(){
+    if(!APPS_URL) return;
+    fetch(APPS_URL+'?all=1',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){ if(!applyData(d)) throw 0; }).catch(function(){
+      var cb='cal_'+Math.random().toString(36).slice(2);           // JSONP 폴백(쿠키/CORS 우회)
+      var s=document.createElement('script'); var done=false;
+      var clean=function(){try{delete window[cb];s.remove();}catch(e){}};
+      window[cb]=function(d){ if(done)return; done=true; applyData(d); clean(); };
+      s.onerror=function(){ if(done)return; done=true; setConn(false); clean(); };
+      s.src=APPS_URL+'?all=1&callback='+cb;
+      document.head.appendChild(s);
+      setTimeout(function(){ if(!done){done=true; setConn(false); clean();} }, 15000);
+    });
+  }
+
   function tick(){
     var d=new Date(), wd=['일','월','화','수','목','금','토'][d.getDay()];
     document.getElementById('date').textContent=d.getFullYear()+'.'+pad(d.getMonth()+1)+'.'+pad(d.getDate())+' ('+wd+')';
@@ -207,7 +254,9 @@
     nowLine(); refreshStatus();
   }
 
-  build(); tick(); setInterval(tick,30000);
+  build(); tick(); loadReal();
+  setInterval(tick,30000);        // 시계·지금선·상태 갱신
+  setInterval(loadReal,60000);    // 실제 일정 60초마다 재조회
 </script>
 </body>
 </html>
