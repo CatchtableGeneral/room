@@ -237,9 +237,28 @@
     });
   }
 
+  // flex가 안 먹는 브라우저(TV Bro 등) 대비: 화면 높이를 픽셀로 직접 분배해 세로를 꽉 채움
+  function layoutHeights(){
+    var vh=window.innerHeight||document.documentElement.clientHeight;
+    var app=document.querySelector('.app'); if(!app) return;
+    var topEl=document.querySelector('.top'), cal=document.querySelector('.cal');
+    var caltop=document.querySelector('.cal-top'), rows=document.getElementById('rows');
+    if(!(topEl&&cal&&caltop&&rows)) return;
+    app.style.height=vh+'px';
+    var cs=getComputedStyle(app), pad=parseFloat(cs.paddingTop||0)+parseFloat(cs.paddingBottom||0);
+    var topM=parseFloat(getComputedStyle(topEl).marginBottom||0);
+    var calH=Math.max(200, vh - pad - topEl.offsetHeight - topM);
+    cal.style.height=calH+'px'; cal.style.flex='none';
+    var rowsH=Math.max(120, calH - caltop.offsetHeight - 2);
+    rows.style.height=rowsH+'px'; rows.style.flex='none';
+    var hdrH=0; rows.querySelectorAll('.ohdr').forEach(function(h){hdrH+=h.offsetHeight;});
+    var per=Math.max(28, Math.floor((rowsH - hdrH)/(REFS.length||1)));
+    REFS.forEach(function(rf){ rf.row.style.height=per+'px'; rf.row.style.flex='none'; });
+  }
+
   // 창 계산 후 축·이벤트·상태 전체 재배치
   function layoutAll(){
-    computeWindow(); buildAxis();
+    computeWindow(); layoutHeights(); buildAxis();
     REFS.forEach(function(rf){ renderRoomEvents(rf, lastRooms?lastRooms[rf.key]:[]); });
     nowLine(); refreshStatus();
   }
@@ -301,6 +320,8 @@
   }
 
   build(); layoutAll(); tick(); loadReal();
+  window.addEventListener('resize', layoutAll);
+  setTimeout(layoutAll, 300);     // 폰트 로드 후 높이 재계산
   setInterval(tick,30000);        // 시계·지금선·상태 갱신(정시마다 롤링)
   setInterval(loadReal,60000);    // 실제 일정 60초마다 재조회
 </script>
