@@ -89,9 +89,12 @@
 
 <script>
   // 롤링 창: 지금(정시) 기준 WINDOW_HOURS 시간만 표시. 시간이 흐르면 왼쪽(과거)은 사라지고 오른쪽(내일까지)이 등장.
-  var WINDOW_HOURS=(function(){var v=parseInt(new URLSearchParams(location.search).get('win'),10);return (v>=4&&v<=16)?v:9;})();
+  var WINDOW_HOURS=(function(){var v=parseInt(new URLSearchParams(location.search).get('win'),10);return (v>=2&&v<=16)?v:5;})();
+  var PAST_MIN=60;      // 현재 시각 왼쪽에 보여줄 과거 분량(=현재를 2번째 칸에)
+  var STEP_MS=15*60000; // 롤링 단위 15분
   var winStart=0, winEnd=0, TOTAL=1;   // ms 절대시각
-  function computeWindow(){ var d=new Date(); d.setMinutes(0,0,0); winStart=d.getTime(); winEnd=winStart+WINDOW_HOURS*3600000; TOTAL=winEnd-winStart; }
+  function winStartFor(t){ return Math.floor(t/STEP_MS)*STEP_MS - PAST_MIN*60000; }  // 15분 내림 - 1시간
+  function computeWindow(){ winStart=winStartFor(Date.now()); winEnd=winStart+WINDOW_HOURS*3600000; TOTAL=winEnd-winStart; }
   // ▼ 회의실 디스플레이(index)와 동일한 Apps Script 백엔드 ▼
   var APPS_URL="https://script.google.com/macros/s/AKfycbyfD-wzNoO_j-t-k2J66D6vZOzpv8cftt7Bj9Ay-pBwTGDYuumrGD8osh3I9dx9uI4/exec";
   var TYPEC={
@@ -151,14 +154,15 @@
   function buildAxis(){
     var ta=document.getElementById('taxis'); ta.innerHTML='';
     document.documentElement.style.setProperty('--colstep',(100/WINDOW_HOURS)+'%');
-    var startDate=new Date(winStart).getDate();
+    var startDate=new Date(winStart).getDate(), markedT=false;
     for(var i=0;i<WINDOW_HOURS;i++){
-      var t=winStart+i*3600000, dt=new Date(t);
+      var t=winStart+i*3600000, dt=new Date(t), timeTxt=fmtMs(t);
       var lb=document.createElement('div'); lb.className='tl'; lb.style.left=((i/WINDOW_HOURS)*100)+'%';
-      if(dt.getHours()===0 && dt.getDate()!==startDate){
-        lb.innerHTML='<span class="daymark">'+pad(dt.getMonth()+1)+'/'+pad(dt.getDate())+' 내일</span>'+pad(dt.getHours())+':00';
+      if(dt.getDate()!==startDate && !markedT){         // 자정 넘긴 첫 라벨에 '내일'
+        markedT=true;
+        lb.innerHTML='<span class="daymark">'+pad(dt.getMonth()+1)+'/'+pad(dt.getDate())+' 내일</span>'+timeTxt;
       } else {
-        lb.textContent=pad(dt.getHours())+':00';
+        lb.textContent=timeTxt;
       }
       ta.appendChild(lb);
     }
@@ -313,8 +317,7 @@
     var d=new Date(), wd=['일','월','화','수','목','금','토'][d.getDay()];
     document.getElementById('date').textContent=d.getFullYear()+'.'+pad(d.getMonth()+1)+'.'+pad(d.getDate())+' ('+wd+')';
     document.getElementById('clock').textContent=pad(d.getHours())+':'+pad(d.getMinutes());
-    var d2=new Date(); d2.setMinutes(0,0,0);
-    if(d2.getTime()!==winStart){ layoutAll(); }   // 정시가 바뀌면 창 롤링(과거 사라지고 새 시간대 등장)
+    if(winStartFor(Date.now())!==winStart){ layoutAll(); }   // 15분 단위로 창 롤링
     else { nowLine(); refreshStatus(); }
     refreshCover();
   }
