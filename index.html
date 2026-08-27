@@ -153,6 +153,10 @@
   .nn-now{flex:1.7;background:#fff;color:#1F2124;border-radius:20px;padding:26px 32px;box-shadow:0 12px 30px rgba(0,0,0,0.22);display:flex;flex-direction:column;justify-content:center;min-height:190px;}
   .nn-now .nn-lbl{font-size:17px;font-weight:800;color:#FF2D55;}
   .nn-now.free .nn-lbl{color:#14A05C;}
+  .nn-now.fixedbz{background:#FFF6E9;}
+  .nn-now .nn-lbl.fixedbz-lbl{color:#F59300;}
+  .jline{display:block;font-size:0.8em;font-weight:600;color:#8A9099;margin-top:2px;line-height:1.25;}
+  .koline{font-size:0.62em;font-weight:500;color:#AEB3BB;white-space:nowrap;letter-spacing:-0.3px;}
   .nn-now .nn-title{font-size:38px;font-weight:800;margin-top:10px;letter-spacing:-0.02em;}
   .nn-now .nn-time{font-size:21px;color:#5A5F66;margin-top:8px;font-weight:600;}
   .nn-now{flex-direction:row;align-items:stretch;gap:24px;}
@@ -673,6 +677,7 @@ const ROOMS = {
   interview1:{name:"Interview Room1",type:"interview",office:"판교사무실 B"},interview2:{name:"Interview Room2",type:"interview",office:"판교사무실 B"},
   party:{name:"Party Room",type:"video",office:"판교사무실 B"},flavor:{name:"Flavor Room",type:"general",office:"페이 사무실"},
   searing:{name:"Searing Room",type:"general",office:"부산 사무실"},
+  gurume:{name:"グルメ Room",type:"general",office:"일본 사무실",langMode:"alt",fixed:"busy"},
   test1:{name:"Plating Room",type:"general",office:"테스트",sample:"empty"}, // 비어있음
   test2:{name:"Plating Room",type:"general",office:"테스트",sample:"busy"},  // 사용 중
   test3:{name:"Plating Room",type:"general",office:"테스트",sample:"soon"},  // 곧 회의 시작
@@ -1015,7 +1020,8 @@ function viewPicker(){
   const rightCells=[
     cell('winery'),cell('terrace'),cell('party'),
     cell('roasting'),cell('baking'),cell('flavor','페이 사무실'),
-    cell('interview1'),cell('interview2'),cell('searing','부산 사무실')
+    cell('interview1'),cell('interview2'),cell('searing','부산 사무실'),
+    cell('gurume','日本オフィス')
   ].join('');
   const sectorL=`<div class="pgrp pg-a"><h3>판교사무실 A</h3><div class="pgrid">${leftKeys.map(k=>cell(k)).join('')}</div></div>`;
   const sectorR=`<div class="pgrp pg-b"><h3>판교사무실 B</h3><div class="pgrid">${rightCells}</div></div>`;
@@ -1131,6 +1137,11 @@ function setPickBadge(k,a){
   const el=document.getElementById('pk-state-'+k); if(!el)return;
   const slotEl=document.getElementById('pk-slot-'+k);
   const pb=el.closest('.pbtn'); if(pb) pb.classList.remove('st-free','st-busy','st-prep');
+  if(ROOMS[k] && ROOMS[k].fixed==='busy'){   // 캘린더 미연동 룸: 상시 사용중(주황) 고정
+    el.className='pk-state prep'; el.textContent='常時利用中';
+    if(slotEl) slotEl.textContent='日本法人 専用';
+    pkMeet(k,''); if(pb) pb.classList.add('st-prep'); return;
+  }
   if(!a){ el.className='pk-state'; el.textContent='예약 정보 없음'; if(slotEl) slotEl.textContent=''; pkMeet(k,''); return; }
   el.className='pk-state '+a.cls; el.textContent=a.state;
   if(slotEl) slotEl.textContent=a.slotTxt||'';
@@ -1296,6 +1307,104 @@ function renderNN(events,now){
     restEl.innerHTML=rest.length?('<div class="nn-rest-h">이후 일정</div>'+rest.map(e=>`<div class="nn-ri"><span>${fmt(e.start)}</span> ${evTitle(e)}</div>`).join('')):'';
   }
 }
+// 일본 법인 룸: 렌더된 한국어 가이드를 자연스러운 일본어로 치환 (긴 문구 먼저)
+function jaTranslate(html){
+  const map=[
+    ["일하기 좋은 회의문화","働きやすい会議文化"],
+    ["이 기기와 연결할까요?","このデバイスに接続しますか？"],
+    ["취소","キャンセル"],
+    ["일하기 좋은","働きやすい"],
+    ["회의 문화 만들기 🙏","会議文化をつくろう 🙏"],
+    ["연결은 5초면 끝!","接続は5秒で完了！"],
+    ["바로 회의 시작 👍","すぐに会議スタート 👍"],
+    ["TV 미러링 가이드","TVミラーリングガイド"],
+    ["유선·무선으로 노트북 화면 연결","有線・無線でノートPC画面を接続"],
+    ["HDMI 케이블 권장","HDMIケーブル推奨"],
+    ["HDMI 케이블","HDMIケーブル"],
+    ["책상의 ","机の"],
+    ["을 노트북에 꽂아주세요","をノートPCに挿してください"],
+    ["화면이 바로 TV에 표시돼요","画面がすぐTVに表示されます"],
+    ["끝!","完了！"],
+    ["회의가 끝나면 ","会議が終わったら"],
+    ["선만 뽑고","ケーブルだけ抜いて"],
+    ["전원은 끄지 마세요","電源は切らないでください"],
+    ["리모컨 조작 없이, ","リモコン操作なし、"],
+    ["케이블만","ケーブルを挿すだけ"],
+    [" 꽂으면 끝이에요","で完了です"],
+    ["무선 연결은 ","無線接続は"],
+    ["연결 기기와 TV 모두 WAD_OFFICE","接続機器とTVの両方がWAD_OFFICE"],
+    [" Wi-Fi에 연결돼 있어야 가능해요"," Wi-Fiに接続されている必要があります"],
+    ["무선 연결","無線接続"],
+    ["유선 연결","有線接続"],
+    ["Mac 사용자","Macユーザー"],
+    ["유선 권장","有線推奨"],
+    ["무선보다 선명한 4K 화면","無線より鮮明な4K画面"],
+    ["AirPlay는 ","AirPlayは"],
+    ["4K 미지원","4K非対応"],
+    ["유선(HDMI) 권장","有線(HDMI)推奨"],
+    ["Windows 사용자","Windowsユーザー"],
+    ["키보드 ","キーボード "],
+    ["연결 허용","接続許可"],
+    [" 창이 뜨면 ","のウィンドウが出たら "],
+    ["'허용'","「許可」"],
+    [" 클릭"," をクリック"],
+    ["(최초 1회)","(初回のみ)"],
+    ["'캐스트'","「キャスト」"],
+    ["캐스트","キャスト"],
+    [" 목록에서 "," 一覧から "],
+    [" 선택","を選択"],
+    ["회의실 사용 에티켓","会議室 利用マナー"],
+    ["다음 사용자를 위해 지켜주세요","次の利用者のために守ってください"],
+    ["이용시간 준수","利用時間の厳守"],
+    ["TV전원 OFF금지","TV電源OFF禁止"],
+    ["쓰레기 정리","ゴミの片付け"],
+    ["자리 정리","席の整頓"],
+    ["소등 후 퇴실","消灯して退室"],
+    ["회의실","会議室"],
+    ["허용","許可"]
+  ];
+  map.forEach(function(p){ html=html.split(p[0]).join(p[1]); });
+  return html;
+}
+// 캘린더 미연동 룸: 스케줄 자리에 '常時利用中'(주황) 고정 표시 (일본어)
+function renderFixedBusy(){ renderFixedBusyLang('ja'); }
+// 언어별 고정 상태 (교대 송출용)
+function renderFixedBusyLang(lang){
+  const ja=(lang==='ja');
+  const nowEl=document.getElementById('nnNow'),nextEl=document.getElementById('nnNext'),restEl=document.getElementById('nnRest');
+  if(nowEl){ nowEl.className='nn-now fixedbz';
+    nowEl.innerHTML='<div class="nn-main"><div class="nn-lbl fixedbz-lbl">● '+(ja?'常時利用中':'상시 사용 중')+'</div><div class="nn-title">'+(ja?'現在ご利用中です':'지금 이용 중입니다')+'</div><div class="nn-time">'+(ja?'日本法人 専用ルーム':'일본 법인 전용 룸')+'</div></div>'; }
+  if(nextEl) nextEl.innerHTML='<div class="nn-main"><div class="nn-lbl">'+(ja?'次の会議':'다음 회의')+'</div><div class="nn-title" style="opacity:.55">'+(ja?'予定なし':'예정 없음')+'</div></div>';
+  if(restEl) restEl.innerHTML='';
+}
+// 고정 상태 한·일 병기
+function renderFixedBusyBiling(){
+  const nowEl=document.getElementById('nnNow'),nextEl=document.getElementById('nnNext'),restEl=document.getElementById('nnRest');
+  if(nowEl){ nowEl.className='nn-now fixedbz';
+    nowEl.innerHTML='<div class="nn-main"><div class="nn-lbl fixedbz-lbl">● 常時利用中<span class="koline"> (상시 사용 중)</span></div><div class="nn-title">現在ご利用中です<span class="koline"> (지금 이용 중입니다)</span></div><div class="nn-time">日本法人 専用ルーム<span class="koline"> (일본 법인 전용 룸)</span></div></div>'; }
+  if(nextEl) nextEl.innerHTML='<div class="nn-main"><div class="nn-lbl">次の会議<span class="koline"> (다음 회의)</span></div><div class="nn-title" style="opacity:.55">予定なし</div></div>';
+  if(restEl) restEl.innerHTML='';
+}
+// 한·일 병기: 렌더된 한국어 요소 밑에 일본어 줄 추가
+function bilingify(root){
+  const sels=['.cb','.etq-h h3','.etq-h .s','.gc-ey','.gc-tt','.steps li > span:last-child','.tip-tx','.etq-item > span'];
+  sels.forEach(function(sel){
+    root.querySelectorAll(sel).forEach(function(el){
+      const ko=el.innerHTML, ja=jaTranslate(ko);
+      if(ja!==ko) el.innerHTML=ja+'<span class="koline"> ('+ko+')</span>';   // 일본어 메인 + (한국어)
+    });
+  });
+}
+// 교대 송출: 한국어 ↔ 일본어를 7초마다 번갈아
+function startAltLang(room,t,key){
+  const page=document.getElementById('page');
+  const ko=draftLayout(room,t,key), ja=jaTranslate(ko);
+  let lang='ko';
+  const paint=function(){ page.innerHTML=(lang==='ja')?ja:ko; renderFixedBusyLang(lang); fit(); };
+  paint();
+  if(window.__altTimer) clearInterval(window.__altTimer);
+  window.__altTimer=setInterval(function(){ lang=(lang==='ja')?'ko':'ja'; paint(); }, 10000);
+}
 function fit(){
   const page=document.getElementById('page');
   if(window.__iframeView){ page.style.transform='none'; return; }   // 캘린더/문패 iframe은 스케일 안 함(확대 버그 방지)
@@ -1421,16 +1530,24 @@ function render(){
     window.__coverBase=window.__coverAlways; refreshCover();
     window.__portrait=false; page.classList.remove('portrait'); // 방 가이드는 항상 가로
     page.style.width='1920px';page.style.height='1080px';page.style.background=dark?'#14161C':'#fff';
+    if(window.__altTimer){ clearInterval(window.__altTimer); window.__altTimer=null; }
     if(window.__draft){
-      page.innerHTML=draftLayout(room,t,key); // 확정 시안 B
+      page.innerHTML=draftLayout(room,t,key);
+      if(room.langMode==='biling') bilingify(page);       // グルメ: 한·일 병기
     } else {
       page.innerHTML=sidebar(room,t)+mainStandard(room,t); // exec: 검정 커버로 가려짐
     }
     document.title=room.name+' · 회의실 가이드';
-    // 15초 주기 폴링(+지터) → 서버가 요청 시 최신화하므로 신선도 ≈ 폴링 주기(약 15초)
-    const calKey=room.cal||key;
-    loadSchedule(calKey);
-    (function poll(){ setTimeout(function(){ loadSchedule(calKey); poll(); }, 15000+Math.floor(Math.random()*5000)); })();
+    if(room.langMode==='alt'){                             // 메시: 한↔일 교대 송출
+      startAltLang(room,t,key);
+    } else if(room.fixed==='busy'){                        // 캘린더 미연동 룸 → 상시 사용중(주황) 고정
+      (room.langMode==='biling') ? renderFixedBusyBiling() : renderFixedBusy();
+    } else {
+      // 15초 주기 폴링(+지터) → 서버가 요청 시 최신화하므로 신선도 ≈ 폴링 주기(약 15초)
+      const calKey=room.cal||key;
+      loadSchedule(calKey);
+      (function poll(){ setTimeout(function(){ loadSchedule(calKey); poll(); }, 15000+Math.floor(Math.random()*5000)); })();
+    }
   }
   fit();
 }
