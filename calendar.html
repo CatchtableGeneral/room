@@ -8,7 +8,7 @@
   @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{width:100%;height:100%;overflow:hidden;font-family:"Pretendard",sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#14161b;color:#e9ebef;}
-  .app{position:fixed;inset:0;height:100vh;width:100vw;display:flex;flex-direction:column;padding:2vh 2vw;}
+  .app{position:fixed;inset:0;display:flex;flex-direction:column;padding:2vh 2vw;}   /* inset:0 = 진짜 뷰포트(100vh 안 씀: TV Bro 대응) */
 
   .top{display:flex;align-items:center;justify-content:space-between;flex:0 0 auto;margin-bottom:1.4vh;}
   .top .l{display:flex;align-items:center;gap:14px;}
@@ -254,15 +254,15 @@
     var app=document.querySelector('.app'); if(!app) return;
     var cal=document.querySelector('.cal'), caltop=document.querySelector('.cal-top'), rows=document.getElementById('rows');
     if(!(cal&&caltop&&rows)) return;
-    // 1) JS가 덮어썼던 값 초기화 → CSS flex 본래대로 되돌려 측정
+    // 1) JS가 덮어썼던 값 초기화 후 자연 좌표 측정
     cal.style.flex=''; cal.style.height=''; rows.style.flex=''; rows.style.height='';
     REFS.forEach(function(rf){ rf.row.style.height=''; rf.row.style.flex=''; });
+    // 2) app은 position:fixed;inset:0 → getBoundingClientRect().bottom 이 '진짜' 뷰포트 하단(TV Bro에서도 정확)
+    var appRect=app.getBoundingClientRect();
     var padB=parseFloat(getComputedStyle(app).paddingBottom||0);
     var rowsTop=rows.getBoundingClientRect().top;
-    var avail=Math.max(120, vpBottom() - padB - rowsTop - 6);     // 하단까지 실제로 남는 높이
-    // 2) flex가 이미 잘 채웠으면(오픈브라우저·PC) JS 개입 안 함
-    if(rows.getBoundingClientRect().height >= avail - 24) return;
-    // 3) flex 실패(TV Bro 등)일 때만 명시적으로 높이 배분
+    var avail=Math.max(120, appRect.bottom - padB - rowsTop - 6);
+    // 3) rows에 명시적 높이 부여(정상 브라우저는 flex와 동일값이라 무해, TV Bro는 이걸로 채워짐)
     cal.style.flex='none'; rows.style.flex='none'; rows.style.height=avail+'px';
     var hdrH=0; rows.querySelectorAll('.ohdr').forEach(function(h){hdrH+=h.offsetHeight;});
     var per=Math.max(22, Math.floor((avail - hdrH)/(REFS.length||1)));
