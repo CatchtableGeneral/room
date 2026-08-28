@@ -1495,22 +1495,15 @@ function render(){
   fitw.classList.toggle('dark',!room);
   page.style.width='1920px';page.style.height='1080px';
   window.__iframeView=false;
-  // ?room=calendar / ?room=door → 완성된 별도 파일을 화면 꽉 채워 iframe으로 표시
+  // ?room=calendar / ?room=door → 완성된 별도 파일을 그 파일로 '바로 이동'(리다이렉트)
+  // (iframe 중첩은 TV Bro/GeckoView에서 크기 계산이 불안정 → 최상위 문서로 로드해야 뷰포트를 정확히 받음)
   const IFRAME_VIEWS={calendar:{src:'calendar.html',title:'회의실 스케줄'}, door:{src:'exec_door.html',title:'C레벨 회의실 문패'}};
   if(IFRAME_VIEWS[key]){
     const v=IFRAME_VIEWS[key];
-    window.__iframeView=true; window.__isPicker=true; window.__coverAlways=false; window.__coverBase=false; window.__videoRoom=false;
-    // 스케일 컨테이너(.fit-wrap/.page)를 완전히 빠져나와 독립 전체화면 iframe으로 표시 → 스케일 간섭 원천 차단
-    fitw.style.display='none';
-    let ifr=document.getElementById('__ifrv');
-    if(!ifr){
-      const wrap=document.createElement('div'); wrap.id='__ifrvwrap';
-      ifr=document.createElement('iframe'); ifr.id='__ifrv';
-      wrap.appendChild(ifr); document.body.appendChild(wrap);
-    }
-    ifr.setAttribute('title', v.title);
-    if(ifr.getAttribute('src')!==v.src){ ifr.setAttribute('src', v.src); }
-    document.title=v.title;
+    const u=new URL(v.src, location.href);
+    // room 제외한 나머지 파라미터(cover, span, v 등)는 그대로 전달
+    new URLSearchParams(location.search).forEach(function(val,k){ if(k!=='room') u.searchParams.set(k,val); });
+    location.replace(u.toString());   // 히스토리 안 남기고 교체
     return;
   }
   if(!room){
