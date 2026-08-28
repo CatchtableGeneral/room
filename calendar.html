@@ -242,8 +242,14 @@
   }
 
   // flex가 안 먹는 브라우저(TV Bro 등) 대비: 화면 높이를 픽셀로 직접 분배해 세로를 꽉 채움
+  function vpH(){   // TV Bro(Gecko) 등에서 innerHeight가 어긋나므로 가장 신뢰도 높은 값 사용
+    var a=(window.visualViewport&&window.visualViewport.height)||0;
+    var b=document.documentElement&&document.documentElement.clientHeight||0;
+    var c=window.innerHeight||0;
+    return Math.max(a,b,c)||c||b||600;
+  }
   function layoutHeights(){
-    var vh=window.innerHeight||document.documentElement.clientHeight;
+    var vh=vpH();
     var app=document.querySelector('.app'); if(!app) return;
     var topEl=document.querySelector('.top'), cal=document.querySelector('.cal');
     var caltop=document.querySelector('.cal-top'), rows=document.getElementById('rows');
@@ -324,7 +330,10 @@
 
   build(); layoutAll(); tick(); loadReal();
   window.addEventListener('resize', layoutAll);
-  setTimeout(layoutAll, 300);     // 폰트 로드 후 높이 재계산
+  if(window.visualViewport) window.visualViewport.addEventListener('resize', layoutAll);
+  window.addEventListener('load', layoutAll);   // 폰트·뷰포트 확정 후
+  // TV Bro 등에서 뷰포트가 늦게 확정되므로 여러 시점에 재계산
+  [100,400,900,1800,3000].forEach(function(ms){ setTimeout(layoutHeights, ms); });
   setInterval(tick,30000);        // 시계·지금선·상태 갱신(정시마다 롤링)
   setInterval(loadReal,60000);    // 실제 일정 60초마다 재조회
 </script>
