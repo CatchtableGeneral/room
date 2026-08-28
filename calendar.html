@@ -242,27 +242,30 @@
   }
 
   // flex가 안 먹는 브라우저(TV Bro 등) 대비: 화면 높이를 픽셀로 직접 분배해 세로를 꽉 채움
-  function vpH(){   // TV Bro(Gecko) 등에서 innerHeight가 어긋나므로 가장 신뢰도 높은 값 사용
-    var a=(window.visualViewport&&window.visualViewport.height)||0;
-    var b=document.documentElement&&document.documentElement.clientHeight||0;
-    var c=window.innerHeight||0;
-    return Math.max(a,b,c)||c||b||600;
+  // 실제 뷰포트 하단(가장 작은 신뢰값) — 넘침 방지 위해 min 사용
+  function vpBottom(){
+    var vv=(window.visualViewport&&window.visualViewport.height)||0;
+    var ch=(document.documentElement&&document.documentElement.clientHeight)||0;
+    var ih=window.innerHeight||0;
+    var c=[vv,ch,ih].filter(function(x){return x>50;});
+    return c.length?Math.min.apply(null,c):(ch||ih||600);
   }
   function layoutHeights(){
-    var vh=vpH();
     var app=document.querySelector('.app'); if(!app) return;
-    var topEl=document.querySelector('.top'), cal=document.querySelector('.cal');
-    var caltop=document.querySelector('.cal-top'), rows=document.getElementById('rows');
-    if(!(topEl&&cal&&caltop&&rows)) return;
-    app.style.height=vh+'px';
-    var cs=getComputedStyle(app), pad=parseFloat(cs.paddingTop||0)+parseFloat(cs.paddingBottom||0);
-    var topM=parseFloat(getComputedStyle(topEl).marginBottom||0);
-    var calH=Math.max(200, vh - pad - topEl.offsetHeight - topM);
-    cal.style.height=calH+'px'; cal.style.flex='none';
-    var rowsH=Math.max(120, calH - caltop.offsetHeight - 2);
-    rows.style.height=rowsH+'px'; rows.style.flex='none';
+    var cal=document.querySelector('.cal'), caltop=document.querySelector('.cal-top'), rows=document.getElementById('rows');
+    if(!(cal&&caltop&&rows)) return;
+    // 1) JS가 덮어썼던 값 초기화 → CSS flex 본래대로 되돌려 측정
+    cal.style.flex=''; cal.style.height=''; rows.style.flex=''; rows.style.height='';
+    REFS.forEach(function(rf){ rf.row.style.height=''; rf.row.style.flex=''; });
+    var padB=parseFloat(getComputedStyle(app).paddingBottom||0);
+    var rowsTop=rows.getBoundingClientRect().top;
+    var avail=Math.max(120, vpBottom() - padB - rowsTop - 6);     // 하단까지 실제로 남는 높이
+    // 2) flex가 이미 잘 채웠으면(오픈브라우저·PC) JS 개입 안 함
+    if(rows.getBoundingClientRect().height >= avail - 24) return;
+    // 3) flex 실패(TV Bro 등)일 때만 명시적으로 높이 배분
+    cal.style.flex='none'; rows.style.flex='none'; rows.style.height=avail+'px';
     var hdrH=0; rows.querySelectorAll('.ohdr').forEach(function(h){hdrH+=h.offsetHeight;});
-    var per=Math.max(28, Math.floor((rowsH - hdrH)/(REFS.length||1)));
+    var per=Math.max(22, Math.floor((avail - hdrH)/(REFS.length||1)));
     REFS.forEach(function(rf){ rf.row.style.height=per+'px'; rf.row.style.flex='none'; });
   }
 
