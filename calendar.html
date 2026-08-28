@@ -267,6 +267,29 @@
     var hdrH=0; rows.querySelectorAll('.ohdr').forEach(function(h){hdrH+=h.offsetHeight;});
     var per=Math.max(22, Math.floor((avail - hdrH)/(REFS.length||1)));
     REFS.forEach(function(rf){ rf.row.style.height=per+'px'; rf.row.style.flex='none'; });
+    if(DBG) dbgShow(appRect, rowsTop, avail, per, hdrH);
+  }
+
+  // ?dbg=1 → 화면 우상단에 실제 측정값 표시(TV Bro 원인 진단용)
+  var DBG=/[?&]dbg=1/.test(location.search);
+  function dbgShow(appRect, rowsTop, avail, per, hdrH){
+    var el=document.getElementById('__dbg');
+    if(!el){ el=document.createElement('div'); el.id='__dbg';
+      el.style.cssText='position:fixed;top:4px;right:4px;z-index:99999;background:rgba(0,0,0,.85);color:#0f0;font:11px/1.4 monospace;padding:6px 8px;border:1px solid #0f0;white-space:pre;pointer-events:none;text-align:left;';
+      document.body.appendChild(el);
+    }
+    var d=document.documentElement;
+    el.textContent=
+      'innerH: '+window.innerHeight+'\n'+
+      'clientH: '+(d&&d.clientHeight)+'\n'+
+      'visualVP: '+(window.visualViewport?Math.round(window.visualViewport.height):'-')+'\n'+
+      'screen: '+screen.width+'x'+screen.height+'\n'+
+      'DPR: '+window.devicePixelRatio+'\n'+
+      'app.bottom: '+Math.round(appRect.bottom)+'\n'+
+      'app.top: '+Math.round(appRect.top)+'\n'+
+      'rowsTop: '+Math.round(rowsTop)+'\n'+
+      'avail: '+Math.round(avail)+'\n'+
+      'per-row: '+per+'  rows: '+(REFS.length);
   }
 
   // 창 계산 후 축·이벤트·상태 전체 재배치
