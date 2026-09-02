@@ -503,9 +503,15 @@
   /* 다크모드에서 남는 밝은 카드 보정 */
   .theme-dark .main .wl-col.mac-warn{background:rgba(253,61,0,0.10);border-color:rgba(253,61,0,0.30);}
   .theme-dark .main .wl-note{color:#F0B3A3;}
-  .theme-dark .main .nn-now{background:#23272F;color:#E7E9ED;}
-  .theme-dark .main .nn-now .nn-time{color:#9AA0A6;}
-  .theme-dark .main .stc{background:#23272F;color:#E7E9ED;}
+  /* 상단 스케줄 존(.szone): 다크모드에선 오렌지 밴드 대신 다크+오렌지 글로우로 하단 가이드와 통일 */
+  .theme-dark .szone{background:radial-gradient(900px 380px at 20% -25%, rgba(253,61,0,0.22), rgba(253,61,0,0) 62%), #14161C;}
+  .theme-dark .szone.szone-bot{background:radial-gradient(900px 380px at 80% 120%, rgba(253,61,0,0.22), rgba(253,61,0,0) 62%), #14161C;}
+  .theme-dark .szone .nn-now{background:#23272F;color:#E7E9ED;}
+  .theme-dark .szone .nn-now .nn-title{color:#E7E9ED;}
+  .theme-dark .szone .nn-now .nn-time{color:#9AA0A6;}
+  .theme-dark .szone .nn-now.fixedbz{background:#2A2620;}
+  .theme-dark .szone .nn-next{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.14);}
+  .theme-dark .szone .nn-ri{border-bottom-color:rgba(255,255,255,0.12);}
 
   /* ===== 방 선택 (B 다크) ===== */
   .picker{position:relative;width:100%;height:100%;padding:40px 64px;color:#fff;display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
