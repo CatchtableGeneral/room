@@ -363,5 +363,23 @@
   setInterval(tick,30000);        // 시계·지금선·상태 갱신(정시마다 롤링)
   setInterval(loadReal,60000);    // 실제 일정 60초마다 재조회
 </script>
+<script>
+/* 장시간 구동 시 TV Bro(GeckoView) 메모리 누적 → 크래시/멋대로 리로드 예방용 자동 새로고침.
+   기본 180분. ?reload=N(분)으로 조정, ?reload=0 이면 끔. ?dbg=1 이면 좌하단에 마지막 로드 시각 표시. */
+(function(){
+  var MIN=90, m=location.search.match(/[?&]reload=(\d+)/); if(m){ MIN=parseInt(m[1],10); }
+  if(MIN>0){ setTimeout(function(){ try{location.reload();}catch(e){} }, MIN*60000); }
+  // heartbeat: 이 스케줄 화면(키 'calendar')이 살아있음을 60초마다 알림
+  (function(){ var U="https://script.google.com/macros/s/AKfycbyfD-wzNoO_j-t-k2J66D6vZOzpv8cftt7Bj9Ay-pBwTGDYuumrGD8osh3I9dx9uI4/exec";
+    function ping(){ try{ new Image().src=U+'?ping=calendar&t='+Date.now(); }catch(e){} }
+    ping(); setInterval(ping, 60000); })();
+  if(/[?&]dbg=1/.test(location.search)){ try{
+    var el=document.createElement('div');
+    el.style.cssText='position:fixed;left:4px;bottom:4px;z-index:99999;background:rgba(0,0,0,.8);color:#0f0;font:11px monospace;padding:3px 6px;pointer-events:none;';
+    el.textContent='loaded '+new Date().toLocaleString('ko-KR')+' · reload '+MIN+'m';
+    document.body.appendChild(el);
+  }catch(e){} }
+})();
+</script>
 </body>
 </html>
