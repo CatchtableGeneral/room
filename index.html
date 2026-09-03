@@ -1558,6 +1558,48 @@ function setCoverLogo(pay){
   img.onerror=function(){ this.outerHTML='<div class="iv-logo">'+txt+'</div>'; };
   cov.innerHTML=''; cov.appendChild(img);
 }
+// ===== [행사/공지] 지정 기간, 전 회의실 가이드 대신 이미지 1장 전면 노출 =====
+//  · img : 리포지토리에 올릴 이미지 파일명(또는 전체 URL)
+//  · start/end : 한국시간(TV 로컬시간). 이 구간에만 이미지가 뜸.
+//  · fit : 'cover'(꽉 채움, 넘치면 잘림) / 'contain'(안 잘리게 맞춤, 여백 생김)
+//  · 미리보기/강제: 주소에 ?event=1(강제 ON) / ?event=0(강제 OFF)
+const EVENT_TAKEOVER = { on:true, img:'event.png', fit:'contain', bg:'#000',
+                         start:'2026-09-04T08:00:00', end:'2026-09-04T23:00:00' };
+function isEventTakeover(){
+  const f=getParam('event'); if(f==='1')return true; if(f==='0')return false;
+  if(!EVENT_TAKEOVER.on) return false;
+  const now=Date.now();
+  const s=new Date(EVENT_TAKEOVER.start).getTime(), e=new Date(EVENT_TAKEOVER.end).getTime();
+  return !isNaN(s) && !isNaN(e) && now>=s && now<e;
+}
+// 이미지 네 모서리 픽셀 평균색 → 여백(레터박스) 배경으로 (검정 대신 이미지 배경색과 이어지게)
+function pickEventBg(img){
+  try{
+    const c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight;
+    const ctx=c.getContext('2d'); ctx.drawImage(img,0,0);
+    const W=c.width,H=c.height, pts=[[1,1],[W-2,1],[1,H-2],[W-2,H-2]];
+    let r=0,g=0,b=0,n=0;
+    pts.forEach(function(p){ const d=ctx.getImageData(p[0],p[1],1,1).data; r+=d[0];g+=d[1];b+=d[2];n++; });
+    if(n){ const el=document.getElementById('event-cover');
+      if(el) el.style.background='rgb('+Math.round(r/n)+','+Math.round(g/n)+','+Math.round(b/n)+')'; }
+  }catch(e){}   // 크로스오리진 등으로 못 읽으면 기본 bg 유지
+}
+function refreshEventCover(){
+  let el=document.getElementById('event-cover');
+  const active = !window.__isPicker && isEventTakeover();   // 회의실 화면에서만(현황판 제외)
+  if(active){
+    if(!el){ el=document.createElement('div'); el.id='event-cover';
+      el.style.cssText='position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;background:'+(EVENT_TAKEOVER.bg||'#000')+';';
+      const img=document.createElement('img'); img.id='event-cover-img';
+      img.onload=function(){ pickEventBg(img); };   // 로드되면 여백색 자동 감지
+      el.appendChild(img); document.body.appendChild(el);
+    }
+    const img=document.getElementById('event-cover-img');
+    if(img.getAttribute('src')!==EVENT_TAKEOVER.img) img.src=EVENT_TAKEOVER.img;
+    img.style.cssText='width:100%;height:100%;object-fit:'+(EVENT_TAKEOVER.fit||'contain')+';display:block;';
+    el.style.display='flex';
+  } else if(el){ el.style.display='none'; }
+}
 // 테마 적용: 클래스 + 페이지 배경 + 헤더 로고색(화이트/그레이=흰 로고, 다크=오렌지 워드마크)
 function setThemeMode(mode){
   const page=document.getElementById('page'); if(!page) return;
@@ -1613,6 +1655,7 @@ function render(){
     window.__isPicker=true; window.__ivRoom=false; window.__coverAlways=false; window.__videoRoom=false; window.__coverBase=false; setCoverLogo(false); refreshCover();
     applyPortrait();   // 세로/가로 반영
     startHeartbeat('board');   // 현황판 자체도 생존신호 전송
+    refreshEventCover();   // 현황판에선 이미지 숨김(회의실 화면만 노출)
   } else {
     const isIvRoom=(room.type==="interview");
     const t=isIvRoom?TYPES.general:(TYPES[room.type]||TYPES.general); // 인터뷰룸도 내용은 일반회의실과 동일하게
@@ -1640,6 +1683,8 @@ function render(){
     }
     // 테마 적용(로고 색 포함). 테스트 순환룸이면 10초마다 화이트→그레이→다크
     if(room.themeCycle){ startThemeCycle(); } else { setThemeMode(themeMode); }
+    refreshEventCover();   // 행사 이미지 전면 노출 구간이면 가이드 위에 이미지
+    if(!window.__eventTimer){ window.__eventTimer=setInterval(refreshEventCover, 60000); }  // 08:00/23:00 경계 자동 전환
     document.title=room.name+' · 회의실 가이드';
     if(room.langMode==='alt'){                             // 메시: 한↔일 교대 송출
       startAltLang(room,t,key);
