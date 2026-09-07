@@ -367,8 +367,23 @@
 /* 장시간 구동 시 TV Bro(GeckoView) 메모리 누적 → 크래시/멋대로 리로드 예방용 자동 새로고침.
    기본 180분. ?reload=N(분)으로 조정, ?reload=0 이면 끔. ?dbg=1 이면 좌하단에 마지막 로드 시각 표시. */
 (function(){
-  var MIN=90, m=location.search.match(/[?&]reload=(\d+)/); if(m){ MIN=parseInt(m[1],10); }
-  if(MIN>0){ setTimeout(function(){ try{location.reload();}catch(e){} }, MIN*60000); }
+  var MIN=60, m=location.search.match(/[?&]reload=(\d+)/); if(m){ MIN=parseInt(m[1],10); }
+  if(MIN>0){
+    function fadeReload(){
+      try{ var o=document.createElement('div');
+        o.style.cssText='position:fixed;inset:0;background:#14161b;z-index:2147483647;opacity:0;transition:opacity .45s ease;pointer-events:none;';
+        document.body.appendChild(o); requestAnimationFrame(function(){ o.style.opacity='1'; });
+        setTimeout(function(){ location.reload(); }, 470);
+      }catch(e){ location.reload(); }
+    }
+    function safeReload(){
+      try{ fetch(location.href,{method:'HEAD',cache:'no-store'})
+        .then(function(r){ if(r && (r.ok||r.type==='opaque'||r.status===0)) fadeReload(); else setTimeout(safeReload,180000); })
+        .catch(function(){ setTimeout(safeReload,180000); });
+      }catch(e){ setTimeout(safeReload,180000); }
+    }
+    setTimeout(safeReload, MIN*60000);
+  }
   // heartbeat: 이 스케줄 화면(키 'calendar')이 살아있음을 60초마다 알림
   (function(){ var U="https://script.google.com/macros/s/AKfycbyfD-wzNoO_j-t-k2J66D6vZOzpv8cftt7Bj9Ay-pBwTGDYuumrGD8osh3I9dx9uI4/exec";
     function ping(){ try{ new Image().src=U+'?ping=calendar&t='+Date.now(); }catch(e){} }
