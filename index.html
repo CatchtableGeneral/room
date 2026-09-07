@@ -1754,7 +1754,7 @@ setInterval(__checkDeploy, 5*60*1000);   // 5분마다 새 배포 확인 → 있
    기본 180분. ?reload=N(분)으로 조정, ?reload=0 이면 끔. ?dbg=1 이면 좌하단에 마지막 로드 시각 표시.
    (calendar/door는 다른 파일로 리다이렉트되므로 이 타이머는 그쪽 파일의 것이 동작함) */
 (function(){
-  var MIN=90, m=location.search.match(/[?&]reload=(\d+)/); if(m){ MIN=parseInt(m[1],10); }
+  var MIN=60, m=location.search.match(/[?&]reload=(\d+)/); if(m){ MIN=parseInt(m[1],10); }
   if(MIN>0){
     function fadeReload(){
       try{ var o=document.createElement('div');
