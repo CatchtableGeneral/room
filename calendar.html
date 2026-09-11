@@ -180,7 +180,7 @@
   }
 
   function refreshStatus(){
-    var now=Date.now();
+    var now=Date.now(), maxBusyEnd=0;
     REFS.forEach(function(rf){
       var busy=false, soonMs=Infinity, curEnd=0;
       rf.ev.forEach(function(x){
@@ -190,6 +190,7 @@
         else if(e<=now){ x.el.classList.add('past'); }
         else if(s>now){ soonMs=Math.min(soonMs, s-now); }
       });
+      if(busy) maxBusyEnd=Math.max(maxBusyEnd, curEnd);   // 진행중 회의의 가장 늦은 종료시각(자동 새로고침 미룸 기준)
       var cls, label;
       if(busy){
         if(curEnd-now<=5*60000){ cls='r-ending'; label='곧 종료'; }
@@ -201,6 +202,7 @@
       rf.stat.textContent=label;
       renderFreeSlots(rf, now);
     });
+    window.__busyUntil = maxBusyEnd;   // 어느 방이든 진행중 회의가 있으면 그 종료시각까지 자동 새로고침 미룸
   }
 
   // 예약 가능(빈) 구간 초록 블록: 지금부터 창 끝까지, 15분 이상 빈 곳만
@@ -377,12 +379,16 @@
       }catch(e){ location.reload(); }
     }
     function safeReload(){
+      // ① 진행중 회의가 있으면 그 종료시각까지 미룸(회의 도중 깜빡임 방지). 예정보다 2시간 넘게 밀리면 강제.
+      var overdue = window.__reloadDue && (Date.now()-window.__reloadDue > 120*60000);
+      if(!overdue && window.__busyUntil && Date.now() < window.__busyUntil){ setTimeout(safeReload, 60000); return; }
+      // ② 연결 확인 후에만 리로드(오프라인이면 3분 뒤 재시도)
       try{ fetch(location.href,{method:'HEAD',cache:'no-store'})
         .then(function(r){ if(r && (r.ok||r.type==='opaque'||r.status===0)) fadeReload(); else setTimeout(safeReload,180000); })
         .catch(function(){ setTimeout(safeReload,180000); });
       }catch(e){ setTimeout(safeReload,180000); }
     }
-    setTimeout(safeReload, MIN*60000);
+    setTimeout(function(){ window.__reloadDue=Date.now(); safeReload(); }, MIN*60000);
   }
   // heartbeat: 이 스케줄 화면(키 'calendar')이 살아있음을 60초마다 알림
   (function(){ var U="https://script.google.com/macros/s/AKfycbyfD-wzNoO_j-t-k2J66D6vZOzpv8cftt7Bj9Ay-pBwTGDYuumrGD8osh3I9dx9uI4/exec";
