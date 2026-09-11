@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>CATCHTABLE IDEA SPRINT</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
+
+<script>
+/* ==========================================================================
+   ★★★ 여기 4줄만 고치면 됩니다 (메모장으로 열어서 수정 → 저장) ★★★
+   따옴표(" ")는 지우지 말고, 그 안의 글자만 바꿔주세요.
+   ========================================================================== */
+var 설정 = {
+
+  // 1) 스프린트 종료(마감) 일시  (형식: "연도-월-일T시:분:초"  ← T는 대문자, 24시간제)
+  //    예) 9월 14일 오후 4시 40분 종료 → "2026-09-14T16:40:00"
+  마감일시: "2026-09-14T16:40:00",
+
+  // 2) 구글 폼 응답이 쌓이는 시트 주소 (응답 탭을 열어둔 상태의 주소창 주소를 그대로 복사)
+  //    주소 끝의 #gid=숫자 부분을 화면이 알아서 읽어서 해당 탭만 셉니다.
+  //    비워두면 '수동 모드'로 동작합니다 (키보드 위/아래 화살표로 숫자 조절)
+  시트주소: "https://docs.google.com/spreadsheets/d/10zxgWqzNwMdvaoCMLdKFguC7ivNPTERJcUe-YTE4HOM/edit?resourcekey=&gid=1275101339#gid=1275101339",
+
+  // 3) 위 주소에 #gid=숫자 가 없을 때만 쓰이는 예비값 (탭 이름)
+  시트탭이름: "설문지 응답 시트1",
+
+  // 4) 숫자를 몇 초마다 새로 확인할지 (숫자만, 10~30 권장)
+  갱신주기초: 15
+
+};
+/* ========================= 아래는 손대지 않아도 됩니다 ===================== */
+</script>
+
+<style>
+  :root{
+    --orange:#FF3D00;
+    --bg:#000000;
+    /* 화면 크기에 맞춰 모든 요소가 같은 비율로 커지고 작아지는 기준값 (16:9 기준) */
+    --u: min(6.25vw, 11.1111vh);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    background:var(--bg);
+    color:var(--orange);
+    font-family:"Poppins","Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    overflow:hidden;
+    cursor:none;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .stage{
+    height:100%;
+    overflow:hidden;
+    display:grid;
+    grid-template-columns: 45.9% 54.1%;
+    align-items:center;
+  }
+
+  /* ---------- 왼쪽 로고 ---------- */
+  .logo-box{ display:flex; justify-content:center; align-items:center; padding-left:1.3%; }
+  .logo-box img{
+    width:75%;
+    max-height:56vh;
+    object-fit:contain;
+    display:block;
+  }
+  /* 로고 파일이 없을 때 자동으로 보여주는 글자 로고 */
+  .logo-text{
+    display:none;
+    font-weight:300;
+    font-size:calc(var(--u) * 0.72);
+    line-height:1.14;
+    letter-spacing:0.01em;
+    text-align:right;
+    white-space:pre-line;
+    padding-right:8%;
+  }
+  .stage.no-logo .logo-box img{ display:none; }
+  .stage.no-logo .logo-text{ display:block; }
+
+  /* ---------- 오른쪽 정보 ---------- */
+  .info{ margin-right:3%; min-width:0; }
+
+  .label{
+    font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    font-weight:700;
+    font-size:calc(var(--u) * 0.31);
+    letter-spacing:-0.01em;
+    line-height:1;
+    padding-top:calc(var(--u) * 0.09);
+  }
+
+  .timer{
+    font-weight:700;
+    font-size:calc(var(--u) * 1.63);
+    line-height:1;
+    letter-spacing:0.055em;
+    font-variant-numeric:tabular-nums;
+    margin-top:calc(var(--u) * 0.023);
+    white-space:nowrap;
+    transform-origin:left center;
+  }
+
+  .count-block{ margin-top:calc(var(--u) * 0.33); }
+  .count-line{
+    font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    font-weight:700;
+    font-size:calc(var(--u) * 0.62);
+    line-height:1.1;
+    letter-spacing:0.005em;
+    margin-top:calc(var(--u) * 0.266);
+    white-space:nowrap;
+    transform-origin:left center;
+  }
+  .count-line .num{
+    font-family:"Poppins","Noto Sans KR",sans-serif;
+    font-weight:700;
+    font-size:1.15em;
+    font-variant-numeric:tabular-nums;
+    display:inline-block;
+  }
+
+  /* 새 아이디어가 들어왔을 때 잠깐 반짝이는 효과 */
+  @keyframes pop{
+    0%{ transform:scale(1); filter:brightness(1); }
+    35%{ transform:scale(1.14); filter:brightness(1.9); }
+    100%{ transform:scale(1); filter:brightness(1); }
+  }
+  .count-line .num.pop{ animation:pop 900ms cubic-bezier(.2,.8,.2,1); }
+
+  /* 종료 후에만 보이는 문구 */
+  .best-line{
+    display:none;
+    font-family:"Poppins","Noto Sans KR",sans-serif;
+    font-weight:700;
+    font-size:calc(var(--u) * 0.62);
+    line-height:1.1;
+    letter-spacing:0.01em;
+    margin-top:calc(var(--u) * 0.34);
+    white-space:nowrap;
+    transform-origin:left center;
+  }
+  .best-line .kr{
+    font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    letter-spacing:0.005em;
+  }
+
+  /* 종료 시각이 지나면: 타이머 줄을 감추고, 로고를 조금 줄여 글자 영역을 넓힘 */
+  body.ended #labelTimer,
+  body.ended #timer{ display:none; }
+  body.ended .count-block{ margin-top:0; }
+  body.ended .best-line{ display:block; }
+  body.ended .best-line{ font-size:calc(var(--u) * 0.80); margin-top:calc(var(--u) * 0.36); }
+
+  /* 설정 오류 등으로 타이머 자리에 글자를 띄울 때 */
+  .timer.done{
+    font-family:"Noto Sans KR","Malgun Gothic",sans-serif;
+    font-weight:700;
+    font-size:calc(var(--u) * 0.9);
+    letter-spacing:-0.02em;
+  }
+
+  /* 화면 오른쪽 아래 아주 작은 상태 표시 (문제 있을 때만 보임) */
+  .status{
+    position:fixed; right:1.2vw; bottom:1.4vh;
+    font-family:"Noto Sans KR","Malgun Gothic",sans-serif;
+    font-size:calc(var(--u) * 0.085);
+    color:#803a22;
+    opacity:0; transition:opacity .4s;
+    letter-spacing:0;
+  }
+  .status.show{ opacity:1; }
+  .status.warn{ color:#FF3D00; font-size:calc(var(--u) * 0.14); opacity:1; }
+
+  /* 세로로 긴 화면(TV를 세로로 걸었을 때)에서는 위아래로 배치 */
+  @media (max-aspect-ratio: 11/10){
+    :root{ --u: min(11vw, 8.2vh); }
+    .stage{ grid-template-columns:1fr; grid-template-rows:auto auto; justify-items:center; gap:4vh; align-content:center; }
+    .info{ margin:0; padding:0; width:92%; text-align:center; }
+    .timer,.count-line,.best-line{ transform-origin:center center; }
+    .logo-text{ text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <div class="logo-box">
+    <!-- 로고 이미지: 같은 폴더의 logo.png 를 씁니다.
+         본인 로고 파일 이름을 logo.png 로 바꿔서 이 HTML과 같은 폴더에 넣어주세요.
+         (배경이 투명한 PNG를 권장합니다) -->
+    <img src="logo.png" alt="CATCHTABLE IDEA SPRINT" id="logo">
+    <div class="logo-text">CATCHTABLE
+IDEA
+SPRINT</div>
+  </div>
+
+  <div class="info">
+    <div class="label" id="labelTimer">종료까지</div>
+    <div class="timer" id="timer">--:--:--</div>
+
+    <div class="count-block">
+      <div class="label" id="labelCount">현재까지</div>
+      <div class="count-line"><span class="num" id="count">0</span><span id="countSuffix">개의 아이디어가 탄생했어요!</span></div>
+      <div class="best-line" id="best">BEST IDEA<span class="kr">의 주인공은?</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="status" id="status"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var $timer  = document.getElementById('timer');
+  var $count  = document.getElementById('count');
+  var $status = document.getElementById('status');
+  var $stage  = document.getElementById('stage');
+  var $countLine = document.querySelector('.count-line');
+  var $logo   = document.getElementById('logo');
+
+  /* 로고 파일이 없으면 글자 로고로 자동 대체 */
+  $logo.addEventListener('error', function(){ $stage.classList.add('no-logo'); });
+  if ($logo.complete && $logo.naturalWidth === 0) $stage.classList.add('no-logo');
+
+  /* --- 주소창 옵션 (테스트용) ---
+     예) ...board.html?count=30&deadline=2026-09-11T18:00:00  */
+  var qs = new URLSearchParams(location.search);
+  var 마감 = new Date(qs.get('deadline') || 설정.마감일시);
+  var 시트주소 = (qs.get('sheet') || 설정.시트주소 || '').trim();
+
+  /* 글자가 화면 밖으로 넘칠 때 자동으로 살짝 줄여주는 장치 */
+  var $info = document.querySelector('.info');
+  function 글자폭(el){
+    var w = 0;
+    try{
+      var rng = document.createRange();
+      rng.selectNodeContents(el);
+      w = rng.getBoundingClientRect().width;
+    }catch(e){}
+    return w || el.scrollWidth;
+  }
+
+  function fit(el){
+    el.style.transform = 'none';
+    var avail = $info.clientWidth;
+    var w = 글자폭(el);
+    if (w > avail && avail > 0) el.style.transform = 'scale(' + (avail * 0.99 / w) + ')';
+  }
+
+
+
+  function 줄맞춤(){
+    fit($countLine);
+    if (document.body.classList.contains('ended')) fit(document.getElementById('best'));
+  }
+
+  /* ---------------- 1) 카운트다운 ---------------- */
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+  function tickTimer(){
+    if (isNaN(마감.getTime())){
+      $timer.textContent = '마감일시 형식 오류';
+      $timer.className = 'timer done';
+      fit($timer);
+      note('설정의 마감일시를 "2026-09-30T18:00:00" 형태로 고쳐주세요', true);
+      return;
+    }
+    var 남음 = 마감.getTime() - Date.now();
+
+    if (남음 <= 0){
+      if (!document.body.classList.contains('ended')){
+        document.body.classList.add('ended');
+        var sfx = document.getElementById('countSuffix');
+        if (sfx) sfx.textContent = '개의 아이디어가 접수되었습니다';
+        줄맞춤();
+      }
+      return;
+    }
+
+    var 총초 = Math.floor(남음 / 1000);
+    var 시  = Math.floor(총초 / 3600);          /* 며칠이 남아도 전부 '시간'으로 환산 */
+    var 분  = Math.floor((총초 % 3600) / 60);
+    var 초  = 총초 % 60;
+
+    var 글자 = pad(시) + ':' + pad(분) + ':' + pad(초);
+    if ($timer.textContent !== 글자){
+      var 바뀜 = $timer.className !== 'timer';
+      $timer.textContent = 글자;
+      $timer.className = 'timer';
+      if (바뀜 || 글자.length !== 이전길이){ 이전길이 = 글자.length; fit($timer); }
+    }
+  }
+
+  /* ---------------- 2) 숫자 표시 ---------------- */
+  var 이전길이 = 0;
+  var 현재숫자 = 0;
+  var 첫로딩 = true;
+
+  function 숫자표시(목표){
+    목표 = Math.max(0, Math.floor(목표));
+    if (목표 === 현재숫자 && !첫로딩) return;
+
+    var 시작 = 현재숫자;
+    현재숫자 = 목표;
+
+    if (첫로딩){
+      첫로딩 = false;
+      $count.textContent = 목표;
+      줄맞춤();
+      return;
+    }
+    if (목표 > 시작){
+      $count.classList.remove('pop');
+      void $count.offsetWidth;
+      $count.classList.add('pop');
+    }
+    // 숫자가 스르륵 올라가는 효과
+    var 시간 = 600, 시작시각 = performance.now();
+    function step(now){
+      var p = Math.min(1, (now - 시작시각) / 시간);
+      var e = 1 - Math.pow(1 - p, 3);
+      $count.textContent = Math.round(시작 + (목표 - 시작) * e);
+      if (p < 1) requestAnimationFrame(step);
+      else { $count.textContent = 목표; 줄맞춤(); }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function note(msg, keep){
+    if ($status.classList.contains('warn')) return;   // 설정 오류 안내가 떠 있으면 덮지 않음
+    $status.textContent = msg || '';
+    $status.classList.toggle('show', !!msg);
+    if (msg && !keep) setTimeout(function(){ $status.classList.remove('show'); }, 6000);
+  }
+
+  function 경고(msg){
+    $status.textContent = msg;
+    $status.className = 'status show warn';
+  }
+
+  /* ---------------- 3) 구글 시트에서 개수 가져오기 ----------------
+     구글 시트의 gviz 기능을 JSONP(스크립트 태그) 방식으로 호출합니다.
+     이렇게 하면 HTML 파일을 그냥 두 번 클릭해서 열어도 차단 없이 동작합니다. */
+  var 시트ID = (시트주소.match(/\/d\/([a-zA-Z0-9-_]+)/) || [])[1] || '';
+  var 시트GID = (시트주소.match(/[#&?]gid=(\d+)/) || [])[1] || '';
+  var 실패횟수 = 0;
+  var 탭지정사용 = true;      /* gid(또는 탭이름)로 특정 탭을 지정해서 물어볼지 */
+  var 탭이름경고 = false;
+
+  /* 주소를 잘못 넣은 흔한 경우 알려주기 */
+  if (시트주소 && /\/forms\//.test(시트주소)){
+    시트ID = '';
+    경고('구글 "폼" 주소가 들어갔어요. 폼이 아니라 응답이 쌓이는 "시트" 주소를 넣어주세요.');
+  } else if (시트주소 && /\/d\/e\//.test(시트주소)){
+    시트ID = '';
+    경고('"웹에 게시" 주소가 들어갔어요. 시트를 열었을 때 주소창에 보이는 원래 주소를 넣어주세요.');
+  } else if (시트주소 && !시트ID){
+    경고('시트주소를 알아볼 수 없어요. 시트를 열고 주소창 주소를 그대로 복사해 넣어주세요.');
+  }
+
+  function 개수가져오기(){
+    if (!시트ID) return;
+
+    var cbName = 'ctcb' + Date.now() + Math.floor(Math.random() * 1000);
+    var s = document.createElement('script');
+    var 끝났나 = false;
+
+    function 정리(){
+      try { delete window[cbName]; } catch(e){ window[cbName] = undefined; }
+      if (s.parentNode) s.parentNode.removeChild(s);
+    }
+
+    window[cbName] = function(res){
+      끝났나 = true;
+      try{
+        if (res && res.status === 'error'){
+          // 탭 이름이 틀린 경우 → 첫 번째 탭으로 한 번 더 시도
+          if (탭지정사용){ 탭지정사용 = false; 탭이름경고 = true; 정리(); 개수가져오기(); return; }
+          throw new Error('sheet error');
+        }
+        /* 응답이 아직 0건이면 gviz가 rows를 빈 배열로 돌려줍니다 → 0으로 처리 */
+        var rows = res.table && res.table.rows;
+        var cell = (rows && rows.length && rows[0].c) ? rows[0].c[0] : null;
+        var v = (cell && cell.v != null) ? cell.v : 0;
+        숫자표시(Number(v) || 0);
+        실패횟수 = 0;
+        if (탭이름경고) 경고('지정한 탭을 못 찾아서 맨 앞 탭을 세고 있어요. 시트주소를 응답 탭에서 다시 복사해주세요.');
+        else note('');
+      } catch(err){
+        실패();
+      }
+      정리();
+    };
+
+    s.onerror = function(){ 끝났나 = true; 실패(); 정리(); };
+    setTimeout(function(){ if (!끝났나){ 실패(); 정리(); } }, 12000);
+
+    var tq = encodeURIComponent('select count(A)');
+    var 탭지정 = '';
+    if (탭지정사용){
+      if (시트GID) 탭지정 = '&gid=' + 시트GID;
+      else if (설정.시트탭이름) 탭지정 = '&sheet=' + encodeURIComponent(설정.시트탭이름);
+    }
+    var url = 'https://docs.google.com/spreadsheets/d/' + 시트ID +
+              '/gviz/tq?tqx=responseHandler:' + cbName + 탭지정 +
+              '&headers=1&tq=' + tq + '&_=' + Date.now();
+    s.src = url;
+    document.head.appendChild(s);
+  }
+
+  function 실패(){
+    실패횟수++;
+    if (실패횟수 >= 2){
+      note('시트 연결 확인 중… (마지막 숫자를 그대로 보여주고 있어요)', true);
+    }
+  }
+
+  /* ---------------- 4) 수동 모드 (시트 주소를 안 넣었을 때) ----------------
+     키보드 ↑ / ↓ 또는 + / - 로 숫자를 직접 올리고 내릴 수 있습니다.
+     새로고침해도 숫자가 유지됩니다. */
+  var 수동모드 = !시트ID;
+  var 수동키 = 'ct-idea-sprint-count';
+
+  if (수동모드){
+    var 저장값 = 0;
+    try { 저장값 = parseInt(localStorage.getItem(수동키) || '0', 10) || 0; } catch(e){}
+    숫자표시(저장값);
+    note('수동 모드 · 키보드 ↑ ↓ 로 숫자 조절', true);
+
+    document.addEventListener('keydown', function(e){
+      var d = 0;
+      if (e.key === 'ArrowUp'   || e.key === '+' || e.key === '=') d = 1;
+      if (e.key === 'ArrowDown' || e.key === '-' || e.key === '_') d = -1;
+      if (e.key === '0') { 숫자표시(0); 저장(0); return; }
+      if (!d) return;
+      e.preventDefault();
+      var v = Math.max(0, 현재숫자 + d);
+      숫자표시(v); 저장(v);
+    });
+    function 저장(v){ try { localStorage.setItem(수동키, String(v)); } catch(e){} }
+  }
+
+  /* 주소창으로 숫자를 강제 지정한 경우 (테스트용) */
+  if (qs.get('count') !== null) 숫자표시(Number(qs.get('count')) || 0);
+
+  /* ---------------- 5) 시작 ---------------- */
+  tickTimer();
+  setInterval(tickTimer, 250);
+  window.addEventListener('resize', function(){ fit($timer); 줄맞춤(); });
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){ fit($timer); 줄맞춤(); });
+  }
+
+  if (시트ID){
+    개수가져오기();
+    var 주기 = Math.max(5, Number(설정.갱신주기초) || 15) * 1000;
+    setInterval(개수가져오기, 주기);
+    // 화면을 다시 켰을 때 즉시 갱신
+    document.addEventListener('visibilitychange', function(){
+      if (!document.hidden) 개수가져오기();
+    });
+  }
+
+  /* TV가 절전으로 꺼지는 것을 조금이나마 막아줍니다 (브라우저가 지원할 때만) */
+  if ('wakeLock' in navigator){
+    navigator.wakeLock.request('screen').catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
