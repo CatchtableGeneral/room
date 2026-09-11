@@ -515,8 +515,8 @@
   .theme-dark .main .wl-col.mac-warn{background:rgba(253,61,0,0.10);border-color:rgba(253,61,0,0.30);}
   .theme-dark .main .wl-note{color:#F0B3A3;}
   /* 상단 스케줄 존(.szone): 다크모드에선 오렌지 밴드 대신 다크+오렌지 글로우로 하단 가이드와 통일 */
-  .theme-dark .szone{background:radial-gradient(900px 380px at 20% -25%, rgba(253,61,0,0.22), rgba(253,61,0,0) 62%), #14161C;}
-  .theme-dark .szone.szone-bot{background:radial-gradient(900px 380px at 80% 120%, rgba(253,61,0,0.22), rgba(253,61,0,0) 62%), #14161C;}
+  .theme-dark .szone{background:#14161C;}   /* 상단도 하단 가이드와 동일한 다크 배경으로 통일(오렌지 글로우 제거) */
+  .theme-dark .szone.szone-bot{background:#14161C;}
   .theme-dark .szone .nn-now{background:#23272F;color:#E7E9ED;}
   .theme-dark .szone .nn-now .nn-title{color:#E7E9ED;}
   .theme-dark .szone .nn-now .nn-time{color:#9AA0A6;}
@@ -714,7 +714,7 @@ const ROOMS = {
   cooking:{name:"Cooking Room",type:"general",office:"판교사무실 A"},plating:{name:"Plating Room",type:"general",office:"판교사무실 A"},
   tasting:{name:"Tasting Room",type:"general",office:"판교사무실 A"},
   exec1:{name:"쪽방1",type:"exec",office:"판교사무실 A"},exec2:{name:"쪽방2",type:"exec",office:"판교사무실 A"},exec3:{name:"쪽방3",type:"exec",office:"판교사무실 A"},
-  winery:{name:"Winery Room",type:"exec",office:"판교사무실 B",tag:"사장님그로스 아르바이트 업무공간"},terrace:{name:"Terrace Room",type:"general",office:"판교사무실 B"},
+  winery:{name:"Winery Room",type:"general",office:"판교사무실 B"},terrace:{name:"Terrace Room",type:"general",office:"판교사무실 B"},
   roasting:{name:"Roasting Room",type:"general",office:"판교사무실 B"},baking:{name:"Baking Room",type:"general",office:"판교사무실 B"},
   interview1:{name:"Interview Room1",type:"interview",office:"판교사무실 B"},interview2:{name:"Interview Room2",type:"interview",office:"판교사무실 B"},
   party:{name:"Party Room",type:"video",office:"판교사무실 B"},flavor:{name:"Flavor Room",type:"general",office:"페이 사무실"},
@@ -726,6 +726,7 @@ const ROOMS = {
   test4:{name:"Plating Room",type:"general",office:"테스트",sample:"full"},  // 종일 꽉 참
   test5:{name:"Plating Room",type:"general",office:"테스트",sample:"few"},   // 여유 + 예정 몇 건
   test6:{name:"Gourmet Room",type:"general",office:"테스트",sample:"few",themeCycle:true}, // 테마 순환(화이트→그레이→다크 10초)
+  test7:{name:"IDEA SPRINT",type:"general",office:"테스트",sample:"few",eventPreview:true},  // 이벤트 화면(보드) 미리보기 — 시간 무관 상시 노출
   testv:{name:"Party Room",type:"video",office:"테스트",sample:"busy"}       // 화상회의실(진행중+다음)
 
 };
@@ -1365,6 +1366,7 @@ function caseEvents(name){
 // B: 지금 / 다음 대형 카드 + 이후 미니 리스트
 function renderNN(events,now){
   const cur=events.find(e=>now>=e.start&&now<e.end);
+  window.__busyUntil = cur ? cur.end : 0;   // 회의 중이면 종료시각 기록(자동 새로고침을 이때까지 미룸)
   const up=events.filter(e=>e.start>now).sort((a,b)=>a.start-b.start);
   const nowEl=document.getElementById('nnNow'),nextEl=document.getElementById('nnNext'),restEl=document.getElementById('nnRest');
   const joinBtn=(e,cls)=> (window.__videoRoom && e) ? `<a class="nn-join${cls?' '+cls:''}" href="${e.meet||'#'}" target="_blank" rel="noopener">참여${cls?'':'하기'}</a>` : '';
@@ -1563,16 +1565,27 @@ function setCoverLogo(pay){
 //  · start/end : 한국시간(TV 로컬시간). 이 구간에만 이미지가 뜸.
 //  · fit : 'cover'(꽉 채움, 넘치면 잘림) / 'contain'(안 잘리게 맞춤, 여백 생김)
 //  · 미리보기/강제: 주소에 ?event=1(강제 ON) / ?event=0(강제 OFF)
-const EVENT_TAKEOVER = { on:false, img:'event.png', fit:'contain', bg:'#EAEBED',   // on:false = 롤백(가이드만 노출). 다시 켜려면 on:true + 날짜만 수정
-                         start:'2026-09-04T08:00:00', end:'2026-09-04T23:00:00' };
+const EVENT_TAKEOVER = {
+  on:true,
+  mode:'iframe',                       // 'iframe'=URL 화면(보드) / 'image'=이미지 한 장
+  url:'idea/idea-sprint-board.html',   // mode:'iframe'일 때 띄울 페이지(리포지토리 내 경로)
+  img:'event.png',                     // mode:'image'일 때
+  roll:false,                          // false=계속 노출 / true=1분 가이드↔1분 화면 교대(+카운트다운)
+  fit:'contain', bg:'#000',
+  start:'2026-09-14T12:40:00', end:'2026-09-14T16:40:00'   // 다음주 월요일 4시간 (시작/종료 시각은 여기만 수정)
+};
 function isEventTakeover(){
   const f=getParam('event'); if(f==='1')return true; if(f==='0')return false;
-  if(!EVENT_TAKEOVER.on) return false;
+  // 테스트용: 주소로 직접 시간대 지정 (?evstart=2026-09-11T15:00:00&evend=2026-09-11T15:03:00)
+  const os=getParam('evstart'), oe=getParam('evend');
   const now=Date.now();
+  if(os && oe){ const s2=new Date(os).getTime(), e2=new Date(oe).getTime();
+    return !isNaN(s2) && !isNaN(e2) && now>=s2 && now<e2; }
+  if(!EVENT_TAKEOVER.on) return false;
   const s=new Date(EVENT_TAKEOVER.start).getTime(), e=new Date(EVENT_TAKEOVER.end).getTime();
   return !isNaN(s) && !isNaN(e) && now>=s && now<e;
 }
-// 이미지 네 모서리 픽셀 평균색 → 여백(레터박스) 배경으로 (검정 대신 이미지 배경색과 이어지게)
+// (이미지 모드) 네 모서리 평균색 → 여백 배경
 function pickEventBg(img){
   try{
     const c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight;
@@ -1582,24 +1595,35 @@ function pickEventBg(img){
     pts.forEach(function(p){ const d=ctx.getImageData(p[0],p[1],1,1).data; r+=d[0];g+=d[1];b+=d[2];n++; });
     if(n){ const el=document.getElementById('event-cover');
       if(el) el.style.background='rgb('+Math.round(r/n)+','+Math.round(g/n)+','+Math.round(b/n)+')'; }
-  }catch(e){}   // 크로스오리진 등으로 못 읽으면 기본 bg 유지
+  }catch(e){}
 }
 function ensureEventCover(){
   let el=document.getElementById('event-cover');
   if(!el){
     el=document.createElement('div'); el.id='event-cover';
-    el.style.cssText='position:fixed;inset:0;z-index:2147482000;display:none;align-items:center;justify-content:center;background:'+(EVENT_TAKEOVER.bg||'#000')+';';
-    const img=document.createElement('img'); img.id='event-cover-img';
-    img.onload=function(){ pickEventBg(img); };   // 로드되면 여백색 자동 감지
-    img.style.cssText='width:100%;height:100%;object-fit:'+(EVENT_TAKEOVER.fit||'contain')+';display:block;';
-    el.appendChild(img);
+    el.style.cssText='position:fixed;inset:0;z-index:2147482000;display:none;align-items:center;justify-content:center;overflow:hidden;background:'+(EVENT_TAKEOVER.bg||'#000')+';';
+    if(EVENT_TAKEOVER.mode==='iframe'){
+      const ifr=document.createElement('iframe'); ifr.id='event-cover-ifr'; ifr.setAttribute('scrolling','no');
+      ifr.style.cssText='width:100%;height:100%;border:0;display:block;background:'+(EVENT_TAKEOVER.bg||'#000')+';';
+      el.appendChild(ifr);
+    } else {
+      const img=document.createElement('img'); img.id='event-cover-img';
+      img.onload=function(){ pickEventBg(img); };
+      img.style.cssText='width:100%;height:100%;object-fit:'+(EVENT_TAKEOVER.fit||'contain')+';display:block;';
+      el.appendChild(img);
+    }
     document.body.appendChild(el);
   }
-  const img=document.getElementById('event-cover-img');
-  if(img.getAttribute('src')!==EVENT_TAKEOVER.img) img.src=EVENT_TAKEOVER.img;
+  if(EVENT_TAKEOVER.mode==='iframe'){
+    const ifr=document.getElementById('event-cover-ifr');
+    if(ifr && ifr.getAttribute('src')!==EVENT_TAKEOVER.url) ifr.src=EVENT_TAKEOVER.url;
+  } else {
+    const img=document.getElementById('event-cover-img');
+    if(img && img.getAttribute('src')!==EVENT_TAKEOVER.img) img.src=EVENT_TAKEOVER.img;
+  }
   return el;
 }
-// 우측 상단 카운트다운(가이드/이미지 공통, 이미지 커버보다 위 레이어)
+// 우측 상단 카운트다운(롤링 모드일 때만)
 function ensureEventCd(){
   let cd=document.getElementById('event-cd');
   if(!cd){ cd=document.createElement('div'); cd.id='event-cd';
@@ -1608,19 +1632,19 @@ function ensureEventCd(){
   }
   return cd;
 }
-// 1초마다 호출. 노출 구간 안에서 홀수분=이미지 / 짝수분=가이드 로 1분 롤링 + 우측상단 카운트다운(항상)
+// 1초마다 호출. 노출 구간(또는 테스트룸/강제)이면 전면 노출. roll:true면 1분 교대+카운트다운.
 function refreshEventCover(){
   const cover=document.getElementById('event-cover'), cd=document.getElementById('event-cd');
-  if(window.__isPicker || !isEventTakeover()){ if(cover) cover.style.display='none'; if(cd) cd.style.display='none'; return; }
+  const active = !window.__isPicker && (window.__eventPreview || isEventTakeover());
+  if(!active){ if(cover) cover.style.display='none'; if(cd) cd.style.display='none'; return; }
   const now=Date.now();
-  const forceImg=(getParam('event')==='img');   // 미리보기: ?event=img → 이미지 상시
-  const showImage = forceImg || (Math.floor(now/60000) % 2 === 1);
-  if(showImage){ ensureEventCover().style.display='flex'; }
-  else if(cover){ cover.style.display='none'; }
-  const remain=Math.max(1, Math.ceil((60000 - (now % 60000))/1000));
-  const badge=ensureEventCd();
-  badge.textContent = forceImg ? '미리보기' : (remain+'초 뒤 화면 전환');
-  badge.style.display='block';
+  const roll = !!EVENT_TAKEOVER.roll && !window.__eventPreview && getParam('event')!=='img';
+  const show = !roll || (Math.floor(now/60000) % 2 === 1);
+  if(show){ ensureEventCover().style.display='flex'; } else if(cover){ cover.style.display='none'; }
+  if(roll){
+    const remain=Math.max(1, Math.ceil((60000 - (now % 60000))/1000));
+    const badge=ensureEventCd(); badge.textContent=remain+'초 뒤 화면 전환'; badge.style.display='block';
+  } else if(cd){ cd.style.display='none'; }
 }
 // 테마 적용: 클래스 + 페이지 배경 + 헤더 로고색(화이트/그레이=흰 로고, 다크=오렌지 워드마크)
 function setThemeMode(mode){
@@ -1684,6 +1708,7 @@ function render(){
     const isExec=(room.type==="exec"); // 임원/쪽방/알바(winery) → 상시 검정 로고 커버(그대로)
     window.__isPicker=false;
     window.__isPay=((room.office||'').indexOf('페이')===0);   // 로고 흰/오렌지 판단용
+    window.__eventPreview=!!room.eventPreview;   // 테스트룸: 시간 무관 이벤트 화면 미리보기
     startHeartbeat(key);   // 이 회의실 화면 생존신호 전송(방키 기준)
     window.__demo=(key.indexOf('test')===0); // 테스트룸 = 케이스 샘플 데이터
     window.__draft=!isExec;                  // exec 제외 전 회의실 = 확정 시안 B
@@ -1763,13 +1788,18 @@ setInterval(__checkDeploy, 5*60*1000);   // 5분마다 새 배포 확인 → 있
         setTimeout(function(){ location.reload(); }, 470);   // 어둡게 페이드 후 리로드(깜빡임 완화)
       }catch(e){ location.reload(); }
     }
-    function safeReload(){   // 연결 확인 후에만 리로드. 오프라인이면 3분 뒤 재시도(에러페이지·튕김 방지)
+    function safeReload(){
+      // ① 회의 중이면 새로고침을 회의 끝날 때까지 미룸(회의 도중 깜빡임 방지).
+      //    단, 예정보다 2시간 넘게 밀리면(연속 회의 등) 메모리 보호 위해 강제 실행.
+      var overdue = window.__reloadDue && (Date.now()-window.__reloadDue > 120*60000);
+      if(!overdue && window.__busyUntil && Date.now() < window.__busyUntil){ setTimeout(safeReload, 60000); return; }
+      // ② 연결 확인 후에만 리로드. 오프라인이면 3분 뒤 재시도(에러페이지·튕김 방지)
       try{ fetch(location.href,{method:'HEAD',cache:'no-store'})
         .then(function(r){ if(r && (r.ok||r.type==='opaque'||r.status===0)) fadeReload(); else setTimeout(safeReload,180000); })
         .catch(function(){ setTimeout(safeReload,180000); });
       }catch(e){ setTimeout(safeReload,180000); }
     }
-    setTimeout(safeReload, MIN*60000);
+    setTimeout(function(){ window.__reloadDue=Date.now(); safeReload(); }, MIN*60000);
   }
   if(/[?&]dbg=1/.test(location.search)){ try{
     var el=document.createElement('div');
