@@ -135,26 +135,39 @@ var 설정 = {
   /* 종료 후에만 보이는 문구 */
   .best-line{
     display:none;
-    font-family:"Poppins","Noto Sans KR",sans-serif;
+    font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
     font-weight:700;
     font-size:calc(var(--u) * 0.62);
     line-height:1.1;
-    letter-spacing:0.01em;
+    letter-spacing:0.005em;
     margin-top:calc(var(--u) * 0.34);
     white-space:nowrap;
     transform-origin:left center;
   }
-  .best-line .kr{
-    font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
-    letter-spacing:0.005em;
-  }
 
-  /* 종료 시각이 지나면: 타이머 줄을 감추고, 로고를 조금 줄여 글자 영역을 넓힘 */
+  /* 종료 시각이 지나면: 타이머와 라벨을 감추고 마무리 문구 두 줄만 남김 */
   body.ended #labelTimer,
+  body.ended #labelCount,
   body.ended #timer{ display:none; }
   body.ended .count-block{ margin-top:0; }
-  body.ended .best-line{ display:block; }
-  body.ended .best-line{ font-size:calc(var(--u) * 0.80); margin-top:calc(var(--u) * 0.36); }
+  /* 글자를 더 키우기 위해 종료 후에는 글자 영역을 넓게 씀 (로고는 거의 그대로) */
+  body.ended .stage{ grid-template-columns: 36% 64%; }
+  body.ended .logo-box{ padding-left:0; padding-right:7%; }
+  body.ended .logo-box img{ width:92%; }
+  body.ended .count-line{ font-size:calc(var(--u) * 0.60); margin-top:0; line-height:1.35; }
+
+  /* 종료 후에는 숫자를 주황 박스에 반전시켜 강조 */
+  body.ended .count-line .num{
+    font-size:1.34em;
+    background:var(--orange);
+    color:var(--bg);
+    padding:0.13em 0.17em 0.17em;
+    border-radius:0.07em;
+    margin:0 0.08em;
+    line-height:1;
+    vertical-align:-0.02em;
+  }
+  body.ended .best-line{ display:block; font-size:calc(var(--u) * 0.34); line-height:1.45; margin-top:calc(var(--u) * 0.48); }
 
   /* 설정 오류 등으로 타이머 자리에 글자를 띄울 때 */
   .timer.done{
@@ -206,8 +219,8 @@ SPRINT</div>
 
     <div class="count-block">
       <div class="label" id="labelCount">현재까지</div>
-      <div class="count-line"><span class="num" id="count">0</span><span id="countSuffix">개의 아이디어가 탄생했어요!</span></div>
-      <div class="best-line" id="best">BEST IDEA<span class="kr">의 주인공은?</span></div>
+      <div class="count-line"><span id="countPrefix"></span><span class="num" id="count">0</span><span id="countSuffix">개의 아이디어가 탄생했어요!</span></div>
+      <div class="best-line" id="best">여러분의 아이디어로 더욱 단단하게 성장할 캐치테이블,<br>함께 만들어 주셔서 감사합니다.</div>
     </div>
   </div>
 
@@ -278,8 +291,10 @@ SPRINT</div>
     if (남음 <= 0){
       if (!document.body.classList.contains('ended')){
         document.body.classList.add('ended');
+        var pfx = document.getElementById('countPrefix');
+        if (pfx) pfx.textContent = '총 ';
         var sfx = document.getElementById('countSuffix');
-        if (sfx) sfx.textContent = '개의 아이디어가 접수되었습니다';
+        if (sfx) sfx.textContent = '개의 아이디어가 탄생했어요!';
         줄맞춤();
       }
       return;
