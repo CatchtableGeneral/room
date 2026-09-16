@@ -22,7 +22,7 @@ var 설정 = {
   // 2) 구글 폼 응답이 쌓이는 시트 주소 (응답 탭을 열어둔 상태의 주소창 주소를 그대로 복사)
   //    주소 끝의 #gid=숫자 부분을 화면이 알아서 읽어서 해당 탭만 셉니다.
   //    비워두면 '수동 모드'로 동작합니다 (키보드 위/아래 화살표로 숫자 조절)
-  시트주소: "https://docs.google.com/spreadsheets/d/10zxgWqzNwMdvaoCMLdKFguC7ivNPTERJcUe-YTE4HOM/edit?resourcekey=&gid=1275101339#gid=1275101339",
+  시트주소: "",
 
   // 3) 위 주소에 #gid=숫자 가 없을 때만 쓰이는 예비값 (탭 이름)
   시트탭이름: "설문지 응답 시트1",
@@ -445,8 +445,8 @@ SPRINT</div>
   var 수동키 = 'ct-idea-sprint-count';
 
   if (수동모드){
-    var 저장값 = 0;
-    try { 저장값 = parseInt(localStorage.getItem(수동키) || '0', 10) || 0; } catch(e){}
+    var 저장값 = 516;
+    try { 저장값 = parseInt(localStorage.getItem(수동키) || '516', 10) || 516; } catch(e){}
     숫자표시(저장값);
     note('수동 모드 · 키보드 ↑ ↓ 로 숫자 조절', true);
 
