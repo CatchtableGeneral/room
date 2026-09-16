@@ -323,6 +323,7 @@
 
   function loadReal(){
     if(!APPS_URL) return;
+    if(isCovered()) return;   // 커버(야간) 중엔 조회·재배치 건너뜀(안 보이는데 무거운 작업 X)
     fetch(APPS_URL+'?all=1&span=2',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){ if(!applyData(d)) throw 0; }).catch(function(){
       var cb='cal_'+Math.random().toString(36).slice(2);           // JSONP 폴백(쿠키/CORS 우회)
       var s=document.createElement('script'); var done=false;
@@ -337,23 +338,28 @@
 
   // 운영시간(07:50~23:00) 외에는 검정+로고 커버. ?cover=1/0 로 강제(확인용)
   function getParam(k){ return new URLSearchParams(location.search).get(k); }
-  function refreshCover(){
-    var c=document.getElementById('cover'); if(!c) return;
+  function isCovered(){   // 운영시간(07:50~23:00) 외 = 커버(로고만). ?cover=1/0 강제
     var d=new Date(), m=d.getHours()*60+d.getMinutes();
     var show = !(m>=(7*60+50) && m<(23*60));
     var f=getParam('cover'); if(f==='1') show=true; else if(f==='0') show=false;
+    return show;
+  }
+  function refreshCover(){
+    var c=document.getElementById('cover'); if(!c) return;
     var img=document.getElementById('coverImg');
     if(img && !img.getAttribute('src')){ var b=document.querySelector('.brandlogo'); if(b) img.src=b.src; }
-    c.classList.toggle('on', show);
+    c.classList.toggle('on', isCovered());
   }
 
   function tick(){
     var d=new Date(), wd=['일','월','화','수','목','금','토'][d.getDay()];
     document.getElementById('date').textContent=d.getFullYear()+'.'+pad(d.getMonth()+1)+'.'+pad(d.getDate())+' ('+wd+')';
     document.getElementById('clock').textContent=pad(d.getHours())+':'+pad(d.getMinutes());
-    if(winStartFor(Date.now())!==winStart){ layoutAll(); }   // 15분 단위로 창 롤링
-    else { nowLine(); refreshStatus(); }
     refreshCover();
+    if(isCovered()){ window.__wasCovered=true; return; }        // 커버 중엔 시계만, 무거운 재배치 X
+    if(window.__wasCovered){ window.__wasCovered=false; loadReal(); layoutAll(); return; }  // 커버 해제 시 최신화
+    if(winStartFor(Date.now())!==winStart){ layoutAll(); }      // 15분 단위로 창 롤링
+    else { nowLine(); refreshStatus(); }
   }
 
   build(); layoutAll(); tick(); loadReal();
@@ -362,8 +368,8 @@
   window.addEventListener('load', layoutAll);   // 폰트·뷰포트 확정 후
   // TV Bro 등에서 뷰포트가 늦게 확정되므로 여러 시점에 재계산
   [100,400,900,1800,3000].forEach(function(ms){ setTimeout(layoutHeights, ms); });
-  setInterval(tick,30000);        // 시계·지금선·상태 갱신(정시마다 롤링)
-  setInterval(loadReal,60000);    // 실제 일정 60초마다 재조회
+  setInterval(tick,60000);        // 시계·지금선·상태 갱신(60초) — 커버 중엔 시계만
+  setInterval(loadReal,120000);   // 실제 일정 120초마다 재조회(커버 중엔 건너뜀) — footprint 완화
 </script>
 <script>
 /* 장시간 구동 시 TV Bro(GeckoView) 메모리 누적 → 크래시/멋대로 리로드 예방용 자동 새로고침.
@@ -392,7 +398,7 @@
   }
   // heartbeat: 이 스케줄 화면(키 'calendar')이 살아있음을 60초마다 알림
   (function(){ var U="https://script.google.com/macros/s/AKfycbyfD-wzNoO_j-t-k2J66D6vZOzpv8cftt7Bj9Ay-pBwTGDYuumrGD8osh3I9dx9uI4/exec";
-    function ping(){ try{ new Image().src=U+'?ping=calendar&t='+Date.now(); }catch(e){} }
+    function ping(){ try{ fetch(U+'?ping=calendar&t='+Date.now(),{mode:'no-cors',cache:'no-store'}).catch(function(){}); }catch(e){} }
     ping(); setInterval(ping, 60000); })();
   if(/[?&]dbg=1/.test(location.search)){ try{
     var el=document.createElement('div');
