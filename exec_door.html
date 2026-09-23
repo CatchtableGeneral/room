@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>C레벨 회의실 문패</title>
 <style>
-  @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+  @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css");
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{width:100%;height:100%;overflow:hidden;font-family:"Pretendard",sans-serif;-webkit-font-smoothing:antialiased;user-select:none;}
+  html,body{width:100%;height:100%;overflow:hidden;font-family:"Pretendard Variable","Pretendard",sans-serif;-webkit-font-smoothing:antialiased;user-select:none;}
   body{background:#14161b;color:#fff;transition:background .5s ease;}
   body.free{background:#12161a;}
 
@@ -29,9 +29,8 @@
   /* 비어있음(임원전용 강조) */
   .subrow{display:flex;align-items:center;gap:2vmin;margin-top:3.4vmin;}
   .subrow .led{width:2.4vmin;height:2.4vmin;border-radius:50%;flex:none;}
-  .led-free{background:#2FCB84;box-shadow:0 0 2.6vmin rgba(47,203,132,0.55);animation:breathe 3.6s ease-in-out infinite;}
+  .led-free{background:#2FCB84;box-shadow:0 0 2.6vmin rgba(47,203,132,0.55);}
   .led-busy{background:#F0453A;box-shadow:0 0 2.6vmin rgba(240,69,58,0.6);}
-  @keyframes breathe{0%,100%{opacity:0.45;}50%{opacity:1;}}
   .subrow span:last-child{font-size:3vmin;font-weight:600;color:#c8ccd3;}
   .vmsg{margin-top:3.4vmin;font-size:2.5vmin;font-weight:500;line-height:1.5;color:#9aa0aa;max-width:52vmin;}
 
