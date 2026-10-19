@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>회의실 디스플레이 — 개선안 비교</title>
+<style>
+  @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css");
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard Variable",Pretendard,sans-serif;background:#0E0F13;color:#E7E9ED;padding:20px 24px 40px;}
+  h1{font-size:22px;font-weight:800;letter-spacing:-0.02em;}
+  h1 span{color:#FD3D00;}
+  .sub{font-size:14px;color:#8A9099;margin-top:6px;}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 6px;}
+  .lab{font-size:12px;font-weight:800;color:#8A9099;letter-spacing:1px;margin-right:2px;}
+  button{font-family:inherit;font-size:14px;font-weight:700;color:#C9CDD4;background:#1A1D24;
+    border:1px solid #2C313B;border-radius:8px;padding:9px 15px;cursor:pointer;transition:.15s;}
+  button:hover{background:#232833;color:#fff;}
+  button.on{background:#FD3D00;border-color:#FD3D00;color:#fff;}
+  .stage{margin-top:16px;position:relative;}
+  .wrap{display:flex;gap:16px;}
+  .pane{flex:1;min-width:0;}
+  .cap{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;margin-bottom:8px;}
+  .cap i{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .cap.a i{background:#6B7280;} .cap.a{color:#9AA0A6;}
+  .cap.b i{background:#2FCB84;} .cap.b{color:#2FCB84;}
+  .frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;
+    border:1px solid #2C313B;background:#000;}
+  .frame iframe{position:absolute;top:0;left:0;width:1920px;height:1080px;border:0;transform-origin:top left;}
+  .solo .pane.hide{display:none;}
+  .note{margin-top:26px;background:#14161C;border:1px solid #242933;border-radius:12px;padding:18px 22px;}
+  .note h2{font-size:15px;font-weight:800;margin-bottom:12px;color:#FD3D00;}
+  .note ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:9px 24px;}
+  .note li{font-size:14px;line-height:1.5;color:#C9CDD4;padding-left:20px;position:relative;}
+  .note li::before{content:"";position:absolute;left:4px;top:8px;width:5px;height:5px;border-radius:50%;background:#2FCB84;}
+  .note li b{color:#fff;font-weight:700;}
+  .note li.x::before{background:#6B7280;}
+  kbd{background:#2A2E38;border:1px solid #3A404C;border-bottom-width:2px;border-radius:5px;
+    padding:1px 6px;font-size:12px;font-weight:700;}
+  @media (max-width:1100px){ .note ul{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<h1>회의실 디스플레이 <span>개선안 비교</span></h1>
+<div class="sub">왼쪽이 현재 배포본, 오른쪽이 개선안입니다. <b>겹쳐보기</b>에서 <kbd>스페이스</kbd> 를 누르면 같은 자리에서 전/후가 번갈아 바뀝니다.</div>
+
+<div class="bar">
+  <span class="lab">화면</span>
+  <button class="on" data-q="?room=test1&night=0&lunch=0&weekend=0&event=0">회의실 · 비어있음</button>
+  <button data-q="?room=test3&night=0&lunch=0&weekend=0&event=0">회의실 · 곧 시작</button>
+  <button data-q="?room=test4&night=0&lunch=0&weekend=0&event=0">회의실 · 사용중(꽉참)</button>
+  <button data-q="?room=cuisine&night=0&lunch=0&weekend=0&event=0">회의실 · 실제데이터</button>
+  <button data-q="">현황판</button>
+  <button data-q="?room=gurume&night=0&lunch=0&weekend=0&event=0">일본룸</button>
+</div>
+
+<div class="bar">
+  <span class="lab">보기</span>
+  <button id="mSide" class="on">나란히</button>
+  <button id="mSolo">겹쳐보기 (스페이스로 전환)</button>
+  <span class="lab" style="margin-left:14px">크기</span>
+  <button class="z on" data-z="1">기본</button>
+  <button class="z" data-z="1.6">확대 1.6배</button>
+  <button class="z" data-z="2.4">확대 2.4배</button>
+</div>
+
+<div class="stage">
+  <div class="wrap" id="wrap">
+    <div class="pane" id="paneA">
+      <div class="cap a"><i></i>현재 배포본 (index.html)</div>
+      <div class="frame"><iframe id="fA" src="about:blank" scrolling="no"></iframe></div>
+    </div>
+    <div class="pane" id="paneB">
+      <div class="cap b"><i></i>개선안 (index_new.html)</div>
+      <div class="frame"><iframe id="fB" src="about:blank" scrolling="no"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <h2>이번 개선안에 들어간 것</h2>
+  <ul>
+    <li><b>사용 가능 기준 통일</b> — 현황판 5분 / 방 화면 15분으로 서로 달랐던 것을 15분으로. 두 화면이 다른 말을 하던 문제</li>
+    <li><b>종일 일정 표시</b> — <code>00:00 – 00:00</code> → <b>종일</b></li>
+    <li><b>'예정 없음' 중복 제거</b> — 다음 회의가 없으면 우측 칼럼을 숨기고 현재 상태 카드가 전폭 사용</li>
+    <li><b>생존신호 숨김</b> — "11일 지속" 같은 운영자용 표시는 <code>?dbg=1</code> 일 때만</li>
+    <li><b>Mac 카드 통합</b> — 1줄짜리 빈 카드를 없애고 유선 카드 하단 안내로. 유선:무선 = 1:1 균형</li>
+    <li><b>대비 개선</b> — 현황판 회의명 3.90:1 → 5.9:1, 브랜드 오렌지는 색 유지하고 굵기만 ↑</li>
+    <li><b>글씨 크기 32종 → 8종</b> — 11.5 / 12.5 같은 눈으로 구분 안 되는 값들 정리</li>
+    <li><b>모서리 19종 → 5종, 카드 그림자 2종으로</b></li>
+    <li class="x">현황판은 카드가 19개라 조밀 스케일(한 단계 아래)을 따로 적용</li>
+    <li class="x">에티켓 축소 · 쪽방 문구 · 상태별 레이아웃은 <b>제외</b>(하지 않기로 한 항목)</li>
+  </ul>
+</div>
+
+<script>
+var BASE_A='index.html', BASE_B='index_new.html';
+var q='?room=test1&night=0&lunch=0&weekend=0&event=0', zoom=1, solo=false, showB=true;
+var fA=document.getElementById('fA'), fB=document.getElementById('fB');
+var paneA=document.getElementById('paneA'), paneB=document.getElementById('paneB'), wrap=document.getElementById('wrap');
+
+function layout(){
+  wrap.classList.toggle('solo', solo);
+  paneA.classList.toggle('hide', solo && showB);
+  paneB.classList.toggle('hide', solo && !showB);
+  // 프레임 폭에 맞춰 1920 짜리 iframe 을 축소
+  document.querySelectorAll('.frame').forEach(function(f){
+    var w=f.clientWidth; if(!w) return;
+    var s=(w/1920)*zoom;
+    var ifr=f.querySelector('iframe');
+    ifr.style.transform='scale('+s+')';
+    ifr.style.width=(zoom>1? 1920 : 1920)+'px';
+  });
+}
+function load(){ fA.src=BASE_A+q; fB.src=BASE_B+q; setTimeout(layout,60); }
+
+document.querySelectorAll('[data-q]').forEach(function(b){
+  b.onclick=function(){
+    document.querySelectorAll('[data-q]').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on'); q=b.dataset.q; load();
+  };
+});
+document.querySelectorAll('.z').forEach(function(b){
+  b.onclick=function(){
+    document.querySelectorAll('.z').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on'); zoom=parseFloat(b.dataset.z); layout();
+  };
+});
+document.getElementById('mSide').onclick=function(){
+  solo=false; this.classList.add('on'); document.getElementById('mSolo').classList.remove('on'); layout();
+};
+document.getElementById('mSolo').onclick=function(){
+  solo=true; this.classList.add('on'); document.getElementById('mSide').classList.remove('on'); layout();
+};
+document.addEventListener('keydown',function(e){
+  if(e.code==='Space'){ e.preventDefault(); if(!solo) document.getElementById('mSolo').click(); showB=!showB; layout(); }
+});
+window.addEventListener('resize',layout);
+load();
+</script>
+</body>
+</html>
