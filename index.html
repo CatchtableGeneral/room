@@ -1371,7 +1371,9 @@ function fit(){
 let __shift=[0,0];
 function startPixelShift(){
   const page=document.getElementById('page'); if(!page) return;
-  page.style.transition='transform 8s linear';            // 더 천천히 → 눈에 띄는 '움직임' 제거
+  // 전환(transition) 없음 — 이게 걸려 있으면 화면 크기 맞춤(fit)까지 느리게 애니메이션돼서
+  //  로딩할 때마다 '슬로우 줌' 처럼 보임. 3px 이동은 즉시 처리해도 눈에 안 띔.
+  page.style.transition='none';
   // 확인용: URL에 ?shiftpx=40&shiftsec=2 처럼 붙이면 크게·자주 움직여 눈으로 볼 수 있음. 기본 3px / 75초.
   let amp=parseInt(getParam('shiftpx'),10); if(!(amp>0)) amp=3;
   let sec=parseFloat(getParam('shiftsec')); if(!(sec>0)) sec=300;   // 75초 → 5분
