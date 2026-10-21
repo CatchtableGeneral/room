@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1920, user-scalable=no"><!-- device-width(540) 대신 1920 고정: TV Bro가 CSS높이 540→1080으로 받게 함(오픈브라우저와 동일) -->
-<title>회의실 스케줄 (초안)</title>
+<title>회의실 스케줄</title>
 <style>
   @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css");
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -17,7 +17,7 @@
   .top .legend{display:flex;gap:14px;margin-left:8px;font-size:13px;font-weight:700;}
   .top .legend .lg-busy{color:#FF6B7D;} .top .legend .lg-ending{color:#3FD3D3;} .top .legend .lg-soon{color:#FFB259;} .top .legend .lg-free{color:#2FCB84;}
   .top .r{text-align:right;}
-  .top .date{font-size:16px;color:#8a9099;font-weight:600;}
+  .top .date{font-size:15px;color:#8a9099;font-weight:600;}
   .top .clock{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:#f2f3f5;line-height:1.1;}
 
   .cal{flex:1 1 0;display:flex;flex-direction:column;min-height:0;border:1px solid #262a32;border-radius:14px;overflow:hidden;background:#161a20;}
@@ -25,11 +25,11 @@
   .cal-top{display:flex;flex:0 0 40px;border-bottom:1px solid #262a32;background:#1a1e25;}
   .corner{width:170px;flex:0 0 170px;border-right:1px solid #262a32;}
   .taxis{flex:1 1 auto;position:relative;}
-  .taxis .tl{position:absolute;top:50%;transform:translateY(-50%);font-size:12px;color:#7a808a;font-weight:700;padding-left:6px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .taxis .tl{position:absolute;top:50%;transform:translateY(-50%);font-size:13px;color:#7a808a;font-weight:700;padding-left:6px;font-variant-numeric:tabular-nums;white-space:nowrap;}
   .taxis .tl .daymark{color:#FD3D00;font-weight:800;margin-right:4px;}
 
   .cal-rows{flex:1 1 0;position:relative;display:flex;flex-direction:column;min-height:0;}
-  .ohdr{flex:0 0 auto;padding:5px 14px;font-size:12px;font-weight:800;letter-spacing:1.2px;color:#FD3D00;background:#191d24;border-bottom:1px solid #23272f;}
+  .ohdr{flex:0 0 auto;padding:5px 14px;font-size:13px;font-weight:800;letter-spacing:1.2px;color:#FD3D00;background:#191d24;border-bottom:1px solid #23272f;}
   .rrow{flex:1 1 0;display:flex;min-height:0;border-bottom:1px solid #1c2027;border-left:5px solid transparent;transition:background .3s;}
   .rrow.r-busy{border-left-color:#FF2D55;}
   .rrow.r-soon{border-left-color:#FF9500;}
@@ -39,7 +39,7 @@
   .r-busy .rstat{color:#FF6B7D;} .r-soon .rstat{color:#FFB259;} .r-free .rstat{color:#7f8791;} .r-ending .rstat{color:#3FD3D3;}
   .r-ending .rname .dot{background:#22C7C7;box-shadow:0 0 9px #22C7C7;}
   .rrow:last-child{border-bottom:none;}
-  .rname{width:170px;flex:0 0 170px;display:flex;align-items:center;gap:9px;padding:0 14px;border-right:1px solid #262a32;font-size:15.5px;font-weight:700;color:#f1f3f5;white-space:nowrap;overflow:hidden;}
+  .rname{width:170px;flex:0 0 170px;display:flex;align-items:center;gap:9px;padding:0 14px;border-right:1px solid #262a32;font-size:15px;font-weight:700;color:#f1f3f5;white-space:nowrap;overflow:hidden;}
   .rname .dot{width:10px;height:10px;border-radius:50%;background:#4a4f57;flex:none;}   /* 현재 상태등: 상태색으로 */
   .r-busy .rname .dot{background:#FF2D55;box-shadow:0 0 9px #FF2D55;}
   .r-soon .rname .dot{background:#FF9500;box-shadow:0 0 9px #FF9500;}
@@ -48,27 +48,28 @@
 
   .ev{position:absolute;top:5px;bottom:5px;border-radius:6px;padding:3px 8px;overflow:hidden;border-left:3px solid var(--ec);background:var(--eb);display:flex;flex-direction:column;justify-content:center;}
   .ev .et{font-size:13px;font-weight:700;color:#f6f7f9;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .ev .em{font-size:10.5px;color:#aab0bb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;margin-top:1px;}
+  .ev .em{font-size:11px;color:#aab0bb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;margin-top:1px;}
   .ev.narrow .em{display:none;}          /* 짧은 회의: 부제 숨기고 제목만 */
   .ev.past{opacity:0.42;}                 /* 완전히 끝난 회의만 흐리게 */
   .ev.now{opacity:1;box-shadow:0 0 0 2px #FF2D55, 0 0 14px rgba(255,45,85,0.55);border-left-color:#FF2D55;}
   .ev.now .et{color:#fff;}
   /* 예약 가능(빈) 시간대 — 초록 */
-  .ev.slotfree{background:rgba(47,203,132,0.10);border-left:3px dashed #2FCB84;}
-  .ev.slotfree .et{color:#2FCB84;font-weight:700;}
-  .ev.slotfree .em{color:#4fae86;}
+  /* 16줄이 전부 같은 초록이면 정작 봐야 할 '실제 회의'가 묻힘 → 블록은 낮추고 글자 가독성만 유지 */
+  .ev.slotfree{background:rgba(47,203,132,0.05);border-left:2px dashed rgba(47,203,132,0.40);}
+  .ev.slotfree .et{color:#5FBF93;font-weight:600;}
+  .ev.slotfree .em{color:#5a9c7d;}
 
   /* 지금 시각 (세로 라인) */
   .nowoverlay{position:absolute;left:170px;right:0;top:0;bottom:0;pointer-events:none;}
   .nowvline{position:absolute;top:0;bottom:0;width:0;border-left:2px solid #FD3D00;}
   .nowvline .dot{position:absolute;top:-4px;left:-4px;width:8px;height:8px;border-radius:50%;background:#FD3D00;}
-  .nowvline .tag{position:absolute;top:2px;left:5px;background:#FD3D00;color:#fff;font-size:10px;font-weight:800;padding:1px 5px;border-radius:5px;font-variant-numeric:tabular-nums;}
+  .nowvline .tag{position:absolute;top:2px;left:5px;background:#FD3D00;color:#fff;font-size:11px;font-weight:800;padding:1px 5px;border-radius:5px;font-variant-numeric:tabular-nums;}
 
   .draft{position:fixed;bottom:1vh;right:1.4vw;font-size:11px;color:#4a4f57;font-weight:600;}
   /* 운영시간 외 커버: 검정 + 로고만 */
   .cover{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:100;}
   .cover.on{display:flex;}
-  .cover img{width:32vw;max-width:560px;height:auto;}
+  .cover img{width:46vw;max-width:640px;height:auto;}   /* 회의실 화면(index.html)과 같은 크기 */
 </style>
 </head>
 <body>
@@ -84,8 +85,8 @@
       <div class="cal-rows" id="rows"></div>
     </div>
   </div>
-  <div class="draft" id="conn">연결 중…</div>
-  <div class="cover" id="cover"><img id="coverImg" alt="CATCHTABLE"></div>
+  <div class="draft" id="conn" style="display:none">연결 중…</div>
+  <div class="cover" id="cover"><img id="coverImg" src="logo_cover.png" alt="CATCHTABLE"></div>
 
 <script>
   // 롤링 창: 지금(정시) 기준 WINDOW_HOURS 시간만 표시. 시간이 흐르면 왼쪽(과거)은 사라지고 오른쪽(내일까지)이 등장.
@@ -127,8 +128,12 @@
   function pad(n){return('0'+n).slice(-2);}
   function fmtMs(ms){var d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinutes());}
   function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  function setConn(ok){var el=document.getElementById('conn');if(el)el.textContent=ok?'실시간 연동':'연결 재시도 중…';}
-  var MG=15*60000;   // 예약가능 최소 간격 15분
+  // 정상일 땐 숨기고 끊겼을 때만 표시. 운영자 확인용으로 ?dbg=1 이면 항상 보임.
+  function setConn(ok){var el=document.getElementById('conn');if(!el)return;
+    el.textContent=ok?'실시간 연동':'연결 재시도 중…';
+    el.style.display=(ok && !/[?&]dbg=1/.test(location.search))?'none':'block';}
+  var MG=15*60000;        // 예약가능 최소 간격 15분
+  var SOON_MS=15*60000;   // '곧 시작 / 곧 종료' 기준 — 회의실 화면(index.html)과 동일하게 15분
 
   var REFS=[], lastRooms=null;
   function build(){
@@ -193,10 +198,10 @@
       if(busy) maxBusyEnd=Math.max(maxBusyEnd, curEnd);   // 진행중 회의의 가장 늦은 종료시각(자동 새로고침 미룸 기준)
       var cls, label;
       if(busy){
-        if(curEnd-now<=5*60000){ cls='r-ending'; label='곧 종료'; }
+        if(curEnd-now<=SOON_MS){ cls='r-ending'; label='곧 종료'; }
         else { cls='r-busy'; label='사용 중'; }
       }
-      else if(soonMs<=5*60000){ cls='r-soon'; label='곧 시작'; }
+      else if(soonMs<=SOON_MS){ cls='r-soon'; label='곧 시작'; }
       else { cls='r-free'; label='비어 있음'; }
       rf.row.classList.remove('r-busy','r-soon','r-free','r-ending'); rf.row.classList.add(cls);
       rf.stat.textContent=label;
@@ -310,8 +315,11 @@
       if(rd && rd.events){
         rd.events.forEach(function(e){
           var s=+e.start, en=+e.end; if(!(en>s)) return;
-          var t = (rf.t==='interview') ? '인터뷰 일정' : ((e.title&&e.title.length)?e.title:'예약됨');
-          evs.push({s:s,e:en,t:t});
+          // 인터뷰는 어느 회의실에서 열리든 제목을 가림(서버 iv 플래그 또는 제목 키워드).
+          // 예전엔 Interview 1·2 방일 때만 가려서, 일반 회의실에 잡힌 채용 면접은 제목이 그대로 노출됐음.
+          var raw=(e.title&&e.title.length)?e.title:'예약됨';
+          var iv=(rf.t==='interview') || !!e.iv || /인터뷰|면접|interview/i.test(raw);
+          evs.push({s:s,e:en,t:(iv?'인터뷰 일정':raw),iv:iv});
         });
         evs.sort(function(a,b){return a.s-b.s;});
       }
@@ -338,16 +346,18 @@
 
   // 운영시간(07:50~23:00) 외에는 검정+로고 커버. ?cover=1/0 로 강제(확인용)
   function getParam(k){ return new URLSearchParams(location.search).get(k); }
-  function isCovered(){   // 운영시간(07:50~23:00) 외 = 커버(로고만). ?cover=1/0 강제
-    var d=new Date(), m=d.getHours()*60+d.getMinutes();
-    var show = !(m>=(7*60+50) && m<(23*60));
-    var f=getParam('cover'); if(f==='1') show=true; else if(f==='0') show=false;
-    return show;
+  function isCovered(){   // 커버(로고만) 조건. ?cover=1/0 으로 강제 확인 가능
+    var f=getParam('cover'); if(f==='1') return true; if(f==='0') return false;
+    var d=new Date(), m=d.getHours()*60+d.getMinutes(), g=d.getDay();
+    if(m>=(23*60) || m<(7*60+50)) return true;                      // 야간 23:00~07:50 — 회의실 화면과 동일
+    if((g===0||g===6) && (m>=(19*60) || m<(9*60+50))) return true;  // 주말 토·일 19:00~09:50 — 회의실 화면과 동일
+    return false;   // 점심(12:00~12:50)은 일부러 커버하지 않음 — 빈 방 찾으러 보는 시간대라 현황판은 계속 떠 있어야 함
   }
   function refreshCover(){
     var c=document.getElementById('cover'); if(!c) return;
     var img=document.getElementById('coverImg');
-    if(img && !img.getAttribute('src')){ var b=document.querySelector('.brandlogo'); if(b) img.src=b.src; }
+    // 회의실 화면과 같은 커버 로고(태그라인 포함)를 사용. 파일을 못 받으면 상단바 워드마크로 대체.
+    if(img && !img.__fb){ img.__fb=1; img.onerror=function(){ var b=document.querySelector('.brandlogo'); if(b){ img.onerror=null; img.src=b.src; } }; }
     c.classList.toggle('on', isCovered());
   }
 
@@ -373,7 +383,7 @@
 </script>
 <script>
 /* 장시간 구동 시 TV Bro(GeckoView) 메모리 누적 → 크래시/멋대로 리로드 예방용 자동 새로고침.
-   기본 180분. ?reload=N(분)으로 조정, ?reload=0 이면 끔. ?dbg=1 이면 좌하단에 마지막 로드 시각 표시. */
+   기본 60분. ?reload=N(분)으로 조정, ?reload=0 이면 끔. ?dbg=1 이면 좌하단에 마지막 로드 시각 표시. */
 (function(){
   var MIN=60, m=location.search.match(/[?&]reload=(\d+)/); if(m){ MIN=parseInt(m[1],10); }
   if(MIN>0){
@@ -385,12 +395,16 @@
       }catch(e){ location.reload(); }
     }
     function safeReload(){
-      // ① 진행중 회의가 있으면 그 종료시각까지 미룸(회의 도중 깜빡임 방지). 예정보다 2시간 넘게 밀리면 강제.
-      var overdue = window.__reloadDue && (Date.now()-window.__reloadDue > 120*60000);
-      if(!overdue && window.__busyUntil && Date.now() < window.__busyUntil){ setTimeout(safeReload, 60000); return; }
+      // ① 사람이 보고 있을 땐 새로고침하지 않음 — 커버(야간·주말)된 동안에만 실행.
+      //    회의실 화면(index.html)과 같은 정책. 24시간 넘게 못 하면 그때는 강제로 진행.
+      var overdue = window.__reloadDue && (Date.now()-window.__reloadDue > 24*60*60000);
+      if(!overdue){
+        if(window.__busyUntil && Date.now() < window.__busyUntil){ setTimeout(safeReload, 60000); return; }
+        if(!isCovered()){ setTimeout(safeReload, 60000); return; }
+      }
       // ② 연결 확인 후에만 리로드(오프라인이면 3분 뒤 재시도)
       try{ fetch(location.href,{method:'HEAD',cache:'no-store'})
-        .then(function(r){ if(r && (r.ok||r.type==='opaque'||r.status===0)) fadeReload(); else setTimeout(safeReload,180000); })
+        .then(function(r){ if(r && (r.ok||r.type==='opaque'||r.status===0)){ isCovered() ? location.reload() : fadeReload(); } else setTimeout(safeReload,180000); })
         .catch(function(){ setTimeout(safeReload,180000); });
       }catch(e){ setTimeout(safeReload,180000); }
     }
