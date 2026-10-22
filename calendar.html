@@ -368,8 +368,16 @@
     document.getElementById('date').textContent=d.getFullYear()+'.'+pad(d.getMonth()+1)+'.'+pad(d.getDate())+' ('+wd+')';
     document.getElementById('clock').textContent=pad(d.getHours())+':'+pad(d.getMinutes());
     refreshCover();
-    if(isCovered()){ window.__wasCovered=true; return; }        // 커버 중엔 시계만, 무거운 재배치 X
-    if(window.__wasCovered){ window.__wasCovered=false; loadReal(); layoutAll(); return; }  // 커버 해제 시 최신화
+    // [야간 절전] 커버(야간·주말) 중에는 표 전체를 비워 메모리를 돌려준다.
+    //   숨기기만 하면 16행 × 일정 블록이 메모리에 그대로 남는다. 커버가 풀리면 깨끗하게 다시 로드.
+    if(isCovered()){
+      if(!window.__slept){
+        window.__slept=true;
+        try{ var _r=document.getElementById('rows'); if(_r) _r.innerHTML=''; REFS=[]; lastRooms=null; }catch(e){}
+      }
+      return;   // 커버 중엔 시계만
+    }
+    if(window.__slept){ location.reload(); return; }   // 커버 해제 → 깨끗하게 다시 그림
     if(winStartFor(Date.now())!==winStart){ layoutAll(); }      // 15분 단위로 창 롤링
     else { nowLine(); refreshStatus(); }
   }
@@ -414,7 +422,15 @@
   }
   // heartbeat: 이 스케줄 화면(키 'calendar')이 살아있음을 60초마다 알림
   (function(){ var U="https://script.google.com/macros/s/AKfycbyfD-wzNoO_j-t-k2J66D6vZOzpv8cftt7Bj9Ay-pBwTGDYuumrGD8osh3I9dx9uI4/exec";
-    function ping(){ try{ fetch(U+'?ping=calendar&t='+Date.now(),{mode:'no-cors',cache:'no-store'}).catch(function(){}); }catch(e){} }
+    try{ if(!sessionStorage.getItem('t0')) sessionStorage.setItem('t0', Date.now()); }catch(e){}
+    var NAV=''; try{ var _n=performance.getEntriesByType('navigation')[0]; NAV=_n?_n.type:''; }catch(e){}
+    function ping(){ try{
+      var t0=0; try{ t0=+sessionStorage.getItem('t0')||0; }catch(e){}
+      var age = t0 ? Math.round((Date.now()-t0)/60000) : -1;
+      var mem = -1; try{ var _m=performance.memory; if(_m && _m.usedJSHeapSize) mem=Math.round(_m.usedJSHeapSize/1048576); }catch(e){}
+      fetch(U+'?ping=calendar&age='+age+'&mem='+mem+'&nav='+encodeURIComponent(NAV)+'&t='+Date.now(),
+            {mode:'no-cors',cache:'no-store'}).catch(function(){});
+    }catch(e){} }
     ping(); setInterval(ping, 60000); })();
   if(/[?&]dbg=1/.test(location.search)){ try{
     var el=document.createElement('div');
