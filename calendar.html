@@ -134,6 +134,8 @@
     el.style.display=(ok && !/[?&]dbg=1/.test(location.search))?'none':'block';}
   var MG=15*60000;        // 예약가능 최소 간격 15분
   var SOON_MS=15*60000;   // '곧 시작 / 곧 종료' 기준 — 회의실 화면(index.html)과 동일하게 15분
+  // 인터뷰로 보고 제목을 가릴 키워드. 서버(Apps Script)의 INTERVIEW_RE 와 같은 값으로 유지할 것.
+  var IV_RE = /인터뷰|면접|커피챗|interview|coffee\s*-?\s*chat/i;
 
   var REFS=[], lastRooms=null;
   function build(){
@@ -318,7 +320,7 @@
           // 인터뷰는 어느 회의실에서 열리든 제목을 가림(서버 iv 플래그 또는 제목 키워드).
           // 방 이름으로 판정하지 않음 — 인터뷰룸에서 일반 회의를 해도 제목이 정상 노출되어야 함.
           var raw=(e.title&&e.title.length)?e.title:'예약됨';
-          var iv=!!e.iv || /인터뷰|면접|interview/i.test(raw);
+          var iv=!!e.iv || IV_RE.test(raw);
           evs.push({s:s,e:en,t:(iv?'인터뷰 일정':raw),iv:iv});
         });
         evs.sort(function(a,b){return a.s-b.s;});
