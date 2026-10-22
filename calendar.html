@@ -316,9 +316,9 @@
         rd.events.forEach(function(e){
           var s=+e.start, en=+e.end; if(!(en>s)) return;
           // 인터뷰는 어느 회의실에서 열리든 제목을 가림(서버 iv 플래그 또는 제목 키워드).
-          // 예전엔 Interview 1·2 방일 때만 가려서, 일반 회의실에 잡힌 채용 면접은 제목이 그대로 노출됐음.
+          // 방 이름으로 판정하지 않음 — 인터뷰룸에서 일반 회의를 해도 제목이 정상 노출되어야 함.
           var raw=(e.title&&e.title.length)?e.title:'예약됨';
-          var iv=(rf.t==='interview') || !!e.iv || /인터뷰|면접|interview/i.test(raw);
+          var iv=!!e.iv || /인터뷰|면접|interview/i.test(raw);
           evs.push({s:s,e:en,t:(iv?'인터뷰 일정':raw),iv:iv});
         });
         evs.sort(function(a,b){return a.s-b.s;});
