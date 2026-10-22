@@ -925,7 +925,10 @@ function peopleTxt(e){ return (e && e.n >= 2) ? '<span class="nn-ppl">· '+e.n+'
 function fmtRange(e){ return isAllDay(e) ? '종일' : (fmt(e.start)+' – '+fmt(e.end)); }
 function setT(h,m){const d=new Date();d.setHours(h,m,0,0);return d.getTime();}
 // 인터뷰룸은 비공개 면접이라 실제 제목 숨기고 "인터뷰 일정"으로 통일
-function evTitle(e){ return window.__ivRoom ? '인터뷰 일정' : ((e&&e.title)?e.title:'예약됨'); }
+function evTitle(e){ if(!e) return '예약됨';
+  // 방 이름이 아니라 '일정 자체'로 판정 — 인터뷰룸에서 일반 회의를 해도 제목이 정상 노출됨
+  if(e.iv || /인터뷰|면접|interview/i.test(e.title||'')) return '인터뷰 일정';
+  return e.title ? e.title : '예약됨'; }
 // 마지막으로 성공한 실제 일정을 보관 → 오류·지연 시 샘플 대신 이 데이터를 유지
 let lastEvents=null, everLoaded=false;
 
@@ -982,7 +985,7 @@ function pickAvail(events){
   if(availableNow){
     const sR=Math.floor(now/MG)*MG;
     const slotTxt = (!nx.length) ? '이후 예정 없음' : ('~'+fmt(nextStart)+' 사용 가능');
-    return {cls:'free',state:'사용 가능',slotTxt:slotTxt,startMs:sR,endMs:nx.length?nextStart:null,title:''};
+    return {cls:'free',state:'사용 가능',slotTxt:slotTxt,startMs:sR,endMs:nx.length?nextStart:null,title:'',iv:false};
   }
   // 사용 중 / 곧 회의 시작 → 다음 사용 가능 시각(15분 이상 비는 첫 시점, 연속회의 감안)
   let cursor=now, changed=true;
@@ -992,10 +995,11 @@ function pickAvail(events){
   const state=busy?'사용 중':'곧 시작';
   const cls=busy?'busy':'prep';
   const showTitle = busy ? title : (nx.length ? (nx[0].title||'') : '');   // 곧 시작이면 다가오는 회의명 표시
-  if(cursor>=eod) return {cls:cls,state:state,slotTxt:'오늘 종일 사용',startMs:null,endMs:null,title:showTitle};
+  const showIv = busy ? !!(_cur&&_cur.iv) : (nx.length ? !!nx[0].iv : false);   // 해당 일정이 인터뷰인지(방 이름 아님)
+  if(cursor>=eod) return {cls:cls,state:state,slotTxt:'오늘 종일 사용',startMs:null,endMs:null,title:showTitle,iv:showIv};
   const after=sorted.filter(e=>e.start>cursor);
   const slotTxt = after.length ? (fmt(cursor)+'~'+fmt(after[0].start)+' 가능') : (fmt(cursor)+' 이후 가능');
-  return {cls:cls,state:state,slotTxt:slotTxt,startMs:cursor,endMs:after.length?after[0].start:null,title:showTitle};
+  return {cls:cls,state:state,iv:showIv,slotTxt:slotTxt,startMs:cursor,endMs:after.length?after[0].start:null,title:showTitle};
 }
 function pkMeet(k,title){ // 회의 이름 줄 (없으면 — 로 자리 유지 → 카드 높이 통일)
   const mt=document.getElementById('pk-meet-'+k); if(!mt)return;
@@ -1052,7 +1056,7 @@ function setPickBadge(k,a){
   el.className='pk-state '+a.cls; el.textContent=a.state;
   if(slotEl) slotEl.textContent=a.slotTxt||'';
   let ttl=a.title;
-  if(ROOMS[k] && ROOMS[k].type==='interview'){ ttl=(a.cls==='free')?'':'인터뷰 일정'; }   // 인터뷰룸: 제목 숨김
+  if(a.iv || (ttl && /인터뷰|면접|interview/i.test(ttl))){ ttl='인터뷰 일정'; }           // 인터뷰 일정: 제목 숨김(방이 아니라 일정으로 판정)
   else if(a.cls!=='free' && !ttl){ ttl='예약됨'; }                                        // 비공개/바쁨 예약 → "예약됨"
   PICK_SLOT[k]={start:a.startMs,end:a.endMs}; pkMeet(k,ttl);
   if(pb && a.cls) pb.classList.add('st-'+a.cls);
