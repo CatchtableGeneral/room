@@ -650,9 +650,11 @@ function pingBeat(k){
   if(!CONFIG.appsScriptUrl||!k) return;
   var t0=0; try{ t0=+sessionStorage.getItem('t0')||0; }catch(e){}
   var age = t0 ? Math.round((Date.now()-t0)/60000) : -1;   // 이 문서가 뜬 지 몇 분(끊김 원인 판정용)
+  // [메모리 계측] 기기가 멈추기 직전에 메모리가 치솟는지 확인하려는 것. 지원 안 하는 브라우저면 -1.
+  var mem = -1; try{ var _m=performance.memory; if(_m && _m.usedJSHeapSize) mem=Math.round(_m.usedJSHeapSize/1048576); }catch(e){}
   try{
     fetch(CONFIG.appsScriptUrl+'?ping='+encodeURIComponent(k)
-          +'&age='+age+'&nav='+encodeURIComponent(__navType)+'&t='+Date.now(),
+          +'&age='+age+'&mem='+mem+'&nav='+encodeURIComponent(__navType)+'&t='+Date.now(),
           {mode:'no-cors',cache:'no-store'}).catch(function(){});
   }catch(e){}
 }
@@ -1105,6 +1107,7 @@ function loadPickerStatusesPerRoom(){
   });
 }
 function renderSched(events,mode){
+  if(window.__slept) return;   // [야간 절전] 화면을 비워둔 상태 — 그릴 DOM이 없음
   events=events||[];
   const loading=(mode==='loading');
   const stEl=document.getElementById('schStatus');
@@ -1420,6 +1423,30 @@ function refreshCover(){
   const coverShown=(((!window.__isPicker) && (isNight()||isLunch()||isWeekend()))||window.__coverBase);
   c.style.display=coverShown?'flex':'none';
   window.__coverOn=coverShown;
+  // ── [야간 절전] ───────────────────────────────────────────────────────────
+  // 야간·주말 커버는 8시간 이상 이어진다. 그동안 display:none 으로 숨기기만 하면
+  // 가이드 DOM·이미지가 메모리에 그대로 남는다. 아예 비워서 메모리를 돌려준다.
+  // #iv-cover 는 #page 바깥이라 화면에는 로고만 그대로 보인다.
+  // 점심(50분)·인터뷰 커버는 짧아서 건드리지 않는다(끝날 때 재로드가 거슬리므로).
+  var _long = (!window.__isPicker) && (isNight()||isWeekend());
+  if(_long){
+    if(!window.__slept){
+      window.__slept=true;
+      try{
+        var _p=document.getElementById('page');
+        if(_p){
+          var _im=_p.getElementsByTagName('img');
+          for(var _i=_im.length-1;_i>=0;_i--){ _im[_i].removeAttribute('src'); _im[_i].removeAttribute('srcset'); }
+          _p.innerHTML='';   // 이미지 버퍼·레이아웃 트리까지 실제로 해제됨
+        }
+      }catch(e){}
+    }
+  } else if(window.__slept){
+    window.__slept=false;
+    location.reload();   // 아침: 비워둔 화면을 깨끗하게 다시 그림
+    return;
+  }
+  // ─────────────────────────────────────────────────────────────────────────
   // 커버(#iv-cover)는 position:fixed로 화면 전체를 덮으므로, 그동안 #page를 렌더 트리에서 빼도
   // 보이는 결과는 완전히 동일. 대신 GeckoView가 들고 있던 레이어/텍스처가 실제로 해제됨.
   const _pg=document.getElementById('page');
@@ -1632,7 +1659,7 @@ function render(){
       // 15초 주기 폴링(+지터) → 서버가 요청 시 최신화하므로 신선도 ≈ 폴링 주기(약 15초)
       const calKey=room.cal||key;
       loadSchedule(calKey);
-      (function poll(){ setTimeout(function(){ loadSchedule(calKey); poll(); }, 45000+Math.floor(Math.random()*8000)); })();  // 폴링 45초(±): footprint 완화
+      (function poll(){ setTimeout(function(){ if(!window.__slept) loadSchedule(calKey); poll(); }, 45000+Math.floor(Math.random()*8000)); })();  // 폴링 45초(±): footprint 완화
     }
   }
   fit();
